@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.modules.auth.router import router as auth_router
 
-from app.core.handlers import register_exception_handlers
+from backend.app.core.api.handlers import register_exception_handlers
 
 
 

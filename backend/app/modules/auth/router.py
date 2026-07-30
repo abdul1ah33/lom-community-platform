@@ -6,7 +6,7 @@ from app.modules.users.schemas import UserCreate, UserResponse
 
 from app.modules.auth.dependencies import get_auth_service
 
-from app.core.responses import SuccessResponse
+from backend.app.core.api.responses import SuccessResponse
 
 
 router = APIRouter()

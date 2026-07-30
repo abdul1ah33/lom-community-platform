@@ -8,7 +8,7 @@ from alembic import context
 from app.db.database import Base
 from backend.app.modules.users import *
 
-from app.core.settings import settings
+from backend.app.core.config.settings import settings
 
 target_metadata = Base.metadata
 
