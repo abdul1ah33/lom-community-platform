@@ -6,6 +6,9 @@ from app.modules.users.schemas import UserCreate, UserResponse
 
 from app.modules.auth.dependencies import get_auth_service
 
+from app.core.responses import SuccessResponse
+
+
 router = APIRouter()
 
 
@@ -20,4 +23,10 @@ def register(
 ):
     user = service.register(data)
 
-    return UserResponse.model_validate(user)
+    response = UserResponse.model_validate(user)
+
+    return SuccessResponse(
+        status_code=201,
+        message="User registered successfully.",
+        data=response.model_dump(),
+    )

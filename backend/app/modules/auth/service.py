@@ -2,8 +2,12 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.modules.users.models import User
-from app.modules.users.repository import UserRepository
-from app.modules.users.schemas import UserCreate
+from app.modules.users.schemas import UserCreate, UserResponse
+
+from app.core.exceptions import (
+    UsernameAlreadyExistsException,
+    EmailAlreadyExistsException,
+)
 
 
 class AuthService:
@@ -14,10 +18,10 @@ class AuthService:
     def register(self, data: UserCreate) -> User:
 
         if self.user_repository.get_by_username(data.username):
-            raise ValueError("Username already exists.")
+            raise UsernameAlreadyExistsException()
 
         if self.user_repository.get_by_email(data.email):
-            raise ValueError("Email already exists.")
+            raise EmailAlreadyExistsException()
 
         user = User(
             username=data.username,
@@ -29,4 +33,4 @@ class AuthService:
 
         self.db.commit()
 
-        return user
+        return UserResponse.model_validate(user)
