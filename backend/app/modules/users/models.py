@@ -5,12 +5,16 @@ from app.db.database import Base
 
 from datetime import datetime
 
+from uuid import UUID, uuid4
+
 
 class User(Base):
     __tablename__ = "users"
 
-    # Note: In future, there will be no auto-incrementing primary key, as we will use UUIDs for user IDs
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[UUID] = mapped_column(
+        primary_key=True,
+        default=uuid4,
+    )
 
     username: Mapped[str] = mapped_column(
         String(50),
