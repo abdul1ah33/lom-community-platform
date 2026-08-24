@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from uuid import UUID
 
 
 class UserCreate(BaseModel):
@@ -10,7 +11,7 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: UUID
     username: str
     email: EmailStr
     avatar_url: str | None = None
