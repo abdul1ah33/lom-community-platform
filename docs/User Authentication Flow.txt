@@ -1,0 +1,60 @@
+User Authentication Flow:
+
+                 REGISTER
+                    │
+                    ▼
+                  User
+                    │
+                    ▼
+                  LOGIN
+                 /     \
+                /       \
+               ▼         ▼
+          Access JWT   Refresh Token
+               │            │
+               │            ▼
+               │       Hashed in DB
+               │
+               ▼
+         Protected APIs
+               │
+               ▼
+      get_current_user()
+               │
+               ▼
+              User
+
+
+What happens when /me endpoint is called?
+
+get_current_user()
+       │
+       ▼
+HTTPBearer
+       │
+       ▼
+Extract token
+       │
+       ▼
+decode_token()
+       │
+       ▼
+Check type == "access"
+       │
+       ▼
+Extract sub
+       │
+       ▼
+Convert sub → UUID
+       │
+       ▼
+UserRepository.get_by_id()
+       │
+       ▼
+User
+       │
+       ▼
+current_user
+       │
+       ▼
+get_me()

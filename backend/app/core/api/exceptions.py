@@ -18,6 +18,8 @@ class AppException(Exception):
         super().__init__(self.message)
 
 
+# Custom exceptions for the authentication module
+# regisgter
 class UsernameAlreadyExistsException(AppException):
     status_code = status.HTTP_409_CONFLICT
     error_code = "USERNAME_ALREADY_EXISTS"
@@ -30,6 +32,7 @@ class EmailAlreadyExistsException(AppException):
     message = "A user with this email already exists."
 
 
+# login
 class InvalidCredentialsException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
     error_code = "INVALID_CREDENTIALS"
@@ -54,7 +57,7 @@ class ForbiddenException(AppException):
     message = "You do not have permission to perform this action."
 
 
-class InvalidTokenException(AppException):
-    status_code = status.HTTP_401_UNAUTHORIZED
+class InvalidAccessTokenException(AppException):
+    status_code = 401
     error_code = "INVALID_TOKEN"
-    message = "The authentication token is invalid or has expired."
+    message = "Invalid or expired access token."

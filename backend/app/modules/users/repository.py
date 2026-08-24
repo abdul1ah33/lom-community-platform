@@ -1,6 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from uuid import UUID
+
 from app.modules.users.models import User
 
 
@@ -16,6 +18,13 @@ class UserRepository:
         statement = select(User).where(User.username == username)
         return self.db.scalar(statement)
 
+    def get_by_id(self, user_id: UUID) -> User | None:
+        statement = select(User).where(
+            User.id == user_id
+        )
+
+        return self.db.scalar(statement)
+    
     def create(self, user: User) -> User:
         self.db.add(user)
         self.db.flush()

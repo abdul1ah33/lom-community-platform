@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends
 
 from app.modules.auth.service import AuthService
 from app.modules.auth.schemas import LoginRequest, TokenResponse
-from app.modules.auth.dependencies import get_auth_service
+from app.modules.auth.dependencies import get_auth_service, get_current_user
 
 from app.modules.users.schemas import UserCreate, UserResponse
 
 from app.core.api.responses import SuccessResponse
+from app.modules.users.models import User
 
 
 router = APIRouter()
@@ -31,6 +32,7 @@ def register(
         data=response.model_dump(mode="json"),
     )
 
+
 @router.post(
     "/login",
     response_model=TokenResponse,
@@ -41,3 +43,13 @@ def login(
 ):
     
     return service.login(data)
+
+
+@router.get(
+    "/me",
+    response_model=UserResponse,
+)
+def get_current_user_profile(
+    current_user: User = Depends(get_current_user)
+):
+    return UserResponse.model_validate(current_user)
