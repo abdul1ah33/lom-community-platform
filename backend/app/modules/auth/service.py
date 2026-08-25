@@ -10,6 +10,8 @@ from app.core.api.exceptions import (
     UsernameAlreadyExistsException,
     EmailAlreadyExistsException,
     InvalidCredentialsException,
+    InvalidRefreshTokenException,
+    DatabaseSavingErrorException,
 )
 
 from datetime import datetime, timedelta, timezone
@@ -24,7 +26,11 @@ from app.core.auth.security import (
 
 from app.modules.auth.models import RefreshToken
 from app.modules.auth.repository import RefreshTokenRepository
-from app.modules.auth.schemas import LoginRequest, TokenResponse
+from app.modules.auth.schemas import (
+    LoginRequest,
+    TokenResponse,
+    RefreshTokenRequest,
+)
 
 from app.core.config.settings import settings
 
@@ -39,6 +45,7 @@ class AuthService:
         self.db = db
         self.user_repository = user_repo
         self.refresh_token_repository = refresh_token_repo
+
 
     def register(self, data: UserCreate) -> UserResponse:
 
@@ -163,4 +170,108 @@ class AuthService:
         return TokenResponse(
             access_token=access_token,
             refresh_token=refresh_token,
+        )
+
+
+    def refresh_token(
+        self,
+        data: RefreshTokenRequest,
+    ) -> TokenResponse:
+
+        token_hash = hash_refresh_token(
+            data.refresh_token
+        )
+
+        refresh_token = (
+            self.refresh_token_repository.get_by_token_hash(
+                token_hash
+            )
+        )
+
+        if not refresh_token:
+            logger.warning(
+                "Refresh failed: refresh token was not found."
+            )
+
+            raise InvalidRefreshTokenException()
+
+        if refresh_token.revoked_at is not None:
+            logger.warning(
+                "Refresh failed: refresh token %s has been revoked.",
+                refresh_token.id,
+            )
+
+            raise InvalidRefreshTokenException()
+
+        if refresh_token.expires_at <= datetime.now(timezone.utc):
+            logger.warning(
+                "Refresh failed: refresh token %s has expired.",
+                refresh_token.id,
+            )
+
+            raise InvalidRefreshTokenException()
+
+
+        user = self.user_repository.get_by_id(
+            refresh_token.user_id
+        )
+
+        if not user:
+            logger.warning(
+                "Refresh failed: user %s no longer exists.",
+                refresh_token.user_id,
+            )
+
+            raise InvalidRefreshTokenException()
+
+        new_access_token = create_access_token(
+            subject=str(user.id)
+        )
+
+        new_refresh_token = generate_refresh_token()
+
+        now = datetime.now(timezone.utc)
+
+        refresh_token.revoked_at = now
+        refresh_token.last_used_at = now
+
+        new_refresh_token_record = RefreshToken(
+            user_id=user.id,
+            token_hash=hash_refresh_token(
+                new_refresh_token
+            ),
+            expires_at=(
+                datetime.now(timezone.utc)
+                + timedelta(
+                    days=settings.refresh_token_expire_days
+                )
+            ),
+        )
+
+        try:
+            self.refresh_token_repository.create(
+                new_refresh_token_record
+            )
+
+            self.db.commit()
+
+        except Exception:
+            self.db.rollback()
+
+            logger.exception(
+                "Unexpected error while refreshing token "
+                "for user '%s'.",
+                user.id,
+            )
+
+            raise DatabaseSavingErrorException()
+
+        logger.info(
+            "Token refreshed successfully for user %s.",
+            user.id,
+        )
+
+        return TokenResponse(
+            access_token=new_access_token,
+            refresh_token=new_refresh_token,
         )

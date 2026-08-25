@@ -59,5 +59,17 @@ class ForbiddenException(AppException):
 
 class InvalidAccessTokenException(AppException):
     status_code = 401
-    error_code = "INVALID_TOKEN"
+    error_code = "INVALID_ACCESS_TOKEN"
     message = "Invalid or expired access token."
+
+
+class InvalidRefreshTokenException(AppException):
+    status_code = 401
+    error_code = "INVALID_REFRESH_TOKEN"
+    message = "Invalid or expired refresh token."
+
+
+class DatabaseSavingErrorException(AppException):
+    status_code = 500
+    error_code = "DATABASE_SAVING_ERROR"
+    message = "An error occurred while saving to the database."

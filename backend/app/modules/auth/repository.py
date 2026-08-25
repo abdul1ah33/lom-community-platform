@@ -18,7 +18,7 @@ class RefreshTokenRepository:
 
         return refresh_token
 
-    def get_by_hash(
+    def get_by_token_hash(
         self,
         token_hash: str,
     ) -> RefreshToken | None:

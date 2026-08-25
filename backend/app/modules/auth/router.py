@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends
 
 from app.modules.auth.service import AuthService
-from app.modules.auth.schemas import LoginRequest, TokenResponse
+from app.modules.auth.schemas import (
+    LoginRequest,
+    TokenResponse,
+    RefreshTokenRequest
+)
 from app.modules.auth.dependencies import get_auth_service, get_current_user
 
 from app.modules.users.schemas import UserCreate, UserResponse
@@ -53,3 +57,14 @@ def get_current_user_profile(
     current_user: User = Depends(get_current_user)
 ):
     return UserResponse.model_validate(current_user)
+
+
+@router.post(
+    "/refresh",
+    response_model=TokenResponse,
+)
+def refresh(
+    data: RefreshTokenRequest,
+    service: AuthService = Depends(get_auth_service),
+):
+    return service.refresh_token(data)
