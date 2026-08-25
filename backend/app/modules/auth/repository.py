@@ -34,4 +34,4 @@ class RefreshTokenRepository:
         refresh_token: RefreshToken,
     ) -> None:
 
-        refresh_token.revoked_at = datetime.utcnow(timezone.utc)
+        refresh_token.revoked_at = datetime.now(timezone.utc)

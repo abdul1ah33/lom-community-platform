@@ -173,6 +173,61 @@ class AuthService:
         )
 
 
+    def logout(
+        self,
+        data: RefreshTokenRequest,
+    ) -> None:
+
+        token_hash = hash_refresh_token(
+            data.refresh_token
+        )
+
+        refresh_token = (
+            self.refresh_token_repository.get_by_token_hash(
+                token_hash
+            )
+        )
+
+        if not refresh_token:
+            logger.warning(
+                "Logout failed: refresh token was not found."
+            )
+
+            raise InvalidRefreshTokenException()
+
+        if refresh_token.revoked_at is not None:
+            logger.warning(
+                "Logout requested for already revoked "
+                "refresh token %s.",
+                refresh_token.id,
+            )
+
+            return
+
+        self.refresh_token_repository.revoke(
+            refresh_token
+        )
+
+        try:
+            self.db.commit()
+
+        except Exception:
+            self.db.rollback()
+
+            logger.exception(
+                "Unexpected error while logging out "
+                "user '%s'.",
+                refresh_token.user_id,
+            )
+
+            raise DatabaseSavingErrorException()
+
+        logger.info(
+            "User logged out successfully | user_id=%s",
+            refresh_token.user_id,
+        )
+
+
     def refresh_token(
         self,
         data: RefreshTokenRequest,

@@ -60,6 +60,17 @@ def get_current_user_profile(
 
 
 @router.post(
+    "/logout",
+    status_code=204,
+)
+def logout(
+    data: RefreshTokenRequest,
+    service: AuthService = Depends(get_auth_service),
+):
+    service.logout(data)
+
+
+@router.post(
     "/refresh",
     response_model=TokenResponse,
 )
