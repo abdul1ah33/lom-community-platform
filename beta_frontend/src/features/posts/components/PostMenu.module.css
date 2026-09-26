@@ -1,0 +1,64 @@
+.root {
+  position: relative;
+}
+
+.trigger {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-faint);
+  transition: color 0.2s, background 0.2s;
+}
+
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.06);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 170px;
+  padding: 6px;
+  border-radius: 14px;
+  background: rgb(24 20 34 / 0.97);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 40px -12px rgb(0 0 0 / 0.85), inset 0 0 0 1px var(--border);
+  transform-origin: top right;
+}
+
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 14px;
+  text-align: left;
+  color: var(--fog-200);
+}
+
+.menu button:hover,
+.menu button:focus-visible {
+  background: rgb(255 255 255 / 0.06);
+  outline: none;
+}
+
+.menu .danger {
+  color: var(--crimson-300);
+}
+
+.menu .danger:hover {
+  background: rgb(209 31 60 / 0.12);
+}

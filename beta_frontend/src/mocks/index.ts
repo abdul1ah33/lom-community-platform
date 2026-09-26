@@ -1,13 +1,17 @@
 import { env } from "@/config/env";
 import { db } from "./db";
 import { registerAuthHandlers } from "./handlers/auth";
+import { registerPostHandlers } from "./handlers/posts";
 import { registerUserHandlers } from "./handlers/users";
 import { MockHttpError } from "./http";
 import { MockRouter } from "./router";
 
 const router = new MockRouter();
 if (env.mockMode === "all") registerAuthHandlers(router);
-if (env.mockMode !== "off") registerUserHandlers(router);
+if (env.mockMode !== "off") {
+  registerUserHandlers(router);
+  registerPostHandlers(router);
+}
 
 if (import.meta.env.DEV) {
   (window as unknown as { lomMockReset: () => void }).lomMockReset = () => {

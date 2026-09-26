@@ -5,6 +5,7 @@ import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
 import { useAuth } from "@/features/auth";
+import { useComposer } from "@/features/posts";
 import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
@@ -14,6 +15,7 @@ interface SidebarProps {
 
 export function Sidebar({ onLogout, loggingOut }: SidebarProps) {
   const { user } = useAuth();
+  const { openComposer } = useComposer();
 
   return (
     <motion.aside
@@ -67,7 +69,7 @@ export function Sidebar({ onLogout, loggingOut }: SidebarProps) {
         </ul>
       </nav>
 
-      <button type="button" className={styles.compose} disabled title="Posting arrives with the Posts module">
+      <button type="button" className={styles.compose} onClick={() => openComposer()}>
         <Icon name="plus" size={18} />
         <span>New post</span>
       </button>

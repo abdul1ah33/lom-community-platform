@@ -10,12 +10,13 @@ interface DialogProps {
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
+  size?: "md" | "lg";
 }
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 /** Modal with backdrop blur, Escape to close, focus trap and focus restore. */
-export function Dialog({ open, onClose, title, description, children, footer }: DialogProps) {
+export function Dialog({ open, onClose, title, description, children, footer, size = "md" }: DialogProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -72,7 +73,7 @@ export function Dialog({ open, onClose, title, description, children, footer }: 
             aria-labelledby={titleId}
             aria-describedby={description ? descriptionId : undefined}
             tabIndex={-1}
-            className={styles.panel}
+            className={`${styles.panel} ${size === "lg" ? styles.large : ""}`}
             initial={{ opacity: 0, y: 30, scale: 0.95, rotateX: 10 }}
             animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }}

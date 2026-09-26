@@ -1,0 +1,134 @@
+.section {
+  display: grid;
+  gap: 16px;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.prompt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 14px 14px 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(100deg, rgb(209 31 60 / 0.1), transparent 60%),
+    var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  text-align: left;
+  transition: box-shadow 0.3s, transform 0.3s var(--ease-out-expo);
+}
+
+.prompt:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 1px var(--border-strong), 0 16px 34px -20px rgb(209 31 60 / 0.7);
+}
+
+.promptText {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--text-faint);
+}
+
+.promptButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--crimson-400), var(--crimson-700));
+  box-shadow: 0 8px 20px -8px rgb(209 31 60 / 0.9);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: inline-grid;
+  grid-auto-flow: column;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgb(7 6 11 / 0.55);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.tab {
+  position: relative;
+  height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-faint);
+  transition: color 0.2s;
+}
+
+.tab span {
+  position: relative;
+}
+
+.tab:hover,
+.active {
+  color: var(--text);
+}
+
+.pill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgb(209 31 60 / 0.3), rgb(201 164 92 / 0.15));
+  box-shadow: inset 0 0 0 1px rgb(226 192 126 / 0.3);
+}
+
+.tagFilter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--brass-200);
+  background: rgb(201 164 92 / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(226 192 126 / 0.35);
+}
+
+.tagFilter:hover {
+  background: rgb(201 164 92 / 0.2);
+}
+
+@media (max-width: 520px) {
+  .promptText {
+    font-size: 17px;
+  }
+}

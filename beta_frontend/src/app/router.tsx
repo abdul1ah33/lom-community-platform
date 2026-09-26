@@ -27,6 +27,10 @@ export const router = createBrowserRouter([
             lazy: () => import("@/pages/EditProfilePage/EditProfilePage").then((m) => ({ Component: m.EditProfilePage })),
           },
           {
+            path: "p/:id",
+            lazy: () => import("@/pages/PostPage/PostPage").then((m) => ({ Component: m.PostPage })),
+          },
+          {
             path: "u/:username",
             lazy: () => import("@/pages/ProfilePage/ProfilePage").then((m) => ({ Component: m.ProfilePage })),
           },

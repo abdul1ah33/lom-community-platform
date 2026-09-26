@@ -124,11 +124,14 @@
   background: linear-gradient(135deg, rgb(209 31 60 / 0.5), rgb(124 13 32 / 0.5));
   color: #fff;
   font-weight: 600;
-  opacity: 0.55;
+  box-shadow: 0 10px 26px -12px rgb(209 31 60 / 0.9), inset 0 1px 0 rgb(255 255 255 / 0.2);
+  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s, background 0.3s;
 }
 
-.compose:disabled {
-  cursor: not-allowed;
+.compose:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--crimson-400), var(--crimson-700));
+  box-shadow: 0 16px 30px -12px rgb(240 68 92 / 1), inset 0 1px 0 rgb(255 255 255 / 0.25);
 }
 
 .account {

@@ -27,7 +27,10 @@ const paths = {
   camera: <><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z" /><circle cx="12" cy="13" r="3.5" /></>,
   trash: <><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13" /></>,
   userPlus: <><circle cx="10" cy="8" r="4" /><path d="M3 20.5c1-3.6 3.8-5.5 7-5.5 1.6 0 3 .4 4.2 1.2M18 13v6M15 16h6" /></>,
-  flame:<path d="M12 21c-3.9 0-6.5-2.6-6.5-6.2 0-4.3 4.1-6.3 4.6-11.3 3.1 2 4 4.8 3.7 7 1-.7 1.7-1.9 1.9-3.3 1.9 1.8 2.8 4.3 2.8 6.7C18.5 18 15.9 21 12 21Z" />,
+  more: <><circle cx="5.5" cy="12" r="1.3" fill="currentColor" /><circle cx="12" cy="12" r="1.3" fill="currentColor" /><circle cx="18.5" cy="12" r="1.3" fill="currentColor" /></>,
+  hash: <path d="M9 4 7 20M17 4l-2 16M4.5 9h16M3.5 15h16" />,
+  x: <path d="M6 6l12 12M18 6 6 18" />,
+  flame: <path d="M12 21c-3.9 0-6.5-2.6-6.5-6.2 0-4.3 4.1-6.3 4.6-11.3 3.1 2 4 4.8 3.7 7 1-.7 1.7-1.9 1.9-3.3 1.9 1.8 2.8 4.3 2.8 6.7C18.5 18 15.9 21 12 21Z" />,
 } as const;
 
 export type IconName = keyof typeof paths;

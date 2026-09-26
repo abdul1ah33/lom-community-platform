@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { NavLink } from "react-router-dom";
 import { NAV_ITEMS, navHref } from "@/app/navigation";
 import { useAuth } from "@/features/auth";
+import { useComposer } from "@/features/posts";
 import { Icon } from "@/components/ui/Icon";
 import styles from "./MobileNav.module.css";
 
@@ -9,12 +10,14 @@ const [home, search, notifications, profile] = NAV_ITEMS.filter((item) => item.m
 
 /** Bottom bar for phones: Home, Search, +, Notifications, Profile (UI/UX doc §4). */
 export function MobileNav() {
+  const { openComposer } = useComposer();
+
   return (
     <nav className={styles.bar} aria-label="Main">
       {[home, search].map((item) => (
         <Item key={item.to} {...item} />
       ))}
-      <button type="button" className={styles.plus} disabled aria-label="New post (coming soon)">
+      <button type="button" className={styles.plus} onClick={() => openComposer()} aria-label="New post">
         <Icon name="plus" size={22} />
       </button>
       {[notifications, profile].map((item) => (

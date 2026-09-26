@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { FogBackground } from "@/components/effects/FogBackground";
 import { ParticleField } from "@/components/effects/ParticleField";
 import { useAuth } from "@/features/auth";
+import { ComposerProvider } from "@/features/posts";
 import { MobileNav } from "./MobileNav";
 import { Sidebar } from "./Sidebar";
 import styles from "./AppShell.module.css";
@@ -20,16 +21,18 @@ export function AppShell() {
   };
 
   return (
-    <div className={styles.shell}>
-      <FogBackground variant="calm" />
-      <ParticleField density={0.45} />
-      <div className={styles.sidebar}>
-        <Sidebar onLogout={handleLogout} loggingOut={loggingOut} />
+    <ComposerProvider>
+      <div className={styles.shell}>
+        <FogBackground variant="calm" />
+        <ParticleField density={0.45} />
+        <div className={styles.sidebar}>
+          <Sidebar onLogout={handleLogout} loggingOut={loggingOut} />
+        </div>
+        <main className={styles.main}>
+          <Outlet context={{ onLogout: handleLogout }} />
+        </main>
+        <MobileNav />
       </div>
-      <main className={styles.main}>
-        <Outlet context={{ onLogout: handleLogout }} />
-      </main>
-      <MobileNav />
-    </div>
+    </ComposerProvider>
   );
 }

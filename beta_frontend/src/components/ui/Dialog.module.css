@@ -22,6 +22,10 @@
   overflow: hidden;
 }
 
+.large {
+  width: min(620px, 100%);
+}
+
 .header {
   display: flex;
   align-items: flex-start;

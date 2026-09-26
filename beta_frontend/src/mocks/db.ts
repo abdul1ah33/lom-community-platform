@@ -20,8 +20,24 @@ export interface MockUser {
   likes_received: number;
 }
 
+export interface MockPost {
+  id: string;
+  author_id: string;
+  body: string;
+  tags: string[];
+  spoiler_chapter: number | null;
+  created_at: string;
+  edited_at: string | null;
+  /** Likes from accounts that don't exist in the mock, so seed posts look lived-in. */
+  base_likes: number;
+  comments: number;
+}
+
 interface MockDbState {
   users: MockUser[];
+  posts: MockPost[];
+  /** [userId, postId] */
+  likes: [string, string][];
   /** [followerId, followeeId] */
   follows: [string, string][];
   /** refresh token -> user id */
@@ -34,6 +50,10 @@ export const DEMO_ACCOUNT = { email: "fool@lom.community", password: "praisethef
 
 function daysAgo(days: number) {
   return new Date(Date.now() - days * 86_400_000).toISOString();
+}
+
+function hoursAgo(hours: number) {
+  return new Date(Date.now() - hours * 3_600_000).toISOString();
 }
 
 function seed(): MockDbState {
@@ -130,6 +150,12 @@ function seed(): MockDbState {
   const [fool, justice, hanged, nighthawk, sun] = users.map((u) => u.id);
   return {
     users,
+    posts: seedPosts({ fool, justice, hanged, nighthawk, sun }),
+    likes: [
+      [fool, "post-01"],
+      [justice, "post-03"],
+      [hanged, "post-01"],
+    ],
     follows: [
       [justice, fool],
       [hanged, fool],
@@ -148,7 +174,8 @@ function seed(): MockDbState {
 function load(): MockDbState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as MockDbState;
+    // Merge over the seed so data saved by an older mock version gains new collections.
+    if (raw) return { ...seed(), ...(JSON.parse(raw) as Partial<MockDbState>) };
   } catch {
     /* corrupt or unavailable: reseed */
   }
@@ -198,6 +225,37 @@ export const db = {
   followerIds: (userId: string) => state.follows.filter(([, b]) => b === userId).map(([a]) => a),
   followingIds: (userId: string) => state.follows.filter(([a]) => a === userId).map(([, b]) => b),
 
+  get posts() {
+    return state.posts;
+  },
+  postById: (id: string) => state.posts.find((p) => p.id === id),
+  insertPost(post: MockPost) {
+    state.posts.unshift(post);
+    persist();
+  },
+  updatePost(id: string, patch: Partial<MockPost>) {
+    const post = state.posts.find((p) => p.id === id);
+    if (post) Object.assign(post, patch);
+    persist();
+    return post;
+  },
+  deletePost(id: string) {
+    state.posts = state.posts.filter((p) => p.id !== id);
+    state.likes = state.likes.filter(([, postId]) => postId !== id);
+    persist();
+  },
+
+  likeCount: (postId: string) => state.likes.filter(([, p]) => p === postId).length,
+  hasLiked: (userId: string, postId: string) => state.likes.some(([u, p]) => u === userId && p === postId),
+  like(userId: string, postId: string) {
+    if (!db.hasLiked(userId, postId)) state.likes.push([userId, postId]);
+    persist();
+  },
+  unlike(userId: string, postId: string) {
+    state.likes = state.likes.filter(([u, p]) => !(u === userId && p === postId));
+    persist();
+  },
+
   createSession(userId: string) {
     const token = `mock-refresh.${userId}.${crypto.randomUUID()}`;
     state.sessions[token] = userId;
@@ -217,3 +275,42 @@ export const db = {
     persist();
   },
 };
+
+function seedPosts(ids: Record<"fool" | "justice" | "hanged" | "nighthawk" | "sun", string>): MockPost[] {
+  const post = (
+    n: number,
+    author_id: string,
+    hours: number,
+    body: string,
+    tags: string[],
+    spoiler_chapter: number | null,
+    base_likes: number,
+    comments: number,
+  ): MockPost => ({
+    id: `post-${String(n).padStart(2, "0")}`,
+    author_id,
+    body,
+    tags,
+    spoiler_chapter,
+    created_at: hoursAgo(hours),
+    edited_at: null,
+    base_likes,
+    comments,
+  });
+
+  // Spoiler posts are deliberately vague: the mock text is visible in devtools.
+  return [
+    post(1, ids.justice, 0.2, "Re-reading Volume 1 and the foreshadowing in the first ten chapters hits so differently the second time. Starting a thread of every small detail I missed.", ["Volume 1", "Re-read"], null, 128, 34),
+    post(2, ids.hanged, 1, "That chapter. I will not say anything else. If you know, you know. Come find me in the comments when you get there.", ["Theory", "Tarot Club"], 1150, 342, 97),
+    post(3, ids.nighthawk, 3, "Tier list of Sequence 9 potions by how miserable the first week of digestion would be. The Sleepless have it rough.", ["Pathways", "Fun"], null, 89, 21),
+    post(4, ids.sun, 5, "Just finished the arc everyone warned me about. My theory about where the story is heading completely changed. Writing up a full breakdown this weekend.", ["Theory"], 640, 57, 18),
+    post(5, ids.fool, 8, "Welcome to everyone who joined this week! Set your reading progress on your profile and spoilers past your chapter will stay sealed on your feed.", ["Announcements"], null, 410, 64),
+    post(6, ids.justice, 11, "Appreciation post for the Tingen arc. The slow build, the atmosphere, the small moments with family. Nothing hits quite like it.", ["Tingen", "Volume 1"], null, 233, 45),
+    post(7, ids.hanged, 16, "Finished the main story last night. Still processing. I have so many questions about the final volume and I need to talk to someone who has read it.", ["Ending"], 1394, 190, 76),
+    post(8, ids.nighthawk, 20, "Question for Nighthawk fans: which squad member would you trust most with your life? Explain your reasoning.", ["Tingen", "Discussion"], null, 44, 39),
+    post(9, ids.sun, 26, "The worldbuilding around the pathways gets so much deeper around the mid-point. Anyone else start keeping notes on every Sequence name?", ["Pathways"], 300, 71, 12),
+    post(10, ids.fool, 30, "Donghua news round-up: trailer breakdown thread coming soon. Keep theories about unreleased episodes marked as spoilers please!", ["Donghua", "Announcements"], null, 156, 28),
+    post(11, ids.justice, 40, "Backlund in the fog is one of the best settings I have ever read. The Victorian atmosphere is unmatched.", ["Backlund"], null, 98, 17),
+    post(12, ids.hanged, 52, "Unpopular opinion incoming about a certain reveal. Marking it at the chapter it happens so nobody gets hurt.", ["Theory", "Discussion"], 820, 63, 54),
+  ];
+}

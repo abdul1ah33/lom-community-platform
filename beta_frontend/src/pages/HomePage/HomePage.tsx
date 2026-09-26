@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { VeilTransition } from "@/components/effects/VeilTransition";
 import { useAuth } from "@/features/auth";
-import { FeedPreview, HomeHero, PathwayDeck, RoadmapCard, TrendingTags } from "@/features/home";
+import { HomeHero, PathwayDeck, RoadmapCard, TrendingTags } from "@/features/home";
+import { FeedSection } from "@/features/posts";
 import styles from "./HomePage.module.css";
 
 export interface ShellContext {
@@ -38,7 +39,7 @@ export function HomePage() {
         <div className={styles.columns}>
           <div className={styles.main}>
             <PathwayDeck />
-            <FeedPreview />
+            <FeedSection />
           </div>
           <aside className={styles.aside}>
             <RoadmapCard />

@@ -11,6 +11,7 @@ import {
   useProfile,
   type RelationKind,
 } from "@/features/profile";
+import { UserPostList } from "@/features/posts";
 import { ApiError } from "@/lib/http/ApiError";
 import styles from "./ProfilePage.module.css";
 
@@ -49,7 +50,11 @@ export function ProfilePage() {
 
       <div className={styles.columns}>
         <div className={styles.main}>
-          <ProfileTabs key={profile.username} profile={profile} />
+          <ProfileTabs
+            key={profile.username}
+            profile={profile}
+            posts={<UserPostList username={profile.username} isSelf={profile.viewer.is_self} />}
+          />
         </div>
         <aside className={styles.aside}>
           <ReadingPanel profile={profile} />

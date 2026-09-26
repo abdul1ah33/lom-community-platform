@@ -125,11 +125,13 @@ function toProfile(user: MockUser, viewer: MockUser | null): UserProfile {
     reading_progress: { current_chapter: user.current_chapter, updated_at: user.progress_updated_at },
     joined_at: user.joined_at,
     stats: {
-      posts: user.posts,
+      posts: db.posts.filter((p) => p.author_id === user.id).length,
       comments: user.comments,
       followers,
       following: db.followingIds(user.id).length,
-      likes_received: user.likes_received,
+      likes_received:
+        user.likes_received +
+        db.posts.filter((p) => p.author_id === user.id).reduce((sum, p) => sum + db.likeCount(p.id), 0),
     },
     achievements: achievementsFor(user, followers),
     viewer: {
