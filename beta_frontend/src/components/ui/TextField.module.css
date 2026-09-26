@@ -1,0 +1,127 @@
+.field {
+  display: grid;
+}
+
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 14px;
+  background: rgb(7 6 11 / 0.55);
+  box-shadow: inset 0 0 0 1px var(--border);
+  transition: box-shadow 0.3s var(--ease-out-expo), background 0.3s;
+  overflow: hidden;
+}
+
+.control:hover {
+  box-shadow: inset 0 0 0 1px rgb(207 200 222 / 0.22);
+}
+
+.control:focus-within {
+  background: rgb(7 6 11 / 0.75);
+  box-shadow:
+    inset 0 0 0 1px var(--border-strong),
+    0 0 0 4px rgb(201 164 92 / 0.1),
+    0 0 26px rgb(201 164 92 / 0.12);
+}
+
+.icon {
+  position: absolute;
+  left: 16px;
+  color: var(--text-faint);
+  transition: color 0.3s;
+  pointer-events: none;
+}
+
+.control:focus-within .icon {
+  color: var(--brass-300);
+}
+
+.input {
+  width: 100%;
+  height: 58px;
+  padding: 22px 48px 6px 46px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+}
+
+.input:-webkit-autofill {
+  -webkit-text-fill-color: var(--text);
+  transition: background-color 9999s;
+}
+
+.label {
+  position: absolute;
+  left: 46px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--text-faint);
+  pointer-events: none;
+  transform-origin: left center;
+  transition:
+    transform 0.3s var(--ease-out-expo),
+    top 0.3s var(--ease-out-expo),
+    color 0.3s;
+}
+
+.input:focus + .label,
+.input:not(:placeholder-shown) + .label {
+  top: 17px;
+  transform: scale(0.76);
+  color: var(--brass-300);
+  letter-spacing: 0.04em;
+}
+
+.reveal {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-faint);
+  transition: color 0.2s, background 0.2s;
+}
+
+.reveal:hover {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.06);
+}
+
+/* A light beam that sweeps along the bottom edge on focus. */
+.beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brass-300), var(--crimson-400), transparent);
+  transform: scaleX(0);
+  transition: transform 0.5s var(--ease-out-expo);
+}
+
+.control:focus-within .beam {
+  transform: scaleX(1);
+}
+
+.invalid .control {
+  box-shadow: inset 0 0 0 1px rgb(240 68 92 / 0.6);
+}
+
+.invalid .icon,
+.invalid .label {
+  color: var(--crimson-300) !important;
+}
+
+.error {
+  margin: 0;
+  padding: 6px 4px 0;
+  font-size: 13px;
+  color: var(--crimson-300);
+  overflow: hidden;
+}

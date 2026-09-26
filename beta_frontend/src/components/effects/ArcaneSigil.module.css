@@ -1,0 +1,107 @@
+.sigil {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+  --spin: 1;
+}
+
+.sigil g,
+.sigil circle {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+.line,
+.lineDashed,
+.lineFaint {
+  fill: none;
+  stroke: var(--brass-400);
+  stroke-width: 0.8;
+  opacity: 0.7;
+}
+
+.lineDashed {
+  stroke-dasharray: 2 6;
+  opacity: 0.5;
+}
+
+.lineFaint {
+  opacity: 0.35;
+}
+
+.runes {
+  fill: var(--brass-300);
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  letter-spacing: 2px;
+  opacity: 0.85;
+}
+
+.tick {
+  stroke: var(--fog-300);
+  stroke-width: 0.8;
+  opacity: 0.45;
+}
+
+.tickMajor {
+  stroke: var(--crimson-400);
+  stroke-width: 1.6;
+}
+
+.starLine {
+  fill: none;
+  stroke: var(--crimson-400);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+
+.ringOuter {
+  animation: spin calc(80s / var(--spin)) linear infinite;
+}
+
+.ringTicks {
+  animation: spin calc(50s / var(--spin)) linear infinite reverse;
+}
+
+.star {
+  animation: spin calc(120s / var(--spin)) linear infinite;
+}
+
+.core {
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.eye {
+  fill: #fff2f4;
+  filter: drop-shadow(0 0 10px var(--crimson-400)) drop-shadow(0 0 24px var(--crimson-500));
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.charged {
+  --spin: 6;
+}
+
+.charged .core,
+.charged .eye {
+  animation-duration: 0.8s;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}

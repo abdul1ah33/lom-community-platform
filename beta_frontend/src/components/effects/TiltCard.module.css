@@ -1,0 +1,60 @@
+.perspective {
+  perspective: 1200px;
+  width: 100%;
+}
+
+.card {
+  position: relative;
+  transform-style: preserve-3d;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, rgb(34 29 48 / 0.78), rgb(14 12 20 / 0.82));
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: var(--shadow-card);
+  isolation: isolate;
+}
+
+.glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Animated brass/crimson hairline that travels around the card. */
+.border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    transparent 0deg,
+    var(--brass-300) 40deg,
+    transparent 90deg,
+    transparent 180deg,
+    var(--crimson-400) 220deg,
+    transparent 270deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.8;
+  animation: orbit 6s linear infinite;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes orbit {
+  to {
+    --angle: 360deg;
+  }
+}

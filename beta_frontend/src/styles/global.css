@@ -1,0 +1,129 @@
+/* ─────────────────────────────────────────────────────────────
+   Design tokens: "Above the Gray Fog"
+   Ink-black night, a crimson moon, brass of the Victorian era,
+   and the lavender-grey fog of the Sefirah Castle.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --ink-950: #07060b;
+  --ink-900: #0c0a12;
+  --ink-800: #14111d;
+  --ink-700: #1d1928;
+  --ink-600: #2a2438;
+
+  --fog-100: #ece8f4;
+  --fog-200: #cfc8de;
+  --fog-300: #a79fba;
+  --fog-400: #7d7592;
+
+  --crimson-300: #ff7b8c;
+  --crimson-400: #f0445c;
+  --crimson-500: #d11f3c;
+  --crimson-700: #7c0d20;
+
+  --brass-200: #f3dfae;
+  --brass-300: #e2c07e;
+  --brass-400: #c9a45c;
+  --brass-600: #8a6a2f;
+
+  --violet-400: #8f7bff;
+  --teal-400: #4fd1c5;
+
+  --surface: rgb(22 19 32 / 0.62);
+  --surface-strong: rgb(26 22 38 / 0.86);
+  --border: rgb(207 200 222 / 0.12);
+  --border-strong: rgb(226 192 126 / 0.35);
+
+  --text: var(--fog-100);
+  --text-muted: var(--fog-300);
+  --text-faint: var(--fog-400);
+
+  --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --shadow-glow-crimson: 0 0 40px rgb(209 31 60 / 0.35);
+  --shadow-glow-brass: 0 0 32px rgb(201 164 92 / 0.28);
+  --shadow-card: 0 30px 80px -20px rgb(0 0 0 / 0.7), 0 0 0 1px var(--border) inset;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ink-950);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--brass-300);
+}
+
+::selection {
+  background: rgb(209 31 60 / 0.45);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass-300);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Thin brass scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-600) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

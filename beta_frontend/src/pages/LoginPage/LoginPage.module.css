@@ -1,0 +1,189 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.moon {
+  position: fixed;
+  top: clamp(40px, 9vh, 90px);
+  right: clamp(24px, 9vw, 160px);
+  z-index: 1;
+}
+
+.layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 80px);
+  width: min(1240px, 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 48px clamp(16px, 5vw, 56px);
+}
+
+/* ── Brand side ─────────────────────────────────────────── */
+.brand {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 520px;
+}
+
+.sigil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.brandContent {
+  position: relative;
+  z-index: 1; /* own stacking context, so the backdrop below paints above the sigil */
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+/* A pool of darkness behind the copy so the title reads cleanly over the sigil. */
+.brandContent::before {
+  content: "";
+  position: absolute;
+  inset: -12% -8%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(7 6 11 / 0.82), rgb(7 6 11 / 0.5) 60%, transparent);
+  filter: blur(10px);
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brass-300);
+  text-shadow: 0 0 18px rgb(201 164 92 / 0.5);
+}
+
+.title {
+  display: grid;
+  justify-items: center;
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 0.95;
+}
+
+.titleSmall {
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  color: var(--fog-200);
+  padding-left: 0.3em;
+}
+
+.titleBig {
+  font-size: clamp(40px, 6.4vw, 96px);
+  white-space: nowrap;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  filter: drop-shadow(0 6px 30px rgb(209 31 60 / 0.35));
+}
+
+/* Each letter animates as its own inline-block, so the gradient is painted per glyph. */
+.titleBig > span {
+  background: linear-gradient(180deg, #fff 0%, var(--brass-200) 40%, var(--brass-400) 70%, var(--crimson-400) 110%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.whisper {
+  min-height: 3.2em;
+  max-width: 440px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(18px, 1.6vw, 21px);
+  color: var(--text-muted);
+}
+
+.whisper p {
+  margin: 0;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgb(20 17 29 / 0.6);
+  box-shadow: inset 0 0 0 1px var(--border);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  color: var(--fog-200);
+}
+
+.feature svg {
+  color: var(--brass-300);
+}
+
+/* ── Form side ──────────────────────────────────────────── */
+.panel {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  justify-self: center;
+}
+
+.footnote {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+@media (max-width: 920px) {
+  .layout {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 8px;
+    padding-top: 32px;
+  }
+
+  .brand {
+    min-height: 340px;
+  }
+
+  .whisper,
+  .features {
+    display: none;
+  }
+
+  .moon {
+    top: 24px;
+    right: 20px;
+  }
+
+  .moon > div {
+    transform: scale(0.6);
+    transform-origin: top right;
+  }
+}

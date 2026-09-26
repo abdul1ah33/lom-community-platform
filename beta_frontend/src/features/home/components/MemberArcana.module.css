@@ -1,0 +1,136 @@
+.card {
+  position: relative;
+  width: 230px;
+  aspect-ratio: 2 / 3.3;
+  border-radius: 18px;
+  padding: 10px;
+  background:
+    linear-gradient(160deg, hsl(var(--hue) 40% 18%), var(--ink-900) 60%),
+    var(--ink-900);
+  box-shadow:
+    0 30px 60px -15px rgb(0 0 0 / 0.8),
+    0 0 50px -10px hsl(var(--hue) 80% 55% / 0.5),
+    inset 0 0 0 1px rgb(226 192 126 / 0.45);
+  transform-style: preserve-3d;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.frame {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  justify-items: center;
+  height: 100%;
+  padding: 14px 12px;
+  border-radius: 12px;
+  border: 1px solid rgb(226 192 126 / 0.4);
+  background:
+    repeating-linear-gradient(45deg, transparent 0 10px, rgb(226 192 126 / 0.03) 10px 11px),
+    radial-gradient(circle at 50% 40%, hsl(var(--hue) 70% 40% / 0.35), transparent 60%);
+}
+
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--brass-300);
+  transform: rotate(45deg);
+}
+
+.frame::before {
+  top: -7px;
+  left: calc(50% - 7px);
+  background: var(--ink-900);
+}
+
+.frame::after {
+  bottom: -7px;
+  left: calc(50% - 7px);
+  background: var(--ink-900);
+}
+
+.numeral {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--brass-200);
+}
+
+.emblem {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-self: center;
+}
+
+.rays {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgb(226 192 126 / 0.35) 0deg 2deg, transparent 2deg 15deg);
+  -webkit-mask: radial-gradient(circle, transparent 48px, #000 50px, transparent 85px);
+  mask: radial-gradient(circle, transparent 48px, #000 50px, transparent 85px);
+  animation: spin 30s linear infinite;
+}
+
+.caption {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.kicker {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.pathway {
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: var(--fog-100);
+}
+
+.sequence {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--brass-300);
+}
+
+.owner {
+  margin-top: 10px;
+  padding-top: 8px;
+  width: 100%;
+  border-top: 1px solid rgb(226 192 126 / 0.2);
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.foil {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  mix-blend-mode: color-dodge;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

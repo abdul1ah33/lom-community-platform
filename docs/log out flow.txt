@@ -1,0 +1,14 @@
+Frontend                         Backend
+   │                                │
+   │ POST /auth/logout              │
+   │───────────────────────────────>│
+   │                                │
+   │                         Revoke refresh token
+   │                                │
+   │<──────────── 204 ──────────────│
+   │                                │
+   │ Delete access token            │
+   │ Delete refresh token           │
+   │                                │
+   ▼                                ▼
+Logged out                     Session revoked

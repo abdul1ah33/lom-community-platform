@@ -1,0 +1,39 @@
+.page {
+  display: grid;
+  gap: clamp(28px, 4vw, 44px);
+  width: min(1320px, 100%);
+  margin: 0 auto;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: clamp(20px, 3vw, 36px);
+  align-items: start;
+}
+
+.main {
+  display: grid;
+  /* Explicit track: otherwise the pathway deck's scroll width sizes the column. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 44px);
+  min-width: 0;
+}
+
+.aside {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+@media (max-width: 1280px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aside {
+    position: static;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}

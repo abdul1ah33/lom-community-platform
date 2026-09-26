@@ -15,6 +15,7 @@ from app.core.api.exceptions import (
 )
 
 from datetime import datetime, timedelta, timezone
+from uuid import uuid4
 
 from app.core.auth.jwt import create_access_token
 from app.core.auth.security import (
@@ -133,8 +134,11 @@ class AuthService:
 
         refresh_token = generate_refresh_token()
 
+        family_id = uuid4()
+
         refresh_token_record = RefreshToken(
             user_id=user.id,
+            family_id=family_id,
             token_hash=hash_refresh_token(refresh_token),
             expires_at=(
                 datetime.now(timezone.utc)
@@ -292,6 +296,7 @@ class AuthService:
 
         new_refresh_token_record = RefreshToken(
             user_id=user.id,
+            family_id=refresh_token.family_id,
             token_hash=hash_refresh_token(
                 new_refresh_token
             ),

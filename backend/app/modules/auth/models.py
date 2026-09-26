@@ -1,6 +1,8 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+
 from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -19,6 +21,11 @@ class RefreshToken(Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
+    )
+
+    family_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        nullable=False,
     )
 
     token_hash: Mapped[str] = mapped_column(

@@ -1,0 +1,16 @@
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(209 31 60 / 0.35), transparent 55%),
+    radial-gradient(circle at 50% 50%, var(--ink-800), var(--ink-950) 70%);
+}
+
+.sigil {
+  display: grid;
+  place-items: center;
+}
