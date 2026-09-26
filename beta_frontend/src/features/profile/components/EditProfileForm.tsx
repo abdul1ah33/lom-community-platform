@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
-import { getPathway } from "@/data/lore/pathways";
 import { CHARACTER_SUGGESTIONS } from "@/data/lore/reading";
 import { ApiError } from "@/lib/http/ApiError";
 import { arcanaFor } from "../arcana";
@@ -93,7 +92,8 @@ export function EditProfileForm({ profile }: { profile: UserProfile }) {
     });
   };
 
-  const previewPathway = getPathway(draft.favorite_pathway) ?? arcanaFor({ id: profile.id });
+  // Preview against the chapter being edited, so pathways unseal live as the slider moves.
+  const previewPathway = arcanaFor({ id: profile.id, favorite_pathway: draft.favorite_pathway }, draft.current_chapter);
 
   return (
     <form className={styles.layout} onSubmit={onSubmit} noValidate>
@@ -132,6 +132,7 @@ export function EditProfileForm({ profile }: { profile: UserProfile }) {
         <Section id="edit-lore" title="Lore" hint="Your pathway colours your whole profile. Click it again to clear.">
           <PathwayPicker
             labelledBy="edit-lore"
+            readerChapter={draft.current_chapter}
             value={draft.favorite_pathway}
             onChange={(slug) => set("favorite_pathway", slug)}
           />

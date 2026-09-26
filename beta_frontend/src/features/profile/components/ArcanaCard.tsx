@@ -1,6 +1,7 @@
 import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from "motion/react";
 import type { CSSProperties, PointerEvent } from "react";
 import { Avatar } from "@/components/ui/Avatar";
+import { Icon } from "@/components/ui/Icon";
 import { toRoman, type Pathway } from "@/data/lore/pathways";
 import styles from "./ArcanaCard.module.css";
 
@@ -11,10 +12,25 @@ interface ArcanaCardProps {
   /** Small caps line above the pathway name. */
   kicker?: string;
   size?: "md" | "lg";
+  /** The pathway is past the viewer's chapter: hide its name, Sequence and colour. */
+  sealed?: boolean;
+  onReveal?: () => void;
 }
 
+/** Neutral hue for sealed cards, so the colour doesn't hint at the pathway. */
+const SEALED_HUE = 250;
+
 /** A member's holographic tarot card: tilts toward the cursor with a foil sheen. */
-export function ArcanaCard({ username, avatarUrl, pathway, kicker = "Your arcana", size = "md" }: ArcanaCardProps) {
+export function ArcanaCard({
+  username,
+  avatarUrl,
+  pathway,
+  kicker = "Your arcana",
+  size = "md",
+  sealed = false,
+  onReveal,
+}: ArcanaCardProps) {
+  const hue = sealed ? SEALED_HUE : pathway.hue;
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
   const rotateX = useSpring(useTransform(py, [0, 1], [14, -14]), { stiffness: 150, damping: 15 });
@@ -22,7 +38,7 @@ export function ArcanaCard({ username, avatarUrl, pathway, kicker = "Your arcana
   const foilX = useTransform(px, [0, 1], [0, 100]);
   const foilY = useTransform(py, [0, 1], [0, 100]);
   const foilAngle = useTransform(px, [0, 1], [100, 260]);
-  const foil = useMotionTemplate`radial-gradient(circle at ${foilX}% ${foilY}%, rgb(255 255 255 / 0.35), transparent 45%), linear-gradient(${foilAngle}deg, hsl(${pathway.hue} 90% 60% / 0.25), hsl(${(pathway.hue + 120) % 360} 90% 60% / 0.2), hsl(${(pathway.hue + 240) % 360} 90% 60% / 0.25))`;
+  const foil = useMotionTemplate`radial-gradient(circle at ${foilX}% ${foilY}%, rgb(255 255 255 / 0.35), transparent 45%), linear-gradient(${foilAngle}deg, hsl(${hue} 90% 60% / 0.25), hsl(${(hue + 120) % 360} 90% 60% / 0.2), hsl(${(hue + 240) % 360} 90% 60% / 0.25))`;
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -36,7 +52,7 @@ export function ArcanaCard({ username, avatarUrl, pathway, kicker = "Your arcana
   };
 
   return (
-    <div style={{ "--hue": pathway.hue } as CSSProperties} className={size === "lg" ? styles.large : undefined}>
+    <div style={{ "--hue": hue } as CSSProperties} className={size === "lg" ? styles.large : undefined}>
       <motion.div
         className={styles.card}
         style={{ rotateX, rotateY }}
@@ -45,7 +61,7 @@ export function ArcanaCard({ username, avatarUrl, pathway, kicker = "Your arcana
         whileHover={{ scale: 1.04 }}
       >
         <div className={styles.frame}>
-          <span className={styles.numeral}>{toRoman(pathway.number)}</span>
+          <span className={styles.numeral}>{sealed ? "?" : toRoman(pathway.number)}</span>
 
           <div className={styles.emblem}>
             <span className={styles.rays} aria-hidden="true" />
@@ -54,16 +70,30 @@ export function ArcanaCard({ username, avatarUrl, pathway, kicker = "Your arcana
 
           <div className={styles.caption}>
             <span className={styles.kicker}>{kicker}</span>
-            {/* Keyed so the name cross-fades when the pathway changes (edit preview). */}
-            <motion.strong
-              key={pathway.slug}
-              className={styles.pathway}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              The {pathway.name}
-            </motion.strong>
-            <span className={styles.sequence}>Sequence 9 · {pathway.sequence9}</span>
+            {sealed ? (
+              <>
+                <strong className={styles.pathway}>Sealed arcana</strong>
+                <span className={styles.sequence}>Revealed at chapter {pathway.revealChapter}</span>
+                {onReveal && (
+                  <button type="button" className={styles.reveal} onClick={onReveal}>
+                    <Icon name="eye" size={13} /> Reveal
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                {/* Keyed so the name cross-fades when the pathway changes (edit preview). */}
+                <motion.strong
+                  key={pathway.slug}
+                  className={styles.pathway}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  The {pathway.name}
+                </motion.strong>
+                <span className={styles.sequence}>Sequence 9 · {pathway.sequence9}</span>
+              </>
+            )}
           </div>
 
           <span className={styles.owner}>{username}</span>

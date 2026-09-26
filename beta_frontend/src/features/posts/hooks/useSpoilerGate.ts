@@ -1,27 +1,8 @@
-import { useEffect, useState } from "react";
-import { useMyProfile } from "@/features/profile";
+import { useEffect } from "react";
+import { useReaderChapter } from "@/features/profile";
+import { useRevealStore } from "@/lib/spoilers/revealStore";
 import type { Post } from "../types";
 import { useRevealPost } from "./usePosts";
-
-/** Posts the reader chose to reveal stay revealed for the rest of the browser session (reloads included). */
-const STORAGE_KEY = "lom.revealed_spoilers";
-
-const revealedThisSession: Set<string> = (() => {
-  try {
-    return new Set(JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "[]") as string[]);
-  } catch {
-    return new Set<string>();
-  }
-})();
-
-function rememberReveal(id: string) {
-  revealedThisSession.add(id);
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...revealedThisSession]));
-  } catch {
-    /* storage unavailable: remembered until reload */
-  }
-}
 
 export type SpoilerState =
   /** Not a spoiler, or the reader has already passed the chapter. */
@@ -36,15 +17,15 @@ export type SpoilerState =
  * - Browser: `spoiler_chapter` is compared with the reader's saved chapter.
  * - Server: when the API already withheld the text (`redacted`), revealing
  *   fetches it with `?reveal=true`.
- * Authors always see their own posts.
+ * Authors always see their own posts. Reveals are remembered for the session.
  */
 export function useSpoilerGate(post: Post) {
-  const { data: me } = useMyProfile();
+  const readerChapter = useReaderChapter();
+  const store = useRevealStore();
   const reveal = useRevealPost();
-  const [revealed, setRevealed] = useState(() => revealedThisSession.has(post.id));
+  const key = `post:${post.id}`;
+  const revealed = store.has(key);
 
-  // Until the profile loads, assume chapter 0: better to over-hide than to spoil.
-  const readerChapter = me?.reading_progress.current_chapter ?? 0;
   const beyondProgress = post.spoiler_chapter !== null && readerChapter < post.spoiler_chapter;
   const author = post.viewer.is_author;
 
@@ -65,8 +46,7 @@ export function useSpoilerGate(post: Post) {
     readerChapter,
     revealError: reveal.isError,
     reveal: () => {
-      rememberReveal(post.id);
-      setRevealed(true);
+      store.add(key);
       if (post.redacted) reveal.mutate(post.id);
     },
   };

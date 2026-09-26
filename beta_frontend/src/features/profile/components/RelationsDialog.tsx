@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { getPathway } from "@/data/lore/pathways";
 import { useAuth } from "@/features/auth";
+import { usePathwaySpoilers } from "../hooks/useSpoilerProgress";
 import { useRelations } from "../hooks/useProfile";
 import { FollowButton } from "./FollowButton";
 import styles from "./RelationsDialog.module.css";
@@ -19,6 +20,7 @@ interface RelationsDialogProps {
 
 export function RelationsDialog({ username, kind, onClose }: RelationsDialogProps) {
   const { user: me } = useAuth();
+  const spoilers = usePathwaySpoilers();
   const query = useRelations(username, kind ?? "followers", kind !== null);
   const people = query.data?.pages.flatMap((page) => page.items) ?? [];
 
@@ -45,6 +47,7 @@ export function RelationsDialog({ username, kind, onClose }: RelationsDialogProp
         <ul className={styles.list}>
           {people.map((person, index) => {
             const pathway = getPathway(person.favorite_pathway);
+            const showPathway = pathway && !spoilers.isSealed(pathway);
             return (
               <motion.li
                 key={person.id}
@@ -59,7 +62,7 @@ export function RelationsDialog({ username, kind, onClose }: RelationsDialogProp
                     <strong>{person.display_name ?? person.username}</strong>
                     <span>
                       @{person.username}
-                      {pathway && <em> · {pathway.name}</em>}
+                      {showPathway && <em> · {pathway.name}</em>}
                     </span>
                   </span>
                 </Link>

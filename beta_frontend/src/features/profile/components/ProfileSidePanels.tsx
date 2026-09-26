@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { TOTAL_CHAPTERS } from "@/data/lore/reading";
 import { arcanaFor } from "../arcana";
+import { usePathwaySpoilers } from "../hooks/useSpoilerProgress";
 import type { UserProfile } from "../types";
 import { AchievementSeals } from "./AchievementSeals";
 import { ReadingProgressRing } from "./ReadingProgressRing";
@@ -26,11 +27,14 @@ function relativeDays(iso: string) {
 export function ReadingPanel({ profile }: { profile: UserProfile }) {
   const { current_chapter, updated_at } = profile.reading_progress;
   const finished = current_chapter >= TOTAL_CHAPTERS;
+  const spoilers = usePathwaySpoilers();
+  const pathway = arcanaFor(profile, spoilers.chapter);
+  const hue = !profile.viewer.is_self && spoilers.isSealed(pathway) ? 350 : pathway.hue;
 
   return (
     <Panel eyebrow="Reading progress" title={finished ? "Beyond the final page" : "Journey through the fog"}>
       <div className={styles.reading}>
-        <ReadingProgressRing chapter={current_chapter} hue={arcanaFor(profile).hue} />
+        <ReadingProgressRing chapter={current_chapter} hue={hue} />
         <p className={styles.note}>
           {current_chapter === 0
             ? profile.viewer.is_self

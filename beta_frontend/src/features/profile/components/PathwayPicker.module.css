@@ -59,3 +59,28 @@
   text-align: center;
   letter-spacing: 0.04em;
 }
+
+.sealed {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 7px, rgb(255 255 255 / 0.025) 7px 8px),
+    linear-gradient(170deg, var(--ink-700), var(--ink-950));
+  box-shadow: inset 0 0 0 1px rgb(207 200 222 / 0.1);
+  color: var(--text-faint);
+}
+
+.sealed .numeral {
+  color: var(--text-faint);
+}
+
+.sealed:hover {
+  box-shadow: inset 0 0 0 1px rgb(240 68 92 / 0.4);
+  color: var(--crimson-300);
+}
+
+.lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+}

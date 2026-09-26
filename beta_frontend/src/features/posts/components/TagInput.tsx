@@ -2,10 +2,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { useId, useState, type KeyboardEvent } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { PATHWAYS } from "@/data/lore/pathways";
+import { usePathwaySpoilers } from "@/features/profile";
 import { POST_LIMITS } from "../types";
 import styles from "./TagInput.module.css";
 
-const SUGGESTIONS = ["Theory", "Discussion", "Fan Art", "Re-read", "Donghua", "Tarot Club", ...PATHWAYS.map((p) => p.name)];
+const GENERAL_TAGS = ["Theory", "Discussion", "Fan Art", "Re-read", "Donghua", "Tarot Club"];
 
 interface TagInputProps {
   value: string[];
@@ -15,6 +16,9 @@ interface TagInputProps {
 /** Chips input: Enter or comma adds a tag, Backspace on an empty field removes the last one. */
 export function TagInput({ value, onChange }: TagInputProps) {
   const id = useId();
+  const spoilers = usePathwaySpoilers();
+  // Only suggest pathway names the writer has already reached.
+  const suggestions = [...GENERAL_TAGS, ...PATHWAYS.filter((p) => !spoilers.isSealed(p)).map((p) => p.name)];
   const [draft, setDraft] = useState("");
   const full = value.length >= POST_LIMITS.tags;
 
@@ -68,14 +72,14 @@ export function TagInput({ value, onChange }: TagInputProps) {
           onChange={(event) => {
             // Picking a datalist suggestion fills the field in one go: add it straight away.
             const next = event.target.value;
-            if (SUGGESTIONS.includes(next)) add(next);
+            if (suggestions.includes(next)) add(next);
             else setDraft(next);
           }}
           onKeyDown={onKeyDown}
           onBlur={() => draft && add(draft)}
         />
         <datalist id={`${id}-suggestions`}>
-          {SUGGESTIONS.filter((s) => !value.includes(s)).map((s) => (
+          {suggestions.filter((s) => !value.includes(s)).map((s) => (
             <option key={s} value={s} />
           ))}
         </datalist>

@@ -1,8 +1,14 @@
 import { useId } from "react";
 import styles from "./ArcaneSigil.module.css";
 
+/**
+ * Text written around the outer ring. It is visible on the login page before the
+ * reader's chapter is known, so it must never name pathways or anything that
+ * spoils the story.
+ */
 const RUNE_TEXT =
-  "FOOL · DOOR · ERROR · VISIONARY · SUN · TYRANT · WHITE TOWER · HANGED MAN · DARKNESS · DEATH · TWILIGHT GIANT · DEMONESS · RED PRIEST · HERMIT · PARAGON · WHEEL OF FORTUNE · MOTHER · MOON · ABYSS · CHAINED · BLACK EMPEROR · JUSTICIAR · ";
+  "ABOVE THE GRAY FOG · THE CRIMSON MOON RISES · THE TAROT CLUB GATHERS · MYSTERIES AWAIT · THE NIGHT IS DEEP · " +
+  "EVERY READER A BEYONDER · WORDS HIDDEN IN THE FOG · SPOILERS REMAIN SEALED · READ ON · ";
 
 interface ArcaneSigilProps {
   size?: number | string;

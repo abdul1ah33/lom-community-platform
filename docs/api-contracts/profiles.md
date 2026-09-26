@@ -150,6 +150,23 @@ Query: `limit` (default 20, max 50), `cursor` (opaque string from the previous p
 `CANNOT_FOLLOW_SELF`, `UNSUPPORTED_MEDIA_TYPE`, `FILE_TOO_LARGE`. The existing `USER_NOT_FOUND`,
 `VALIDATION_ERROR` and `INVALID_ACCESS_TOKEN` are reused.
 
+## Reading progress at sign-up
+
+The sign-up form has an optional "Last chapter you read" field. Today the frontend registers,
+logs in, then sends it with `PATCH /users/me { "current_chapter": n }`, so **no backend change is
+required**.
+
+Optional improvement: accept `"current_chapter"` (same rules as above, default 0) on
+`POST /auth/register` so it is saved atomically with the account. If you do, return validation
+errors with `field: "current_chapter"`; the form already shows them under the chapter input.
+
+## Pathway spoilers
+
+Pathways also have a "revealed at chapter" number (the frontend currently keeps it in
+`beta_frontend/src/data/lore/pathways.ts`). Profile responses don't change: the frontend hides
+another member's `favorite_pathway` itself when it's past the viewer's chapter. When the Wiki
+module arrives, the reveal chapters can move into the database and be served from there.
+
 ## Switching the frontend to the real endpoints
 
 In `beta_frontend/.env` set `VITE_MOCK_API=off` (or keep `users` while only some endpoints exist:

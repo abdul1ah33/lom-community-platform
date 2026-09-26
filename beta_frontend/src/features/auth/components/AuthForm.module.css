@@ -104,6 +104,16 @@
   text-decoration-color: currentColor;
 }
 
+.chapter {
+  overflow: hidden;
+}
+
+.chapterHint {
+  margin: 6px 4px 0;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
 .banner {
   display: flex;
   align-items: flex-start;

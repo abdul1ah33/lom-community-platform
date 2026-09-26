@@ -9,8 +9,10 @@ import { TiltCard } from "@/components/effects/TiltCard";
 import { VeilTransition } from "@/components/effects/VeilTransition";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { RevealText } from "@/components/ui/RevealText";
+import { useToast } from "@/components/feedback/ToastProvider";
 import { useAuth } from "@/features/auth";
 import { AuthForm } from "@/features/auth/components/AuthForm";
+import { useUpdateProfile } from "@/features/profile";
 import { usePointerParallax } from "@/hooks/usePointerParallax";
 import styles from "./LoginPage.module.css";
 
@@ -37,6 +39,21 @@ export function LoginPage() {
   const from = (location.state as { from?: string } | null)?.from ?? "/";
 
   const [phase, setPhase] = useState<Phase>("idle");
+  const updateProfile = useUpdateProfile();
+  const { notify } = useToast();
+
+  // After sign-up, store the reading progress entered in the form before entering,
+  // so the very first feed already hides the right spoilers.
+  const onAuthenticated = async (chapter: number | null) => {
+    if (chapter) {
+      try {
+        await updateProfile.mutateAsync({ current_chapter: chapter });
+      } catch {
+        notify("Your account is ready, but your chapter wasn't saved. Set it on your profile.", "error");
+      }
+    }
+    setPhase("ascending");
+  };
   const [whisper, setWhisper] = useState(0);
   const { x, y } = usePointerParallax();
 
@@ -142,7 +159,7 @@ export function LoginPage() {
           <TiltCard>
             <AuthForm
               onPendingChange={(pending) => setPhase(pending ? "pending" : "idle")}
-              onSuccess={() => setPhase("ascending")}
+              onSuccess={(_user, { chapter }) => void onAuthenticated(chapter)}
             />
           </TiltCard>
           <p className={styles.footnote}>

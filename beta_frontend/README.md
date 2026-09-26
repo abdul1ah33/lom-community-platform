@@ -76,10 +76,23 @@ rollback, and the cache is cleared on logout so one account never sees another's
 
 ### Spoilers
 
-Posts carry `spoiler_chapter`. `features/posts/hooks/useSpoilerGate.ts` seals a post when it is
-past the reader's saved chapter (browser layer), or when the API already withheld its text
-(`redacted: true`, server layer). "Reveal anyway" is remembered for the browser session. Set
-`VITE_MOCK_REDACT_SPOILERS=true` to have the mock behave like a redacting server.
+Everything is judged against the reader's saved chapter (`useReaderChapter`, 0 until known, so
+unknown means "hide"). The chapter can be entered at sign-up or on the edit-profile page.
+
+- **Posts** carry `spoiler_chapter`. `features/posts/hooks/useSpoilerGate.ts` seals a post past the
+  reader's chapter (browser layer), or when the API already withheld its text (`redacted: true`,
+  server layer). Set `VITE_MOCK_REDACT_SPOILERS=true` to have the mock behave like a redacting
+  server.
+- **Pathways** each have a `revealChapter` in `src/data/lore/pathways.ts`. Before it, the pathway
+  is sealed everywhere it appears: the homepage deck, member arcana cards, author labels on posts,
+  follower lists, the edit-page picker and tag suggestions (`usePathwaySpoilers`). Sealed UI never
+  renders the pathway's name, Sequence or colour. **The reveal chapters in that file are
+  placeholders and must be replaced with the real ones.**
+- The spinning sigil ring shows before anyone logs in, so its text (`RUNE_TEXT` in
+  `components/effects/ArcaneSigil.tsx`) must stay spoiler-free.
+
+"Reveal anyway" choices are shared across the app and remembered for the browser session
+(`lib/spoilers/revealStore.ts`).
 
 ### Auth flow (matches `docs/User Authentication Flow.txt` and `docs/log out flow.txt`)
 

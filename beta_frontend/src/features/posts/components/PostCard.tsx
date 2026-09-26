@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Icon } from "@/components/ui/Icon";
 import { getPathway } from "@/data/lore/pathways";
+import { usePathwaySpoilers } from "@/features/profile";
 import { fullDate, relativeTime } from "@/lib/format/relativeTime";
 import { useComposer } from "../context/ComposerContext";
 import { useDeletePost } from "../hooks/usePosts";
@@ -32,7 +33,10 @@ export function PostCard({ post, index = 0, variant = "feed", onDeleted }: PostC
   const { notify } = useToast();
   const remove = useDeletePost();
   const [confirming, setConfirming] = useState(false);
-  const pathway = getPathway(post.author.favorite_pathway);
+  const spoilers = usePathwaySpoilers();
+  const authorPathway = getPathway(post.author.favorite_pathway);
+  // The author's pathway label is itself a spoiler if the reader hasn't reached it.
+  const pathway = authorPathway && !spoilers.isSealed(authorPathway) ? authorPathway : undefined;
   const isFeed = variant === "feed";
   const href = `/p/${post.id}`;
 

@@ -7,6 +7,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { Icon } from "@/components/ui/Icon";
 import { RevealText } from "@/components/ui/RevealText";
 import { arcanaFor } from "../arcana";
+import { usePathwaySpoilers } from "../hooks/useSpoilerProgress";
 import type { UserProfile } from "../types";
 import { ArcanaCard } from "./ArcanaCard";
 import { FollowButton } from "./FollowButton";
@@ -23,7 +24,10 @@ function joinedLabel(iso: string) {
 }
 
 export function ProfileHeader({ profile, onOpenRelations }: ProfileHeaderProps) {
-  const pathway = arcanaFor(profile);
+  const spoilers = usePathwaySpoilers();
+  const pathway = arcanaFor(profile, spoilers.chapter);
+  // Someone else's favourite pathway may be past your chapter.
+  const sealed = !profile.viewer.is_self && spoilers.isSealed(pathway);
   const name = profile.display_name ?? profile.username;
 
   const stats: { label: string; value: number; relation?: RelationKind }[] = [
@@ -36,7 +40,7 @@ export function ProfileHeader({ profile, onOpenRelations }: ProfileHeaderProps) 
   return (
     <motion.section
       className={styles.header}
-      style={{ "--hue": pathway.hue } as CSSProperties}
+      style={{ "--hue": sealed ? 350 : pathway.hue } as CSSProperties}
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -129,6 +133,8 @@ export function ProfileHeader({ profile, onOpenRelations }: ProfileHeaderProps) 
           pathway={pathway}
           kicker={profile.viewer.is_self ? "Your arcana" : "Their arcana"}
           size="lg"
+          sealed={sealed}
+          onReveal={() => spoilers.reveal(pathway)}
         />
       </motion.div>
     </motion.section>

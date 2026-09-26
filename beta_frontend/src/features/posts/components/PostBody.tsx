@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { Icon } from "@/components/ui/Icon";
 import { Spinner } from "@/components/ui/Spinner";
-import { useMyProfile } from "@/features/profile";
+import { useReaderChapter } from "@/features/profile";
 import { useSpoilerGate } from "../hooks/useSpoilerGate";
 import type { Post } from "../types";
 import styles from "./PostBody.module.css";
@@ -71,9 +71,9 @@ export function PostBody({ post, clamp = false }: PostBodyProps) {
 }
 
 export function SpoilerBadge({ post }: { post: Post }) {
-  const { data: me } = useMyProfile();
+  const readerChapter = useReaderChapter();
   if (post.spoiler_chapter === null) return null;
-  const read = (me?.reading_progress.current_chapter ?? 0) >= post.spoiler_chapter;
+  const read = readerChapter >= post.spoiler_chapter;
 
   return (
     <span className={`${styles.badge} ${read ? styles.badgeSafe : ""}`}>

@@ -4,7 +4,7 @@ import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { Icon } from "@/components/ui/Icon";
 import { RevealText } from "@/components/ui/RevealText";
 import type { User } from "@/features/auth";
-import { ArcanaCard, arcanaFor, useMyProfile } from "@/features/profile";
+import { ArcanaCard, arcanaFor, useMyProfile, useReaderChapter } from "@/features/profile";
 import styles from "./HomeHero.module.css";
 
 function greeting(date = new Date()) {
@@ -22,7 +22,8 @@ interface HomeHeroProps {
 
 export function HomeHero({ user, onLogout }: HomeHeroProps) {
   const { data: profile } = useMyProfile();
-  const pathway = arcanaFor(profile ?? user);
+  // Your own card is never sealed: it's either your own choice or drawn from pathways you've reached.
+  const pathway = arcanaFor(profile ?? user, useReaderChapter());
   const spotX = useMotionValue(-500);
   const spotY = useMotionValue(-500);
   const spotlight = useMotionTemplate`radial-gradient(420px circle at ${spotX}px ${spotY}px, rgb(226 192 126 / 0.12), transparent 60%)`;
