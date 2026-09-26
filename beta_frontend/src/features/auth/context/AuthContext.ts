@@ -9,6 +9,8 @@ export interface AuthContextValue {
   login: (credentials: LoginCredentials) => Promise<User>;
   register: (payload: RegisterPayload) => Promise<User>;
   logout: () => Promise<void>;
+  /** Merges fresh fields (e.g. a new avatar from the profile module) into the signed-in user. */
+  updateUser: (patch: Partial<User>) => void;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);

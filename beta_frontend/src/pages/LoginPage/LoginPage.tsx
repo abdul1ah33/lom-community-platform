@@ -86,7 +86,13 @@ export function LoginPage() {
 
             <h1 id="brand-title" className={styles.title}>
               <RevealText text="Lord of the" className={styles.titleSmall} delay={0.3} />
-              <RevealText text="Mysteries" className={styles.titleBig} delay={0.75} stagger={0.07} />
+              <RevealText
+                text="Mysteries"
+                className={styles.titleBig}
+                charClassName={styles.glyph}
+                delay={0.75}
+                stagger={0.07}
+              />
             </h1>
 
             <div className={styles.whisper} aria-live="polite">

@@ -1,0 +1,67 @@
+.page {
+  display: grid;
+  gap: 28px;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.header {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.back:hover {
+  color: var(--brass-200);
+}
+
+.title {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.1;
+}
+
+.glyph {
+  background: linear-gradient(180deg, #fff, var(--brass-200) 60%, var(--brass-400));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.loading {
+  height: 520px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.03));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.error {
+  color: var(--crimson-300);
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}

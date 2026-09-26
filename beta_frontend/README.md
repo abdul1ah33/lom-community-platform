@@ -1,9 +1,17 @@
 # LOM Beta Frontend
 
 A beta web client for the Lord of Mysteries Community Platform: an animated login/registration
-page and a signed-in home page, wired to the FastAPI auth endpoints in `backend/`.
+page, a signed-in home page and member profiles, wired to the FastAPI backend in `backend/`.
 
-**Stack:** React 19 · TypeScript · Vite · React Router · Motion (animations) · CSS Modules
+**Stack:** React 19 · TypeScript · Vite · React Router · TanStack Query · Motion (animations) · CSS Modules
+
+| Route           | Screen                                          |
+| --------------- | ----------------------------------------------- |
+| `/login`        | Sign in / register                              |
+| `/`             | Home                                            |
+| `/u/:username`  | Member profile                                  |
+| `/profile`      | Redirects to your own profile                   |
+| `/profile/edit` | Edit your profile (with live preview)           |
 
 ## Running it
 
@@ -15,6 +23,9 @@ npm run dev               # http://localhost:5173
 ```
 
 The backend must be running on `http://localhost:8000` (override with `VITE_API_PROXY_TARGET`).
+Endpoints the backend doesn't have yet (currently the Profiles API) are served by an in-browser
+mock server. See [`src/mocks/README.md`](src/mocks/README.md). To try everything with **no
+backend at all**, set `VITE_MOCK_API=all` and sign in as `fool@lom.community` / `praisethefool`.
 The backend has no CORS middleware yet, so the Vite dev server proxies `/api/*` to it and the
 browser only ever talks to one origin. A production deployment needs either the same reverse-proxy
 setup or CORS enabled on the backend.
@@ -31,15 +42,20 @@ setup or CORS enabled on the backend.
 ```
 src/
 ├── app/                 # Composition root: App, router, navigation config
-├── config/env.ts        # Typed access to VITE_* variables
+├── config/env.ts        # Typed access to VITE_* variables (API base, mock mode)
+├── data/lore/           # Static LOTM reference data: pathways, chapter count, character names
 ├── lib/
-│   ├── http/            # fetch client (auth header, single-flight token refresh) + ApiError
+│   ├── http/            # fetch client (auth header, single-flight token refresh, mock hook) + ApiError
+│   ├── image/           # client-side image resizing
 │   └── storage/         # tokenStorage, the only place that touches localStorage
+├── mocks/               # In-browser mock API for endpoints the backend doesn't have yet
 ├── features/            # Business features, each self-contained
 │   ├── auth/            # api · context · hooks · routes (guards) · components · validation · types
-│   └── home/            # components · data
+│   ├── home/            # components · data
+│   └── profile/         # api · hooks (React Query) · components · types (= API contract)
 ├── components/
-│   ├── ui/              # Generic building blocks: Button, TextField, Avatar, Icon, …
+│   ├── ui/              # Generic building blocks: Button, TextField, TextAreaField, Dialog, Avatar, CountUp, …
+│   ├── feedback/        # Toast notifications
 │   ├── effects/         # Visual effects: FogBackground, ParticleField, ArcaneSigil, TiltCard, VeilTransition, …
 │   └── layout/          # AppShell, Sidebar (desktop), MobileNav (phone)
 ├── hooks/               # Cross-cutting hooks (reduced motion, pointer parallax)
@@ -49,6 +65,12 @@ src/
 
 Dependencies point one way: `pages → features → components/lib`. Features expose a public API
 through their `index.ts`, and pages import from there.
+
+### Server state
+
+Server data is read through TanStack Query hooks inside each feature (`features/profile/hooks`).
+Mutations update the cache in place (`setQueryData`), follow and unfollow are optimistic with
+rollback, and the cache is cleared on logout so one account never sees another's data.
 
 ### Auth flow (matches `docs/User Authentication Flow.txt` and `docs/log out flow.txt`)
 
@@ -71,7 +93,8 @@ refresh token to an httpOnly cookie later would only require changes in `lib/sto
 | Section                      | Source                                                             |
 | ---------------------------- | ------------------------------------------------------------------ |
 | Login / register / logout    | Live backend                                                       |
-| Greeting, member arcana card | Live `/auth/me` data (the arcana is derived from the user id)      |
+| Greeting, member arcana card | Live `/auth/me`; the arcana is your favourite pathway (else derived from your id) |
+| Profiles, follow, edit       | **Mock API** until the backend implements `docs/api-contracts/profiles.md` |
 | The 22 Pathways deck         | Static reference data (`features/home/data/pathways.ts`)           |
 | Road to launch               | Mirrors `docs/LOM_feature_roadmap_MVP.pdf`                         |
 | Community feed, tags         | **Sample data** (`features/home/data/previewFeed.ts`), labelled in the UI |

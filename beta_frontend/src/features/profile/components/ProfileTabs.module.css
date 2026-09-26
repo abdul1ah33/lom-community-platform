@@ -1,0 +1,83 @@
+.card {
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 0 0 1px var(--border);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 54px;
+  padding: 0 16px;
+  border: 0;
+  background: none;
+  color: var(--text-faint);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.tab:hover,
+.active {
+  color: var(--text);
+}
+
+.count {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: rgb(255 255 255 / 0.06);
+  color: var(--text-muted);
+}
+
+.underline {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--brass-300), var(--crimson-400));
+  box-shadow: 0 0 12px var(--crimson-400);
+}
+
+.panel {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 48px 24px 56px;
+  text-align: center;
+}
+
+.emblem {
+  margin-bottom: 8px;
+  opacity: 0.55;
+}
+
+.panel h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.03em;
+}
+
+.panel p {
+  max-width: 380px;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text-muted);
+}

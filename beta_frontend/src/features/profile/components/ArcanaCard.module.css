@@ -134,3 +134,11 @@
     transform: rotate(360deg);
   }
 }
+
+.large .card {
+  width: 250px;
+}
+
+.card {
+  transition: background 0.6s;
+}

@@ -142,6 +142,19 @@
   box-shadow: inset 0 0 0 1px var(--border);
 }
 
+.accountLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.accountLink:hover strong {
+  color: var(--brass-200);
+}
+
 .accountText {
   display: grid;
   min-width: 0;
@@ -213,6 +226,10 @@
   .account {
     flex-direction: column;
     padding: 8px;
+  }
+
+  .accountLink {
+    justify-content: center;
   }
 
   .logout {

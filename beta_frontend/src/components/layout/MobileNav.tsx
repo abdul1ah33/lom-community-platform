@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { NavLink } from "react-router-dom";
-import { NAV_ITEMS } from "@/app/navigation";
+import { NAV_ITEMS, navHref } from "@/app/navigation";
+import { useAuth } from "@/features/auth";
 import { Icon } from "@/components/ui/Icon";
 import styles from "./MobileNav.module.css";
 
@@ -23,7 +24,11 @@ export function MobileNav() {
   );
 }
 
-function Item({ to, icon, label, available }: (typeof NAV_ITEMS)[number]) {
+function Item(item: (typeof NAV_ITEMS)[number]) {
+  const { user } = useAuth();
+  const { icon, label, available } = item;
+  const to = navHref(item, user?.username);
+
   if (!available) {
     return (
       <span className={`${styles.item} ${styles.disabled}`} aria-disabled="true" title={`${label} (soon)`}>

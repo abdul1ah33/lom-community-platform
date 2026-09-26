@@ -17,6 +17,11 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Wiki", icon: "book", to: "/wiki", available: false },
   { label: "Notifications", icon: "bell", to: "/notifications", available: false, mobile: true },
   { label: "Bookmarks", icon: "bookmark", to: "/bookmarks", available: false },
-  { label: "Profile", icon: "user", to: "/profile", available: false, mobile: true },
+  { label: "Profile", icon: "user", to: "/profile", available: true, mobile: true },
   { label: "Settings", icon: "settings", to: "/settings", available: false },
 ];
+
+/** The Profile item points at the signed-in user's own page so it highlights there. */
+export function navHref(item: NavItem, username: string | undefined) {
+  return item.to === "/profile" && username ? `/u/${username}` : item.to;
+}

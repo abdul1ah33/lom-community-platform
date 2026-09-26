@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
-import { PATHWAYS, toRoman, type Pathway } from "../data/pathways";
+import { PATHWAYS, toRoman, type Pathway } from "@/data/lore/pathways";
 import { SectionHeader } from "./SectionHeader";
 import styles from "./PathwayDeck.module.css";
 

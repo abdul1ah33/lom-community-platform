@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
 import type { PreviewPost } from "../data/previewFeed";
@@ -22,11 +23,13 @@ export function PostCard({ post, index }: { post: PreviewPost; index: number }) 
       whileHover={{ y: -3 }}
     >
       <header className={styles.header}>
-        <Avatar name={post.author} size={40} />
-        <div className={styles.meta}>
-          <strong>{post.author}</strong>
-          <span>{post.postedAgo} ago</span>
-        </div>
+        <Link to={`/u/${post.author}`} className={styles.author}>
+          <Avatar name={post.author} size={40} />
+          <div className={styles.meta}>
+            <strong>{post.author}</strong>
+            <span>{post.postedAgo} ago</span>
+          </div>
+        </Link>
         {post.spoilerChapter && (
           <span className={styles.spoilerTag}>
             <Icon name="flame" size={13} /> Spoiler · Ch. {post.spoilerChapter}

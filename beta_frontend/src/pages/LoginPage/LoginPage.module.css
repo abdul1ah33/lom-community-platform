@@ -97,7 +97,7 @@
 }
 
 /* Each letter animates as its own inline-block, so the gradient is painted per glyph. */
-.titleBig > span {
+.glyph {
   background: linear-gradient(180deg, #fff 0%, var(--brass-200) 40%, var(--brass-400) 70%, var(--crimson-400) 110%);
   -webkit-background-clip: text;
   background-clip: text;

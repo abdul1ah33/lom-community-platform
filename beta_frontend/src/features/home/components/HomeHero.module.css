@@ -106,7 +106,7 @@
   filter: drop-shadow(0 4px 24px rgb(209 31 60 / 0.35));
 }
 
-.name > span {
+.glyph {
   background: linear-gradient(180deg, #fff, var(--brass-200) 55%, var(--brass-400));
   -webkit-background-clip: text;
   background-clip: text;

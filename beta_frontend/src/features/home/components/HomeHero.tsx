@@ -4,7 +4,7 @@ import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { Icon } from "@/components/ui/Icon";
 import { RevealText } from "@/components/ui/RevealText";
 import type { User } from "@/features/auth";
-import { MemberArcana } from "./MemberArcana";
+import { ArcanaCard, arcanaFor, useMyProfile } from "@/features/profile";
 import styles from "./HomeHero.module.css";
 
 function greeting(date = new Date()) {
@@ -21,6 +21,8 @@ interface HomeHeroProps {
 }
 
 export function HomeHero({ user, onLogout }: HomeHeroProps) {
+  const { data: profile } = useMyProfile();
+  const pathway = arcanaFor(profile ?? user);
   const spotX = useMotionValue(-500);
   const spotY = useMotionValue(-500);
   const spotlight = useMotionTemplate`radial-gradient(420px circle at ${spotX}px ${spotY}px, rgb(226 192 126 / 0.12), transparent 60%)`;
@@ -61,7 +63,13 @@ export function HomeHero({ user, onLogout }: HomeHeroProps) {
 
         <h1 id="home-greeting" className={styles.title}>
           <RevealText text={`${greeting()},`} className={styles.titleLine} delay={0.7} stagger={0.025} />
-          <RevealText text={user.username} className={styles.name} delay={1.05} stagger={0.05} />
+          <RevealText
+            text={user.username}
+            className={styles.name}
+            charClassName={styles.glyph}
+            delay={1.05}
+            stagger={0.05}
+          />
         </h1>
 
         <motion.p
@@ -103,7 +111,7 @@ export function HomeHero({ user, onLogout }: HomeHeroProps) {
         animate={{ opacity: 1, rotateY: 0, x: 0 }}
         transition={{ duration: 1.2, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
       >
-        <MemberArcana user={user} />
+        <ArcanaCard username={user.username} avatarUrl={user.avatar_url} pathway={pathway} />
       </motion.div>
     </motion.section>
   );

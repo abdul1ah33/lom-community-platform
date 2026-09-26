@@ -1,0 +1,56 @@
+.ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.track {
+  fill: none;
+  stroke: var(--ink-600);
+  stroke-width: 8;
+}
+
+.progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.tick {
+  stroke: var(--fog-400);
+  stroke-width: 1;
+  opacity: 0.4;
+}
+
+.label {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: 34em;
+  font-weight: 700;
+  color: var(--brass-100, #f7ecd0);
+  font-variant-numeric: tabular-nums;
+}
+
+.caption {
+  font-size: max(10em, 10px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}

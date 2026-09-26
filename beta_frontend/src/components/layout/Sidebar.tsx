@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
-import { NavLink } from "react-router-dom";
-import { NAV_ITEMS } from "@/app/navigation";
+import { Link, NavLink } from "react-router-dom";
+import { NAV_ITEMS, navHref } from "@/app/navigation";
 import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
@@ -40,7 +40,7 @@ export function Sidebar({ onLogout, loggingOut }: SidebarProps) {
               transition={{ delay: 0.7 + index * 0.05 }}
             >
               {item.available ? (
-                <NavLink to={item.to} end className={styles.link}>
+                <NavLink to={navHref(item, user?.username)} end className={styles.link}>
                   {({ isActive }) => (
                     <>
                       {isActive && (
@@ -74,11 +74,13 @@ export function Sidebar({ onLogout, loggingOut }: SidebarProps) {
 
       {user && (
         <div className={styles.account}>
-          <Avatar name={user.username} src={user.avatar_url} size={38} ring />
-          <div className={styles.accountText}>
-            <strong>{user.username}</strong>
-            <span>{user.email}</span>
-          </div>
+          <Link to={`/u/${user.username}`} className={styles.accountLink} aria-label="Your profile">
+            <Avatar name={user.username} src={user.avatar_url} size={38} ring />
+            <div className={styles.accountText}>
+              <strong>{user.username}</strong>
+              <span>{user.email}</span>
+            </div>
+          </Link>
           <button
             type="button"
             className={styles.logout}

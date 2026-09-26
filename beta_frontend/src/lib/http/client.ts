@@ -5,6 +5,7 @@ import { ApiError } from "./ApiError";
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 interface RequestOptions {
+  /** JSON-serialised, unless it is FormData (sent as multipart). */
   body?: unknown;
   /** Attach the bearer token and transparently refresh it once on 401. */
   auth?: boolean;
@@ -22,22 +23,28 @@ export function onSessionExpired(listener: SessionExpiredListener) {
   };
 }
 
+// Loaded lazily so the mock server never ships when mocks are off.
+const mockServer = env.mockMode === "off" ? null : import("@/mocks");
+
 async function send(method: Method, path: string, { body, auth, signal }: RequestOptions) {
   const headers: Record<string, string> = { Accept: "application/json" };
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const isForm = body instanceof FormData;
+  if (body !== undefined && !isForm) headers["Content-Type"] = "application/json";
 
   if (auth) {
     const token = tokenStorage.getAccessToken();
     if (token) headers.Authorization = `Bearer ${token}`;
   }
 
+  const payload = body === undefined ? undefined : isForm ? body : JSON.stringify(body);
+
+  if (mockServer) {
+    const mocked = await (await mockServer).handleMockRequest(method, path, { headers, body: payload });
+    if (mocked) return mocked;
+  }
+
   try {
-    return await fetch(`${env.apiBaseUrl}${path}`, {
-      method,
-      headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
-      signal,
-    });
+    return await fetch(`${env.apiBaseUrl}${path}`, { method, headers, body: payload, signal });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     throw ApiError.network();
@@ -86,8 +93,11 @@ async function request<T>(method: Method, path: string, options: RequestOptions 
   return (await response.json()) as T;
 }
 
+type NoBody = Omit<RequestOptions, "body">;
+
 export const http = {
-  get: <T>(path: string, options?: Omit<RequestOptions, "body">) => request<T>("GET", path, options),
-  post: <T>(path: string, body?: unknown, options?: Omit<RequestOptions, "body">) =>
-    request<T>("POST", path, { ...options, body }),
+  get: <T>(path: string, options?: NoBody) => request<T>("GET", path, options),
+  post: <T>(path: string, body?: unknown, options?: NoBody) => request<T>("POST", path, { ...options, body }),
+  patch: <T>(path: string, body?: unknown, options?: NoBody) => request<T>("PATCH", path, { ...options, body }),
+  delete: <T>(path: string, options?: NoBody) => request<T>("DELETE", path, options),
 };

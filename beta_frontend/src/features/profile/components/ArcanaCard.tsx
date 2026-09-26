@@ -1,17 +1,20 @@
 import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from "motion/react";
 import type { CSSProperties, PointerEvent } from "react";
-import { Avatar, hueFromString } from "@/components/ui/Avatar";
-import type { User } from "@/features/auth";
-import { PATHWAYS, toRoman } from "../data/pathways";
-import styles from "./MemberArcana.module.css";
+import { Avatar } from "@/components/ui/Avatar";
+import { toRoman, type Pathway } from "@/data/lore/pathways";
+import styles from "./ArcanaCard.module.css";
 
-/**
- * The signed-in user's "membership card", drawn like a holographic tarot card.
- * The arcana is derived from the user id, so each member always draws the same one.
- */
-export function MemberArcana({ user }: { user: User }) {
-  const pathway = PATHWAYS[hueFromString(user.id) % PATHWAYS.length];
+interface ArcanaCardProps {
+  username: string;
+  avatarUrl: string | null;
+  pathway: Pathway;
+  /** Small caps line above the pathway name. */
+  kicker?: string;
+  size?: "md" | "lg";
+}
 
+/** A member's holographic tarot card: tilts toward the cursor with a foil sheen. */
+export function ArcanaCard({ username, avatarUrl, pathway, kicker = "Your arcana", size = "md" }: ArcanaCardProps) {
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
   const rotateX = useSpring(useTransform(py, [0, 1], [14, -14]), { stiffness: 150, damping: 15 });
@@ -33,7 +36,7 @@ export function MemberArcana({ user }: { user: User }) {
   };
 
   return (
-    <div style={{ "--hue": pathway.hue } as CSSProperties}>
+    <div style={{ "--hue": pathway.hue } as CSSProperties} className={size === "lg" ? styles.large : undefined}>
       <motion.div
         className={styles.card}
         style={{ rotateX, rotateY }}
@@ -46,16 +49,24 @@ export function MemberArcana({ user }: { user: User }) {
 
           <div className={styles.emblem}>
             <span className={styles.rays} aria-hidden="true" />
-            <Avatar name={user.username} src={user.avatar_url} size={92} />
+            <Avatar name={username} src={avatarUrl} size={92} />
           </div>
 
           <div className={styles.caption}>
-            <span className={styles.kicker}>Your arcana</span>
-            <strong className={styles.pathway}>The {pathway.name}</strong>
+            <span className={styles.kicker}>{kicker}</span>
+            {/* Keyed so the name cross-fades when the pathway changes (edit preview). */}
+            <motion.strong
+              key={pathway.slug}
+              className={styles.pathway}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              The {pathway.name}
+            </motion.strong>
             <span className={styles.sequence}>Sequence 9 · {pathway.sequence9}</span>
           </div>
 
-          <span className={styles.owner}>{user.username}</span>
+          <span className={styles.owner}>{username}</span>
         </div>
         <motion.span className={styles.foil} style={{ background: foil }} aria-hidden="true" />
       </motion.div>

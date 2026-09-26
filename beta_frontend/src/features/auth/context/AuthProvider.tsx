@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { onSessionExpired } from "@/lib/http/client";
 import { tokenStorage } from "@/lib/storage/tokenStorage";
@@ -6,6 +7,7 @@ import type { LoginCredentials, RegisterPayload, User } from "../types";
 import { AuthContext, type AuthStatus } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>(() =>
     tokenStorage.getRefreshToken() ? "loading" : "guest",
@@ -34,10 +36,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(
     () =>
       onSessionExpired(() => {
+        queryClient.clear();
         setUser(null);
         setStatus("guest");
       }),
-    [],
+    [queryClient],
   );
 
   const login = useCallback(async (credentials: LoginCredentials) => {
@@ -68,14 +71,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       /* token already invalid or server unreachable; still log out locally */
     } finally {
       tokenStorage.clear();
+      queryClient.clear();
       setUser(null);
       setStatus("guest");
     }
+  }, [queryClient]);
+
+  const updateUser = useCallback((patch: Partial<User>) => {
+    setUser((current) => (current ? { ...current, ...patch } : current));
   }, []);
 
   const value = useMemo(
-    () => ({ status, user, login, register, logout }),
-    [status, user, login, register, logout],
+    () => ({ status, user, login, register, logout, updateUser }),
+    [status, user, login, register, logout, updateUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
