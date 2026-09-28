@@ -1,0 +1,395 @@
+/* ── Section ─────────────────────────────────────────── */
+.section {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.title span {
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-muted);
+  background: rgb(255 255 255 / 0.06);
+}
+
+.list {
+  display: grid;
+  gap: 6px;
+}
+
+.more {
+  display: grid;
+  justify-items: center;
+}
+
+.empty,
+.sealed {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 26px 12px;
+  text-align: center;
+}
+
+.empty p,
+.sealed p {
+  margin: 0;
+  max-width: 380px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.sealed {
+  border-radius: 14px;
+  background: rgb(209 31 60 / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(240 68 92 / 0.25);
+}
+
+.sealed > svg {
+  color: var(--crimson-300);
+}
+
+.skeleton {
+  height: 76px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.03));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* ── Composer ────────────────────────────────────────── */
+.composer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.composerCompact {
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.composerBody {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.composerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.counter {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.smallButton {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  border-radius: 11px;
+}
+
+/* ── Comment ─────────────────────────────────────────── */
+.thread {
+  display: grid;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 14px;
+  transition: background 0.2s;
+}
+
+.item:hover {
+  background: rgb(255 255 255 / 0.025);
+}
+
+.highlight {
+  animation: arrive 2.6s ease-out;
+}
+
+.avatarLink {
+  flex-shrink: 0;
+  display: grid;
+  align-self: flex-start;
+  text-decoration: none;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.name:hover {
+  color: var(--brass-200);
+}
+
+.meta em {
+  font-style: normal;
+}
+
+.menu {
+  margin-left: auto;
+}
+
+.body {
+  margin: 4px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fog-200);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.editor {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 0 -8px;
+}
+
+.replyButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.2s, background 0.2s;
+}
+
+.replyButton:hover {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.05);
+}
+
+.removed {
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-faint);
+}
+
+.removedIcon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.04);
+}
+
+/* ── Replies ─────────────────────────────────────────── */
+.replies {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  margin-left: 28px;
+  padding-left: 18px;
+}
+
+/* The thread line, fading at the bottom (only once replies are open). */
+.repliesOpen::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 12px;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(var(--border-strong), transparent);
+}
+
+.toggleReplies {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brass-300);
+}
+
+.toggleReplies:hover {
+  background: rgb(201 164 92 / 0.08);
+}
+
+.line {
+  width: 18px;
+  height: 1px;
+  background: var(--brass-400);
+  opacity: 0.6;
+}
+
+.loadingReplies {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.dialogText {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* ── Profile tab ─────────────────────────────────────── */
+.profileRow {
+  display: grid;
+  gap: 2px;
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profileRow:last-of-type {
+  border-bottom: 0;
+}
+
+.context {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--text-faint);
+  text-decoration: none;
+}
+
+.context:hover {
+  color: var(--brass-200);
+}
+
+.contextSpoiler {
+  color: var(--crimson-300);
+}
+
+.sealedRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 10px 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--crimson-300);
+  background: rgb(209 31 60 / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(240 68 92 / 0.25);
+}
+
+.emptyTab {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 32px 20px 40px;
+  text-align: center;
+}
+
+.emptyTab svg {
+  opacity: 0.55;
+  margin-bottom: 8px;
+}
+
+.emptyTab h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.emptyTab p {
+  max-width: 380px;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+@keyframes arrive {
+  0%,
+  35% {
+    background: rgb(201 164 92 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(226 192 126 / 0.45), 0 0 28px -8px rgb(226 192 126 / 0.6);
+  }
+  100% {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .replies {
+    margin-left: 14px;
+    padding-left: 12px;
+  }
+
+  .handle {
+    display: none;
+  }
+}

@@ -5,6 +5,7 @@ import { useToast } from "@/components/feedback/ToastProvider";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Icon } from "@/components/ui/Icon";
 import { getPathway } from "@/data/lore/pathways";
 import { usePathwaySpoilers } from "@/features/profile";
@@ -14,7 +15,6 @@ import { useDeletePost } from "../hooks/usePosts";
 import type { Post } from "../types";
 import { LikeButton } from "./LikeButton";
 import { PostBody, SpoilerBadge } from "./PostBody";
-import { PostMenu } from "./PostMenu";
 import styles from "./PostCard.module.css";
 
 interface PostCardProps {
@@ -78,7 +78,7 @@ export function PostCard({ post, index = 0, variant = "feed", onDeleted }: PostC
         </Link>
         <div className={styles.headerEnd}>
           <SpoilerBadge post={post} />
-          {post.viewer.is_author && <PostMenu onEdit={() => openComposer(post)} onDelete={() => setConfirming(true)} />}
+          {post.viewer.is_author && <ActionMenu onEdit={() => openComposer(post)} onDelete={() => setConfirming(true)} />}
         </div>
       </header>
 

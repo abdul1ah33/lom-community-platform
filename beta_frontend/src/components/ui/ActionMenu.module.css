@@ -14,6 +14,11 @@
   transition: color 0.2s, background 0.2s;
 }
 
+.small {
+  width: 28px;
+  height: 28px;
+}
+
 .trigger:hover,
 .trigger[aria-expanded="true"] {
   color: var(--text);

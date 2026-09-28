@@ -1,7 +1,8 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { Icon } from "@/components/ui/Icon";
-import { PostCard, PostCardSkeleton, usePost } from "@/features/posts";
+import { CommentSection } from "@/features/comments";
+import { PostCard, PostCardSkeleton, usePost, useSpoilerGate, type Post } from "@/features/posts";
 import { ApiError } from "@/lib/http/ApiError";
 import styles from "./PostPage.module.css";
 
@@ -34,15 +35,17 @@ export function PostPage() {
       ) : (
         <>
           <PostCard post={post} variant="full" onDeleted={() => navigate("/", { replace: true })} />
-
-          <section className={styles.comments} aria-label="Comments">
-            <h2>
-              Comments <span>{post.stats.comments}</span>
-            </h2>
-            <p>The conversation arrives with the Comments module, next on the roadmap.</p>
-          </section>
+          <PostComments post={post} />
         </>
       )}
     </div>
+  );
+}
+
+/** Comments stay closed while the post itself is a sealed spoiler for this reader. */
+function PostComments({ post }: { post: Post }) {
+  const gate = useSpoilerGate(post);
+  return (
+    <CommentSection postId={post.id} count={post.stats.comments} sealed={gate.state !== "clear"} onReveal={gate.reveal} />
   );
 }

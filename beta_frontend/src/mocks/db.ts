@@ -33,9 +33,23 @@ export interface MockPost {
   comments: number;
 }
 
+export interface MockComment {
+  id: string;
+  post_id: string;
+  parent_id: string | null;
+  author_id: string;
+  body: string;
+  deleted: boolean;
+  created_at: string;
+  edited_at: string | null;
+}
+
 interface MockDbState {
   users: MockUser[];
   posts: MockPost[];
+  comments: MockComment[];
+  /** [userId, commentId] */
+  commentLikes: [string, string][];
   /** [userId, postId] */
   likes: [string, string][];
   /** [followerId, followeeId] */
@@ -151,6 +165,12 @@ function seed(): MockDbState {
   return {
     users,
     posts: seedPosts({ fool, justice, hanged, nighthawk, sun }),
+    comments: seedComments({ fool, justice, hanged, nighthawk, sun }),
+    commentLikes: [
+      [justice, "c-01"],
+      [hanged, "c-01"],
+      [fool, "c-04"],
+    ],
     likes: [
       [fool, "post-01"],
       [justice, "post-03"],
@@ -240,8 +260,11 @@ export const db = {
     return post;
   },
   deletePost(id: string) {
+    const commentIds = new Set(state.comments.filter((c) => c.post_id === id).map((c) => c.id));
     state.posts = state.posts.filter((p) => p.id !== id);
     state.likes = state.likes.filter(([, postId]) => postId !== id);
+    state.comments = state.comments.filter((c) => c.post_id !== id);
+    state.commentLikes = state.commentLikes.filter(([, c]) => !commentIds.has(c));
     persist();
   },
 
@@ -253,6 +276,36 @@ export const db = {
   },
   unlike(userId: string, postId: string) {
     state.likes = state.likes.filter(([u, p]) => !(u === userId && p === postId));
+    persist();
+  },
+
+  get comments() {
+    return state.comments;
+  },
+  commentById: (id: string) => state.comments.find((c) => c.id === id),
+  insertComment(comment: MockComment) {
+    state.comments.push(comment);
+    persist();
+  },
+  updateComment(id: string, patch: Partial<MockComment>) {
+    const comment = state.comments.find((c) => c.id === id);
+    if (comment) Object.assign(comment, patch);
+    persist();
+    return comment;
+  },
+  removeComment(id: string) {
+    state.comments = state.comments.filter((c) => c.id !== id);
+    state.commentLikes = state.commentLikes.filter(([, c]) => c !== id);
+    persist();
+  },
+  commentLikeCount: (id: string) => state.commentLikes.filter(([, c]) => c === id).length,
+  hasLikedComment: (userId: string, id: string) => state.commentLikes.some(([u, c]) => u === userId && c === id),
+  likeComment(userId: string, id: string) {
+    if (!db.hasLikedComment(userId, id)) state.commentLikes.push([userId, id]);
+    persist();
+  },
+  unlikeComment(userId: string, id: string) {
+    state.commentLikes = state.commentLikes.filter(([u, c]) => !(u === userId && c === id));
     persist();
   },
 
@@ -312,5 +365,32 @@ function seedPosts(ids: Record<"fool" | "justice" | "hanged" | "nighthawk" | "su
     post(10, ids.fool, 30, "Donghua news round-up: trailer breakdown thread coming soon. Keep theories about unreleased episodes marked as spoilers please!", ["Donghua", "Announcements"], null, 156, 28),
     post(11, ids.justice, 40, "Backlund in the fog is one of the best settings I have ever read. The Victorian atmosphere is unmatched.", ["Backlund"], null, 98, 17),
     post(12, ids.hanged, 52, "Unpopular opinion incoming about a certain reveal. Marking it at the chapter it happens so nobody gets hurt.", ["Theory", "Discussion"], 820, 63, 54),
+  ];
+}
+
+function seedComments(ids: Record<"fool" | "justice" | "hanged" | "nighthawk" | "sun", string>): MockComment[] {
+  let n = 0;
+  const comment = (post_id: string, author_id: string, hours: number, body: string, parent_id: string | null = null): MockComment => ({
+    id: `c-${String(++n).padStart(2, "0")}`,
+    post_id,
+    parent_id,
+    author_id,
+    body,
+    deleted: false,
+    created_at: hoursAgo(hours),
+    edited_at: null,
+  });
+
+  return [
+    comment("post-01", ids.hanged, 0.15, "The detail about the grey fog in chapter 1 still gives me chills on a re-read."),
+    comment("post-01", ids.fool, 0.12, "@HangedMan_Enjoyer exactly! It was all there from the very first page.", "c-01"),
+    comment("post-01", ids.sun, 0.1, "Adding this to my re-read list. Thank you for the thread!"),
+    comment("post-01", ids.nighthawk, 0.08, "Please keep going, I want the full list.", "c-01"),
+    comment("post-03", ids.justice, 2.5, "The Sleepless entry made me laugh. Poor Nighthawks."),
+    comment("post-03", ids.nighthawk, 2.2, "@Justice_of_Backlund it's a lifestyle, not a choice.", "c-05"),
+    comment("post-05", ids.justice, 7, "Thank you for setting this up! The spoiler shield is such a good idea."),
+    comment("post-05", ids.hanged, 6.5, "Finally a place where I can post theories without ruining it for everyone."),
+    comment("post-02", ids.justice, 0.8, "I am still not okay after that chapter."),
+    comment("post-02", ids.sun, 0.6, "@Justice_of_Backlund same. I had to put the book down for a day.", "c-09"),
   ];
 }

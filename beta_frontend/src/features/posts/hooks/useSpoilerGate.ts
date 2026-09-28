@@ -4,6 +4,9 @@ import { useRevealStore } from "@/lib/spoilers/revealStore";
 import type { Post } from "../types";
 import { useRevealPost } from "./usePosts";
 
+/** Posts whose withheld text is being fetched, shared so several gates on one post fetch once. */
+const fetchingText = new Set<string>();
+
 export type SpoilerState =
   /** Not a spoiler, or the reader has already passed the chapter. */
   | "clear"
@@ -29,10 +32,13 @@ export function useSpoilerGate(post: Post) {
   const beyondProgress = post.spoiler_chapter !== null && readerChapter < post.spoiler_chapter;
   const author = post.viewer.is_author;
 
-  // A refetch can bring back a redacted copy of a post revealed earlier; fetch its text again.
+  // Revealed but still withheld by the server (just revealed, or a refetch brought back a
+  // redacted copy): fetch the text once, however many gates are showing this post.
   const needsText = revealed && post.redacted && !author;
   useEffect(() => {
-    if (needsText && !reveal.isPending) reveal.mutate(post.id);
+    if (!needsText || fetchingText.has(post.id)) return;
+    fetchingText.add(post.id);
+    reveal.mutate(post.id, { onSettled: () => fetchingText.delete(post.id) });
     // Deliberately keyed on the flag only: re-running on `reveal` identity would refetch in a loop.
   }, [needsText, post.id]);
 
@@ -45,9 +51,7 @@ export function useSpoilerGate(post: Post) {
     state,
     readerChapter,
     revealError: reveal.isError,
-    reveal: () => {
-      store.add(key);
-      if (post.redacted) reveal.mutate(post.id);
-    },
+    // Marking it revealed is enough: the effect above fetches withheld text if needed.
+    reveal: () => store.add(key),
   };
 }

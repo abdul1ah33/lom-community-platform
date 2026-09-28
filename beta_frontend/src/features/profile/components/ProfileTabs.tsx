@@ -23,11 +23,12 @@ const EMPTY_COPY: Record<TabId, { title: string; body: string }> = {
 
 interface ProfileTabsProps {
   profile: UserProfile;
-  /** Content for the Posts tab, supplied by the page so this feature doesn't depend on Posts. */
+  /** Content for the Posts and Comments tabs, supplied by the page so this feature doesn't depend on them. */
   posts?: ReactNode;
+  comments?: ReactNode;
 }
 
-export function ProfileTabs({ profile, posts }: ProfileTabsProps) {
+export function ProfileTabs({ profile, posts, comments }: ProfileTabsProps) {
   const tabs: { id: TabId; label: string; count?: number }[] = [
     { id: "posts", label: "Posts", count: profile.stats.posts },
     { id: "comments", label: "Comments", count: profile.stats.comments },
@@ -35,7 +36,7 @@ export function ProfileTabs({ profile, posts }: ProfileTabsProps) {
   ];
   const [active, setActive] = useState<TabId>("posts");
   const copy = EMPTY_COPY[active];
-  const content = active === "posts" ? posts : undefined;
+  const content = active === "posts" ? posts : active === "comments" ? comments : undefined;
 
   return (
     <section className={styles.card} aria-label="Activity">

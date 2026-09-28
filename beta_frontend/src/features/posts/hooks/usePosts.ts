@@ -40,6 +40,15 @@ function patchPostEverywhere(queryClient: QueryClient, id: string, update: (post
   queryClient.setQueryData<Post>(postKeys.detail(id), (post) => (post ? (update(post) ?? undefined) : post));
 }
 
+/**
+ * For other features that change a post's numbers (e.g. comments changing
+ * `stats.comments`): patch the post in every cached list and its detail entry.
+ */
+export function usePostCacheUpdater() {
+  const queryClient = useQueryClient();
+  return (id: string, update: (post: Post) => Post) => patchPostEverywhere(queryClient, id, update);
+}
+
 export function usePostFeed(feed: FeedKind, tag: string | null) {
   return useInfiniteQuery({
     queryKey: postKeys.feed(feed, tag),

@@ -1,15 +1,18 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { Icon } from "@/components/ui/Icon";
-import styles from "./PostMenu.module.css";
+import { Icon } from "./Icon";
+import styles from "./ActionMenu.module.css";
 
-interface PostMenuProps {
+interface ActionMenuProps {
   onEdit: () => void;
   onDelete: () => void;
+  /** What the actions apply to, e.g. "post" → "Edit post". */
+  noun?: string;
+  size?: "md" | "sm";
 }
 
-/** "⋯" menu on the author's own posts. Closes on outside click or Escape. */
-export function PostMenu({ onEdit, onDelete }: PostMenuProps) {
+/** "⋯" Edit / Delete menu on the author's own content. Closes on outside click or Escape. */
+export function ActionMenu({ onEdit, onDelete, noun = "post", size = "md" }: ActionMenuProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -36,11 +39,11 @@ export function PostMenu({ onEdit, onDelete }: PostMenuProps) {
     <div ref={rootRef} className={styles.root} onClick={(event) => event.stopPropagation()}>
       <button
         type="button"
-        className={styles.trigger}
+        className={`${styles.trigger} ${size === "sm" ? styles.small : ""}`}
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Post options"
+        aria-label={`${noun[0].toUpperCase()}${noun.slice(1)} options`}
       >
         <Icon name="more" size={18} />
       </button>
@@ -55,10 +58,10 @@ export function PostMenu({ onEdit, onDelete }: PostMenuProps) {
             transition={{ duration: 0.15 }}
           >
             <button type="button" role="menuitem" onClick={choose(onEdit)} autoFocus>
-              <Icon name="edit" size={16} /> Edit post
+              <Icon name="edit" size={16} /> Edit {noun}
             </button>
             <button type="button" role="menuitem" className={styles.danger} onClick={choose(onDelete)}>
-              <Icon name="trash" size={16} /> Delete post
+              <Icon name="trash" size={16} /> Delete {noun}
             </button>
           </motion.div>
         )}

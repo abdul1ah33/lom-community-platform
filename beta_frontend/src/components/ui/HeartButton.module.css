@@ -1,0 +1,49 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s, background 0.2s;
+}
+
+.md {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.sm {
+  height: 28px;
+  padding: 0 8px;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.button:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.05);
+  color: var(--text);
+}
+
+.liked,
+.liked:hover:not(:disabled) {
+  color: var(--crimson-400);
+}
+
+.heart {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--crimson-300);
+  box-shadow: 0 0 6px var(--crimson-400);
+}

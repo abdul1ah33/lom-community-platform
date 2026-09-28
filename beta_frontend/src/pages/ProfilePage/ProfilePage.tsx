@@ -11,6 +11,7 @@ import {
   useProfile,
   type RelationKind,
 } from "@/features/profile";
+import { UserCommentList } from "@/features/comments";
 import { UserPostList } from "@/features/posts";
 import { ApiError } from "@/lib/http/ApiError";
 import styles from "./ProfilePage.module.css";
@@ -54,6 +55,7 @@ export function ProfilePage() {
             key={profile.username}
             profile={profile}
             posts={<UserPostList username={profile.username} isSelf={profile.viewer.is_self} />}
+            comments={<UserCommentList username={profile.username} isSelf={profile.viewer.is_self} />}
           />
         </div>
         <aside className={styles.aside}>

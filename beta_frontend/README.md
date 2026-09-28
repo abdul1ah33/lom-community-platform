@@ -24,8 +24,9 @@ npm run dev               # http://localhost:5173
 ```
 
 The backend must be running on `http://localhost:8000` (override with `VITE_API_PROXY_TARGET`).
-Endpoints the backend doesn't have yet (currently Profiles and Posts) are served by an in-browser
-mock server. See [`src/mocks/README.md`](src/mocks/README.md). To try everything with **no
+Endpoints the backend doesn't have yet (Profiles, Posts, Comments) are served by an in-browser
+mock server. The full list of what the backend still needs is in
+[`docs/BACKEND_ENDPOINTS.md`](../docs/BACKEND_ENDPOINTS.md). See [`src/mocks/README.md`](src/mocks/README.md). To try everything with **no
 backend at all**, set `VITE_MOCK_API=all` and sign in as `fool@lom.community` / `praisethefool`.
 The backend has no CORS middleware yet, so the Vite dev server proxies `/api/*` to it and the
 browser only ever talks to one origin. A production deployment needs either the same reverse-proxy
@@ -52,6 +53,7 @@ src/
 ├── mocks/               # In-browser mock API for endpoints the backend doesn't have yet
 ├── features/            # Business features, each self-contained
 │   ├── auth/            # api · context · hooks · routes (guards) · components · validation · types
+│   ├── comments/        # api · hooks · components (threads, @mentions) · types (= API contract)
 │   ├── home/            # components · data
 │   ├── posts/           # api · hooks · context (composer) · components · types (= API contract)
 │   └── profile/         # api · hooks (React Query) · components · types (= API contract)
@@ -120,6 +122,7 @@ refresh token to an httpOnly cookie later would only require changes in `lib/sto
 | The 22 Pathways deck         | Static reference data (`src/data/lore/pathways.ts`)                |
 | Road to launch               | Mirrors `docs/LOM_feature_roadmap_MVP.pdf`                         |
 | Feed, posts, likes, tags     | **Mock API** until the backend implements `docs/api-contracts/posts.md` |
+| Comments, replies, @mentions | **Mock API** until the backend implements `docs/api-contracts/comments.md` |
 
 Nav items without a backend yet (Search, Wiki, Notifications, …) are shown as "Soon".
 

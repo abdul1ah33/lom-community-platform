@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
 import { db } from "./db";
 import { registerAuthHandlers } from "./handlers/auth";
+import { registerCommentHandlers } from "./handlers/comments";
 import { registerPostHandlers } from "./handlers/posts";
 import { registerUserHandlers } from "./handlers/users";
 import { MockHttpError } from "./http";
@@ -11,6 +12,7 @@ if (env.mockMode === "all") registerAuthHandlers(router);
 if (env.mockMode !== "off") {
   registerUserHandlers(router);
   registerPostHandlers(router);
+  registerCommentHandlers(router);
 }
 
 if (import.meta.env.DEV) {

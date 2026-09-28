@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { Icon } from "@/components/ui/Icon";
+import { RichText } from "@/components/ui/RichText";
 import { Spinner } from "@/components/ui/Spinner";
 import { useReaderChapter } from "@/features/profile";
 import { useSpoilerGate } from "../hooks/useSpoilerGate";
@@ -28,7 +29,8 @@ export function PostBody({ post, clamp = false }: PostBodyProps) {
         transition={{ duration: 0.6 }}
         aria-hidden={hidden}
       >
-        {text}
+        {/* Links inside sealed text must not be reachable: render it plain while hidden. */}
+        {hidden ? text : <RichText text={text} />}
       </motion.p>
 
       <AnimatePresence>

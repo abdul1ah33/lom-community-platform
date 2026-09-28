@@ -126,7 +126,7 @@ function toProfile(user: MockUser, viewer: MockUser | null): UserProfile {
     joined_at: user.joined_at,
     stats: {
       posts: db.posts.filter((p) => p.author_id === user.id).length,
-      comments: user.comments,
+      comments: db.comments.filter((c) => c.author_id === user.id && !c.deleted).length,
       followers,
       following: db.followingIds(user.id).length,
       likes_received:

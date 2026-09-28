@@ -148,7 +148,10 @@ function toPost(post: MockPost, viewer: MockUser | null, reveal: boolean): Post 
     spoiler_chapter: post.spoiler_chapter,
     created_at: post.created_at,
     edited_at: post.edited_at,
-    stats: { likes: post.base_likes + db.likeCount(post.id), comments: post.comments },
+    stats: {
+      likes: post.base_likes + db.likeCount(post.id),
+      comments: db.comments.filter((c) => c.post_id === post.id && !c.deleted).length,
+    },
     viewer: { liked: viewer ? db.hasLiked(viewer.id, post.id) : false, is_author: isAuthor },
   };
 }

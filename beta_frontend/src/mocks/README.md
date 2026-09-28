@@ -38,7 +38,8 @@ mocks/
 └── handlers/
     ├── auth.ts       # mirrors backend/app/modules/auth/router.py
     ├── users.ts      # docs/api-contracts/profiles.md
-    └── posts.ts      # docs/api-contracts/posts.md
+    ├── posts.ts      # docs/api-contracts/posts.md
+    └── comments.ts   # docs/api-contracts/comments.md (+ /search/users)
 ```
 
 When the backend implements an endpoint, delete its handler (or switch the mode) and nothing else
