@@ -108,6 +108,20 @@ frontend handles both. Anonymous requests count as chapter 0.
 
 ---
 
+## 5. Wiki ([wiki.md](api-contracts/wiki.md))
+
+| ✓  | Method | Path                                         | Auth | Returns                       |
+| -- | ------ | -------------------------------------------- | ---- | ----------------------------- |
+| 🆕 | GET    | `/wiki/entries?q=&category=&cursor=&limit=` | 👁   | `Page<WikiEntrySummary>`      |
+| 🆕 | GET    | `/wiki/entries/{slug}`                       | 👁   | `WikiEntry`                   |
+
+**New tables:** `wiki_entries` (`slug`, `category`, `title`, `summary`, `reveal_chapter`, `aliases`)
+and `wiki_sections` (ordered, each with an optional `spoiler_chapter`). Read-only for now; editing
+comes with the admin dashboard. Seed content (draft, chapters to verify) is in
+`beta_frontend/src/mocks/data/wiki.ts`.
+
+---
+
 ## Cross-cutting rules (apply to every new endpoint)
 
 - **Plain JSON responses** (like `/auth/login` and `/auth/me`), not the `SuccessResponse` envelope.
@@ -130,6 +144,7 @@ frontend handles both. Anonymous requests count as chapter 0.
 | `FILE_TOO_LARGE`         | 413    | avatar upload (> 2 MB)           |
 | `POST_NOT_FOUND`         | 404    | posts, comments                  |
 | `COMMENT_NOT_FOUND`      | 404    | comments                         |
+| `WIKI_ENTRY_NOT_FOUND`   | 404    | wiki                             |
 
 Reused: `USER_NOT_FOUND`, `FORBIDDEN`, `VALIDATION_ERROR`, `INVALID_ACCESS_TOKEN`.
 
@@ -142,8 +157,9 @@ Reused: `USER_NOT_FOUND`, `FORBIDDEN`, `VALIDATION_ERROR`, `INVALID_ACCESS_TOKEN
 2. **Follows**: follow/unfollow and the two lists.
 3. **Posts**: CRUD, feed, likes, bookmarks, tags, `/users/{username}/posts`, `/tags/trending`.
 4. **Comments** and `/search/users`.
-5. **Avatar upload** (needs a storage decision: S3 / Cloudinary).
-6. *(Optional)* server-side spoiler redaction on posts.
+5. **Wiki**: two read-only endpoints, seeded once the draft lore's chapters are verified.
+6. **Avatar upload** (needs a storage decision: S3 / Cloudinary).
+7. *(Optional)* server-side spoiler redaction on posts.
 
 ## Switching the frontend over
 

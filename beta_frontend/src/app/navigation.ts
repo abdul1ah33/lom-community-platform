@@ -14,7 +14,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { label: "Home", icon: "home", to: "/", available: true, mobile: true },
   { label: "Search", icon: "search", to: "/search", available: false, mobile: true },
-  { label: "Wiki", icon: "book", to: "/wiki", available: false },
+  { label: "Wiki", icon: "book", to: "/wiki", available: true },
   { label: "Notifications", icon: "bell", to: "/notifications", available: false, mobile: true },
   { label: "Bookmarks", icon: "bookmark", to: "/bookmarks", available: true },
   { label: "Profile", icon: "user", to: "/profile", available: true, mobile: true },

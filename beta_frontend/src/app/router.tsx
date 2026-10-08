@@ -31,6 +31,14 @@ export const router = createBrowserRouter([
             lazy: () => import("@/pages/BookmarksPage/BookmarksPage").then((m) => ({ Component: m.BookmarksPage })),
           },
           {
+            path: "wiki",
+            lazy: () => import("@/pages/WikiPage/WikiPage").then((m) => ({ Component: m.WikiPage })),
+          },
+          {
+            path: "wiki/:slug",
+            lazy: () => import("@/pages/WikiPage/WikiEntryPage").then((m) => ({ Component: m.WikiEntryPage })),
+          },
+          {
             path: "p/:id",
             lazy: () => import("@/pages/PostPage/PostPage").then((m) => ({ Component: m.PostPage })),
           },
