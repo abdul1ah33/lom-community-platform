@@ -16,6 +16,7 @@ export const postKeys = {
   lists: ["posts", "list"] as const,
   feed: (feed: FeedKind, tag: string | null) => ["posts", "list", "feed", feed, tag ?? ""] as const,
   byUser: (username: string) => ["posts", "list", "user", username.toLowerCase()] as const,
+  bookmarks: ["posts", "list", "bookmarks"] as const,
   detail: (id: string) => ["posts", "detail", id] as const,
   trending: ["tags", "trending"] as const,
 };
@@ -62,6 +63,15 @@ export function useUserPosts(username: string) {
   return useInfiniteQuery({
     queryKey: postKeys.byUser(username),
     queryFn: ({ pageParam }) => postsApi.byUser(username, pageParam),
+    initialPageParam: null as string | null,
+    getNextPageParam: (page) => page.next_cursor,
+  });
+}
+
+export function useBookmarks() {
+  return useInfiniteQuery({
+    queryKey: postKeys.bookmarks,
+    queryFn: ({ pageParam }) => postsApi.bookmarks(pageParam),
     initialPageParam: null as string | null,
     getNextPageParam: (page) => page.next_cursor,
   });
@@ -135,6 +145,25 @@ export function useLikePost() {
       patchPostEverywhere(queryClient, id, toggle(like));
     },
     onError: (_error, { id, like }) => patchPostEverywhere(queryClient, id, toggle(!like)),
+  });
+}
+
+/**
+ * Optimistic bookmark toggle on every cached copy, rolled back on failure. The saved list itself
+ * is refetched afterwards so it gains or drops the post in the right order.
+ */
+export function useBookmarkPost() {
+  const queryClient = useQueryClient();
+  const toggle = (bookmarked: boolean) => (post: Post) => ({ ...post, viewer: { ...post.viewer, bookmarked } });
+
+  return useMutation({
+    mutationFn: ({ id, save }: { id: string; save: boolean }) => (save ? postsApi.bookmark(id) : postsApi.unbookmark(id)),
+    onMutate: async ({ id, save }) => {
+      await queryClient.cancelQueries({ queryKey: postKeys.all });
+      patchPostEverywhere(queryClient, id, toggle(save));
+    },
+    onError: (_error, { id, save }) => patchPostEverywhere(queryClient, id, toggle(!save)),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: postKeys.bookmarks }),
   });
 }
 

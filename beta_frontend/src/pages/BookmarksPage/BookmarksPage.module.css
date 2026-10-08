@@ -1,0 +1,29 @@
+.page {
+  display: grid;
+  gap: 18px;
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.icon {
+  flex: none;
+  margin-top: 8px;
+  color: var(--brass-300);
+}
+
+.header h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 32px);
+}
+
+.header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+}

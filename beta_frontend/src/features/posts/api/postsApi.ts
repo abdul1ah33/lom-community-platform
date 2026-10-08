@@ -27,5 +27,10 @@ export const postsApi = {
   like: (id: string) => http.post<void>(`/posts/${encodeURIComponent(id)}/like`, undefined, { auth: true }),
   unlike: (id: string) => http.delete<void>(`/posts/${encodeURIComponent(id)}/like`, { auth: true }),
 
-  trendingTags: () => http.get<TrendingTag[]>("/tags/trending", { auth: true }),
+  bookmark: (id: string) => http.post<void>(`/posts/${encodeURIComponent(id)}/bookmark`, undefined, { auth: true }),
+  unbookmark: (id: string) => http.delete<void>(`/posts/${encodeURIComponent(id)}/bookmark`, { auth: true }),
+  /** The signed-in user's saved posts, most recently saved first. */
+  bookmarks: (cursor: string | null) => http.get<Page<Post>>(`/users/me/bookmarks${qs({ cursor })}`, { auth: true }),
+
+  trendingTags:() => http.get<TrendingTag[]>("/tags/trending", { auth: true }),
 };

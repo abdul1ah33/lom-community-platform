@@ -27,6 +27,10 @@ export const router = createBrowserRouter([
             lazy: () => import("@/pages/EditProfilePage/EditProfilePage").then((m) => ({ Component: m.EditProfilePage })),
           },
           {
+            path: "bookmarks",
+            lazy: () => import("@/pages/BookmarksPage/BookmarksPage").then((m) => ({ Component: m.BookmarksPage })),
+          },
+          {
             path: "p/:id",
             lazy: () => import("@/pages/PostPage/PostPage").then((m) => ({ Component: m.PostPage })),
           },

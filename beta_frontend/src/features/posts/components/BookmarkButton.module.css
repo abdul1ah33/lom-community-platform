@@ -1,0 +1,27 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  transition: color 0.2s, background 0.2s;
+}
+
+.button:hover {
+  background: rgb(255 255 255 / 0.05);
+  color: var(--text);
+}
+
+.saved,
+.saved:hover {
+  color: var(--brass-300);
+}
+
+.saved svg {
+  filter: drop-shadow(0 0 6px rgb(201 164 92 / 0.45));
+}

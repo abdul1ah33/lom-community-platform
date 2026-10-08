@@ -73,9 +73,13 @@ Small follow-ups on existing auth:
 | 🆕 | DELETE | `/posts/{id}/like`            | 🔒   | 204 (idempotent)                      |
 | 🆕 | GET    | `/users/{username}/posts`     | 👁   | `Page<Post>`                          |
 | 🆕 | GET    | `/tags/trending`              | 👁   | `[{ tag, count }]` (top 10)           |
+| 🆕 | POST   | `/posts/{id}/bookmark`        | 🔒   | 204 (idempotent)                      |
+| 🆕 | DELETE | `/posts/{id}/bookmark`        | 🔒   | 204 (idempotent, no 404)              |
+| 🆕 | GET    | `/users/me/bookmarks`         | 🔒   | `Page<Post>`, most recently saved first |
 
 **New tables:** `posts` (body ≤2000, `spoiler_chapter` 1–1394 or NULL, `edited_at`),
-`post_tags(post_id, tag)` (≤5 per post, ≤30 chars each), `post_likes(user_id, post_id)`.
+`post_tags(post_id, tag)` (≤5 per post, ≤30 chars each), `post_likes(user_id, post_id)`,
+`post_bookmarks(user_id, post_id, created_at)` (private; `Post.viewer.bookmarked`).
 
 **Spoilers (two layers).** The frontend already blurs posts whose `spoiler_chapter` is past the
 reader's `current_chapter`, so returning the full `body` always works. The optional **server
@@ -136,7 +140,7 @@ Reused: `USER_NOT_FOUND`, `FORBIDDEN`, `VALIDATION_ERROR`, `INVALID_ACCESS_TOKEN
 1. **Profiles**: the columns and `GET /users/{username}` + `PATCH /users/me`. Every page reads the
    reader's `current_chapter` from here, so spoilers depend on it.
 2. **Follows**: follow/unfollow and the two lists.
-3. **Posts**: CRUD, feed, likes, tags, `/users/{username}/posts`, `/tags/trending`.
+3. **Posts**: CRUD, feed, likes, bookmarks, tags, `/users/{username}/posts`, `/tags/trending`.
 4. **Comments** and `/search/users`.
 5. **Avatar upload** (needs a storage decision: S3 / Cloudinary).
 6. *(Optional)* server-side spoiler redaction on posts.
