@@ -52,6 +52,8 @@ interface MockDbState {
   commentLikes: [string, string][];
   /** [userId, postId] */
   likes: [string, string][];
+  /** [userId, postId, savedAt] */
+  bookmarks: [string, string, string][];
   /** [followerId, followeeId] */
   follows: [string, string][];
   /** refresh token -> user id */
@@ -83,7 +85,7 @@ function seed(): MockDbState {
       bio: "Presiding over the long bronze table. Reads with a cup of tea and far too many theories.",
       location: "Tingen City",
       favorite_character: "Klein Moretti",
-      favorite_pathway: "fool",
+      favorite_pathway: "seer",
       current_chapter: 214,
       progress_updated_at: daysAgo(1),
       joined_at: daysAgo(40),
@@ -100,7 +102,7 @@ function seed(): MockDbState {
       bio: "Psychology enthusiast. Currently re-reading Volume 1 and taking notes on everything.",
       location: "Backlund",
       favorite_character: "Audrey Hall",
-      favorite_pathway: "visionary",
+      favorite_pathway: "spectator",
       current_chapter: 1394,
       progress_updated_at: daysAgo(3),
       joined_at: daysAgo(120),
@@ -117,7 +119,7 @@ function seed(): MockDbState {
       bio: "Theories only. Every secret has a price.",
       location: "The Sonia Sea",
       favorite_character: "Alger Wilson",
-      favorite_pathway: "hanged-man",
+      favorite_pathway: "secrets-suppliant",
       current_chapter: 1150,
       progress_updated_at: daysAgo(6),
       joined_at: daysAgo(95),
@@ -134,7 +136,7 @@ function seed(): MockDbState {
       bio: "Sleepless. Keeping watch over the feed.",
       location: "Tingen City",
       favorite_character: "Dunn Smith",
-      favorite_pathway: "darkness",
+      favorite_pathway: "sleepless",
       current_chapter: 88,
       progress_updated_at: daysAgo(2),
       joined_at: daysAgo(12),
@@ -151,7 +153,7 @@ function seed(): MockDbState {
       bio: "Bard of the City of Silver. Always looking for the light.",
       location: null,
       favorite_character: "Derrick Berg",
-      favorite_pathway: "sun",
+      favorite_pathway: "bard",
       current_chapter: 640,
       progress_updated_at: daysAgo(9),
       joined_at: daysAgo(60),
@@ -175,6 +177,10 @@ function seed(): MockDbState {
       [fool, "post-01"],
       [justice, "post-03"],
       [hanged, "post-01"],
+    ],
+    bookmarks: [
+      [fool, "post-03", hoursAgo(2)],
+      [fool, "post-11", hoursAgo(30)],
     ],
     follows: [
       [justice, fool],
@@ -263,6 +269,7 @@ export const db = {
     const commentIds = new Set(state.comments.filter((c) => c.post_id === id).map((c) => c.id));
     state.posts = state.posts.filter((p) => p.id !== id);
     state.likes = state.likes.filter(([, postId]) => postId !== id);
+    state.bookmarks = state.bookmarks.filter(([, postId]) => postId !== id);
     state.comments = state.comments.filter((c) => c.post_id !== id);
     state.commentLikes = state.commentLikes.filter(([, c]) => !commentIds.has(c));
     persist();
@@ -278,6 +285,22 @@ export const db = {
     state.likes = state.likes.filter(([u, p]) => !(u === userId && p === postId));
     persist();
   },
+
+  hasBookmarked: (userId: string, postId: string) => state.bookmarks.some(([u, p]) => u === userId && p === postId),
+  bookmark(userId: string, postId: string) {
+    if (!db.hasBookmarked(userId, postId)) state.bookmarks.push([userId, postId, new Date().toISOString()]);
+    persist();
+  },
+  unbookmark(userId: string, postId: string) {
+    state.bookmarks = state.bookmarks.filter(([u, p]) => !(u === userId && p === postId));
+    persist();
+  },
+  /** The user's saved post ids, most recently saved first. */
+  bookmarkedPostIds: (userId: string) =>
+    state.bookmarks
+      .filter(([u]) => u === userId)
+      .sort((a, b) => b[2].localeCompare(a[2]))
+      .map(([, postId]) => postId),
 
   get comments() {
     return state.comments;

@@ -91,13 +91,6 @@ button.action:hover {
   color: var(--text);
 }
 
-
-
-
-.save {
-  margin-left: auto;
-}
-
 .clickable {
   cursor: pointer;
 }

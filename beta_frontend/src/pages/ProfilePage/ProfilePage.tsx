@@ -12,7 +12,7 @@ import {
   type RelationKind,
 } from "@/features/profile";
 import { UserCommentList } from "@/features/comments";
-import { UserPostList } from "@/features/posts";
+import { SavedPostList, UserPostList } from "@/features/posts";
 import { ApiError } from "@/lib/http/ApiError";
 import styles from "./ProfilePage.module.css";
 
@@ -56,6 +56,7 @@ export function ProfilePage() {
             profile={profile}
             posts={<UserPostList username={profile.username} isSelf={profile.viewer.is_self} />}
             comments={<UserCommentList username={profile.username} isSelf={profile.viewer.is_self} />}
+            saved={profile.viewer.is_self ? <SavedPostList embedded /> : undefined}
           />
         </div>
         <aside className={styles.aside}>

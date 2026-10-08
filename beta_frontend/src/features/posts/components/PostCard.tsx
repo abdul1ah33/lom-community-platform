@@ -13,6 +13,7 @@ import { fullDate, relativeTime } from "@/lib/format/relativeTime";
 import { useComposer } from "../context/ComposerContext";
 import { useDeletePost } from "../hooks/usePosts";
 import type { Post } from "../types";
+import { BookmarkButton } from "./BookmarkButton";
 import { LikeButton } from "./LikeButton";
 import { PostBody, SpoilerBadge } from "./PostBody";
 import styles from "./PostCard.module.css";
@@ -101,16 +102,7 @@ export function PostCard({ post, index = 0, variant = "feed", onDeleted }: PostC
         <Link to={href} className={styles.action} onClick={(e) => e.stopPropagation()} aria-label={`${post.stats.comments} comments`}>
           <Icon name="comment" size={19} /> {post.stats.comments.toLocaleString()}
         </Link>
-        <button
-          type="button"
-          className={`${styles.action} ${styles.save}`}
-          aria-label="Bookmark (coming soon)"
-          title="Bookmarks arrive later"
-          disabled
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Icon name="bookmark" size={19} />
-        </button>
+        <BookmarkButton post={post} />
       </footer>
 
       <Dialog

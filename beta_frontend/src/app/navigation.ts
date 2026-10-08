@@ -16,7 +16,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Search", icon: "search", to: "/search", available: false, mobile: true },
   { label: "Wiki", icon: "book", to: "/wiki", available: false },
   { label: "Notifications", icon: "bell", to: "/notifications", available: false, mobile: true },
-  { label: "Bookmarks", icon: "bookmark", to: "/bookmarks", available: false },
+  { label: "Bookmarks", icon: "bookmark", to: "/bookmarks", available: true },
   { label: "Profile", icon: "user", to: "/profile", available: true, mobile: true },
   { label: "Settings", icon: "settings", to: "/settings", available: false },
 ];

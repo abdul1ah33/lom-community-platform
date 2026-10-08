@@ -28,7 +28,8 @@ export interface Post {
   created_at: string;
   edited_at: string | null;
   stats: { likes: number; comments: number };
-  viewer: { liked: boolean; is_author: boolean };
+  /** `bookmarked` is private: only ever true for the viewer's own saves. */
+  viewer: { liked: boolean; bookmarked: boolean; is_author: boolean };
 }
 
 /** POST /posts */

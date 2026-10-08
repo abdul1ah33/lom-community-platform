@@ -91,7 +91,27 @@ export function registerPostHandlers(router: MockRouter) {
       return noContent();
     })
 
-    .on("GET", "/users/:username/posts", async ({ params, query, headers }) => {
+    .on("POST", "/posts/:id/bookmark", async ({ params, headers }) => {
+      const me = await requireUser(headers);
+      if (!db.postById(params.id)) return notFound();
+      db.bookmark(me.id, params.id);
+      return noContent();
+    })
+
+    .on("DELETE", "/posts/:id/bookmark", async ({ params, headers }) => {
+      const me = await requireUser(headers);
+      // No 404 here: un-saving a post that was deleted meanwhile should still succeed.
+      db.unbookmark(me.id, params.id);
+      return noContent();
+    })
+
+    .on("GET", "/users/me/bookmarks", async ({ query, headers }) => {
+      const me = await requireUser(headers);
+      const posts = db.bookmarkedPostIds(me.id).flatMap((id) => db.postById(id) ?? []);
+      return json(paginate(posts, query, (p) => toPost(p, me, false)));
+    })
+
+    .on("GET", "/users/:username/posts",async ({ params, query, headers }) => {
       const viewer = await currentUser(headers);
       const author = db.byUsername(params.username);
       if (!author) return apiError(404, "USER_NOT_FOUND", "The requested user does not exist.");
@@ -152,7 +172,11 @@ function toPost(post: MockPost, viewer: MockUser | null, reveal: boolean): Post 
       likes: post.base_likes + db.likeCount(post.id),
       comments: db.comments.filter((c) => c.post_id === post.id && !c.deleted).length,
     },
-    viewer: { liked: viewer ? db.hasLiked(viewer.id, post.id) : false, is_author: isAuthor },
+    viewer: {
+      liked: viewer ? db.hasLiked(viewer.id, post.id) : false,
+      bookmarked: viewer ? db.hasBookmarked(viewer.id, post.id) : false,
+      is_author: isAuthor,
+    },
   };
 }
 

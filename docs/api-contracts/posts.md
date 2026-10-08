@@ -34,6 +34,9 @@ case-insensitive. Add an index on `lower(tag)`.
 
 **`post_likes(user_id, post_id, created_at)`**: PK on both, cascade on either side.
 
+**`post_bookmarks(user_id, post_id, created_at)`**: PK on both, cascade on either side. Index
+`(user_id, created_at DESC)` for the saved list. Bookmarks are private: there is no public count.
+
 `stats.comments` can be `0` until the Comments module exists.
 
 ---
@@ -57,9 +60,11 @@ case-insensitive. Add an index on `lower(tag)`.
   "created_at": "2026-09-27T09:12:00Z",
   "edited_at": null,
   "stats": { "likes": 342, "comments": 97 },
-  "viewer": { "liked": false, "is_author": false }
+  "viewer": { "liked": false, "bookmarked": false, "is_author": false }
 }
 ```
+
+`viewer.bookmarked` is whether the **requester** saved the post (always `false` without a token).
 
 ### Spoilers: two layers
 
@@ -118,6 +123,18 @@ delete too (roadmap Phase 4).
 
 Idempotent, like follow/unfollow. `404 POST_NOT_FOUND`.
 
+### `POST /posts/{id}/bookmark` → `204` and `DELETE /posts/{id}/bookmark` → `204`
+
+Requires auth. Idempotent. `POST` returns `404 POST_NOT_FOUND` for a missing post; `DELETE` always
+succeeds (removing a bookmark on a post that was deleted meanwhile is fine).
+
+### `GET /users/me/bookmarks` → `200 Page<Post>`
+
+Requires auth. The requester's saved posts, **most recently saved first** (order by
+`post_bookmarks.created_at`, not the post's date; use it for the keyset cursor). Same `cursor` /
+`limit` params as the feed. Posts in it go through the same spoiler redaction as everywhere else.
+There is no endpoint to read someone else's bookmarks.
+
 ### `GET /users/{username}/posts` → `200 Page<Post>`
 
 Same query params as the feed except `feed` and `tag`. `404 USER_NOT_FOUND`.
@@ -145,5 +162,5 @@ sum of likes on them.
 
 ## Not in this round (planned)
 
-Image attachments (`POST /uploads/images` and then `image_ids` on create), bookmarks (the icon is
-already on every card, disabled), and comments.
+Image attachments (`POST /uploads/images` and then `image_ids` on create). Comments have their own
+contract in comments.md.
