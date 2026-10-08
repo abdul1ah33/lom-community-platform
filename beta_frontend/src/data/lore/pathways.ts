@@ -1,27 +1,27 @@
 /** Stable identifier the API uses for a pathway (e.g. `favorite_pathway: "hanged-man"`). */
 export type PathwaySlug =
-  | "fool"
-  | "door"
-  | "error"
-  | "visionary"
-  | "sun"
-  | "tyrant"
-  | "white-tower"
-  | "hanged-man"
-  | "darkness"
-  | "death"
-  | "twilight-giant"
-  | "demoness"
-  | "red-priest"
-  | "hermit"
-  | "paragon"
-  | "wheel-of-fortune"
-  | "mother"
-  | "moon"
-  | "abyss"
-  | "chained"
-  | "black-emperor"
-  | "justiciar";
+  | "seer"
+  | "apprentice"
+  | "marauder"
+  | "spectator"
+  | "bard"
+  | "sailor"
+  | "reader"
+  | "secrets-suppliant"
+  | "sleepless"
+  | "corpse-collector"
+  | "warrior"
+  | "assassin"
+  | "hunter"
+  | "mystery-pryer"
+  | "savant"
+  | "monster"
+  | "planter"
+  | "apothecary"
+  | "criminal"
+  | "prisoner"
+  | "lawyer"
+  | "arbiter";
 
 export interface Pathway {
   slug: PathwaySlug;
@@ -37,35 +37,32 @@ export interface Pathway {
 }
 
 /**
- * ⚠️ PLACEHOLDER VALUES, NOT VERIFIED LORE ⚠️
- * The chapter where each pathway is first revealed to the reader. These are rough
- * guesses in round numbers so the spoiler system can be built and tested;
- * replace each one with the real chapter. Everything that hides pathways reads
- * from this table only.
+ * The chapter where each pathway is first revealed to the reader.
+ * Everything that hides pathways reads from this table only.
  */
 const REVEAL_CHAPTER: Record<PathwaySlug, number> = {
-  fool: 1,
-  darkness: 10,
-  visionary: 10,
-  tyrant: 10,
-  death: 30,
-  sun: 60,
-  "twilight-giant": 60,
-  "hanged-man": 100,
-  "white-tower": 100,
-  door: 150,
-  "red-priest": 150,
-  demoness: 200,
-  moon: 200,
-  mother: 250,
-  hermit: 250,
-  paragon: 300,
-  error: 300,
-  "wheel-of-fortune": 400,
-  abyss: 400,
-  chained: 400,
-  "black-emperor": 500,
-  justiciar: 500,
+  seer: 1,
+  apprentice: 150,
+  marauder: 300,
+  spectator: 10,
+  bard: 60,
+  sailor: 10,
+  reader: 100,
+  "secrets-suppliant": 100,
+  sleepless: 10,
+  "corpse-collector": 30,
+  warrior: 60,
+  assassin: 200,
+  hunter: 150,
+  "mystery-pryer": 250,
+  savant: 300,
+  monster: 400,
+  planter: 250,
+  apothecary: 200,
+  criminal: 400,
+  prisoner: 400,
+  lawyer: 500,
+  arbiter: 500,
 };
 
 /**
@@ -73,31 +70,34 @@ const REVEAL_CHAPTER: Record<PathwaySlug, number> = {
  * (roadmap Phase 3) serves it from the API.
  */
 const PATHWAY_BASE: Omit<Pathway, "revealChapter">[] = [
-  { slug: "fool", number: 0, name: "Fool", sequence9: "Seer", hue: 265 },
-  { slug: "door", number: 1, name: "Door", sequence9: "Apprentice", hue: 265 },
-  { slug: "error", number: 2, name: "Error", sequence9: "Marauder", hue: 265 },
-  { slug: "visionary", number: 3, name: "Visionary", sequence9: "Spectator", hue: 200 },
-  { slug: "sun", number: 4, name: "Sun", sequence9: "Bard", hue: 42 },
-  { slug: "tyrant", number: 5, name: "Tyrant", sequence9: "Sailor", hue: 205 },
-  { slug: "white-tower", number: 6, name: "White Tower", sequence9: "Reader", hue: 45 },
-  { slug: "hanged-man", number: 7, name: "Hanged Man", sequence9: "Secrets Suppliant", hue: 15 },
-  { slug: "darkness", number: 8, name: "Darkness", sequence9: "Sleepless", hue: 235 },
-  { slug: "death", number: 9, name: "Death", sequence9: "Corpse Collector", hue: 235 },
-  { slug: "twilight-giant", number: 10, name: "Twilight Giant", sequence9: "Warrior", hue: 28 },
-  { slug: "demoness", number: 11, name: "Demoness", sequence9: "Assassin", hue: 320 },
-  { slug: "red-priest", number: 12, name: "Red Priest", sequence9: "Hunter", hue: 355 },
-  { slug: "hermit", number: 13, name: "Hermit", sequence9: "Mystery Pryer", hue: 175 },
-  { slug: "paragon", number: 14, name: "Paragon", sequence9: "Savant", hue: 175 },
-  { slug: "wheel-of-fortune", number: 15, name: "Wheel of Fortune", sequence9: "Monster", hue: 140 },
-  { slug: "mother", number: 16, name: "Mother", sequence9: "Planter", hue: 110 },
-  { slug: "moon", number: 17, name: "Moon", sequence9: "Apothecary", hue: 340 },
-  { slug: "abyss", number: 18, name: "Abyss", sequence9: "Criminal", hue: 0 },
-  { slug: "chained", number: 19, name: "Chained", sequence9: "Prisoner", hue: 10 },
-  { slug: "black-emperor", number: 20, name: "Black Emperor", sequence9: "Lawyer", hue: 220 },
-  { slug: "justiciar", number: 21, name: "Justiciar", sequence9: "Arbiter", hue: 50 },
+  { slug: "seer", number: 0, name: "Seer", sequence9: "Seer", hue: 265 },
+  { slug: "apprentice", number: 1, name: "Apprentice", sequence9: "Apprentice", hue: 265 },
+  { slug: "marauder", number: 2, name: "Marauder", sequence9: "Marauder", hue: 265 },
+  { slug: "spectator", number: 3, name: "Spectator", sequence9: "Spectator", hue: 200 },
+  { slug: "bard", number: 4, name: "Bard", sequence9: "Bard", hue: 42 },
+  { slug: "sailor", number: 5, name: "Sailor", sequence9: "Sailor", hue: 205 },
+  { slug: "reader", number: 6, name: "Reader", sequence9: "Reader", hue: 45 },
+  { slug: "secrets-suppliant", number: 7, name: "Secrets Suppliant", sequence9: "Secrets Suppliant", hue: 15 },
+  { slug: "sleepless", number: 8, name: "Sleepless", sequence9: "Sleepless", hue: 235 },
+  { slug: "corpse-collector", number: 9, name: "Corpse Collector", sequence9: "Corpse Collector", hue: 235 },
+  { slug: "warrior", number: 10, name: "Warrior", sequence9: "Warrior", hue: 28 },
+  { slug: "assassin", number: 11, name: "Assassin", sequence9: "Assassin", hue: 320 },
+  { slug: "hunter", number: 12, name: "Hunter", sequence9: "Hunter", hue: 355 },
+  { slug: "mystery-pryer", number: 13, name: "Myster Pryer", sequence9: "Mystery Pryer", hue: 175 },
+  { slug: "savant", number: 14, name: "Savant", sequence9: "Savant", hue: 175 },
+  { slug: "monster", number: 15, name: "Monster", sequence9: "Monster", hue: 140 },
+  { slug: "planter", number: 16, name: "Planter", sequence9: "Planter", hue: 110 },
+  { slug: "apothecary", number: 17, name: "Apothecary", sequence9: "Apothecary", hue: 340 },
+  { slug: "criminal", number: 18, name: "Criminal", sequence9: "Criminal", hue: 0 },
+  { slug: "prisoner", number: 19, name: "Prisoner", sequence9: "Prisoner", hue: 10 },
+  { slug: "lawyer", number: 20, name: "Lawyer", sequence9: "Lawyer", hue: 220 },
+  { slug: "arbiter", number: 21, name: "Arbiter", sequence9: "Arbiter", hue: 50 },
 ];
 
-export const PATHWAYS: Pathway[] = PATHWAY_BASE.map((p) => ({ ...p, revealChapter: REVEAL_CHAPTER[p.slug] }));
+export const PATHWAYS: Pathway[] = PATHWAY_BASE.map((p) => ({
+  ...p,
+  revealChapter: REVEAL_CHAPTER[p.slug],
+}));
 
 /** Pathways a reader at `chapter` has already met, in tarot order. */
 export function pathwaysRevealedAt(chapter: number): Pathway[] {
