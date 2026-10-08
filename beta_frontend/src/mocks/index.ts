@@ -4,6 +4,7 @@ import { registerAuthHandlers } from "./handlers/auth";
 import { registerCommentHandlers } from "./handlers/comments";
 import { registerPostHandlers } from "./handlers/posts";
 import { registerUserHandlers } from "./handlers/users";
+import { registerWikiHandlers } from "./handlers/wiki";
 import { MockHttpError } from "./http";
 import { MockRouter } from "./router";
 
@@ -13,6 +14,7 @@ if (env.mockMode !== "off") {
   registerUserHandlers(router);
   registerPostHandlers(router);
   registerCommentHandlers(router);
+  registerWikiHandlers(router);
 }
 
 if (import.meta.env.DEV) {

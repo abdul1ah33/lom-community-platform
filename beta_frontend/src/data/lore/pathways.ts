@@ -83,7 +83,7 @@ const PATHWAY_BASE: Omit<Pathway, "revealChapter">[] = [
   { slug: "warrior", number: 10, name: "Warrior", sequence9: "Warrior", hue: 28 },
   { slug: "assassin", number: 11, name: "Assassin", sequence9: "Assassin", hue: 320 },
   { slug: "hunter", number: 12, name: "Hunter", sequence9: "Hunter", hue: 355 },
-  { slug: "mystery-pryer", number: 13, name: "Myster Pryer", sequence9: "Mystery Pryer", hue: 175 },
+  { slug: "mystery-pryer", number: 13, name: "Mystery Pryer", sequence9: "Mystery Pryer", hue: 175 },
   { slug: "savant", number: 14, name: "Savant", sequence9: "Savant", hue: 175 },
   { slug: "monster", number: 15, name: "Monster", sequence9: "Monster", hue: 140 },
   { slug: "planter", number: 16, name: "Planter", sequence9: "Planter", hue: 110 },
