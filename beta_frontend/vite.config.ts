@@ -12,6 +12,8 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 5173,
+      // File events don't cross a Docker bind mount on Windows, so poll there.
+      watch: { usePolling: env.VITE_USE_POLLING === "true" },
       // The FastAPI backend has no CORS middleware yet, so the dev server
       // forwards /api/* to it and the browser only ever talks to one origin.
       proxy: {
