@@ -1,0 +1,54 @@
+# One-command dev environment: `docker compose up --build`
+#   frontend -> http://localhost:5173
+#   backend  -> http://localhost:8000/docs
+#   postgres -> localhost:5433 (user/pass/db: lom / lom / lom_community)
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: lom
+      POSTGRES_PASSWORD: lom
+      POSTGRES_DB: lom_community
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lom -d lom_community"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://lom:lom@db:5432/lom_community
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-only-secret-change-me}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      REFRESH_TOKEN_EXPIRE_DAYS: 30
+      WATCHFILES_FORCE_POLLING: "true"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./beta_frontend
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
+      VITE_USE_POLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./beta_frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
