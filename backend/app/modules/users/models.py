@@ -1,11 +1,15 @@
-from sqlalchemy import String
+from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from uuid import UUID, uuid4
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class User(Base):
@@ -43,6 +47,41 @@ class User(Base):
         nullable=True
     )
 
+    # Profile fields (docs/api-contracts/profiles.md)
+    display_name: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True
+    )
+
+    location: Mapped[str | None] = mapped_column(
+        String(60),
+        nullable=True
+    )
+
+    favorite_character: Mapped[str | None] = mapped_column(
+        String(60),
+        nullable=True
+    )
+
+    # A pathway slug such as "seer"; validated by the API, not the database.
+    favorite_pathway: Mapped[str | None] = mapped_column(
+        String(32),
+        nullable=True
+    )
+
+    # Last chapter read; 0 = not started. Drives every spoiler check.
+    current_chapter: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0"
+    )
+
+    progress_updated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+
     # favorite_character_id: Mapped[int] = mapped_column(
     #     nullable=True
     # )
@@ -61,11 +100,14 @@ class User(Base):
     # )
 
     created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
-        default=datetime.utcnow
+        default=utc_now
     )
 
     updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
-        default=datetime.utcnow
+        default=utc_now,
+        onupdate=utc_now
     )
