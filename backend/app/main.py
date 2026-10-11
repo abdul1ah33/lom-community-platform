@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.modules.auth.router import router as auth_router
+from app.modules.users.router import router as users_router
 
 from app.core.api.handlers import register_exception_handlers
 
@@ -14,6 +15,7 @@ app = FastAPI(
 register_exception_handlers(app)
 
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(users_router, prefix="/api/v1/users", tags=["Users"])
 
 
 @app.get("/")

@@ -19,6 +19,9 @@ from app.modules.users.models import User
 
 bearer_scheme = HTTPBearer()
 
+# Same scheme, but returns None instead of raising when the header is missing.
+optional_bearer_scheme = HTTPBearer(auto_error=False)
+
 
 def get_user_repository(
     db: Session = Depends(get_db),
@@ -48,8 +51,32 @@ def get_current_user(
         get_user_repository
     ),
 ) -> User:
+    return _user_from_token(credentials.credentials, user_repository)
 
-    token = credentials.credentials
+
+def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(
+        optional_bearer_scheme
+    ),
+    user_repository: UserRepository = Depends(
+        get_user_repository
+    ),
+) -> User | None:
+    """
+    For endpoints anyone can read. No token -> None (anonymous).
+    A token that is present but invalid still raises 401, so the
+    frontend refreshes it instead of silently browsing as a guest.
+    """
+    if credentials is None:
+        return None
+
+    return _user_from_token(credentials.credentials, user_repository)
+
+
+def _user_from_token(
+    token: str,
+    user_repository: UserRepository,
+) -> User:
 
     try:
         payload = decode_token(token)

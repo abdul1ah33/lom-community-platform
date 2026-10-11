@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from uuid import UUID
@@ -16,6 +16,13 @@ class UserRepository:
 
     def get_by_username(self, username: str) -> User | None:
         statement = select(User).where(User.username == username)
+        return self.db.scalar(statement)
+
+    def get_by_username_ci(self, username: str) -> User | None:
+        """Case-insensitive lookup: "fool_above_fog" finds "Fool_Above_Fog"."""
+        statement = select(User).where(
+            func.lower(User.username) == username.lower()
+        )
         return self.db.scalar(statement)
 
     def get_by_id(self, user_id: UUID) -> User | None:
