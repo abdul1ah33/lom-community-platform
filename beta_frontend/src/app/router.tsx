@@ -39,6 +39,10 @@ export const router = createBrowserRouter([
             lazy: () => import("@/pages/WikiPage/WikiEntryPage").then((m) => ({ Component: m.WikiEntryPage })),
           },
           {
+            path: "summaries",
+            lazy: () => import("@/pages/SummariesPage/SummariesPage").then((m) => ({ Component: m.SummariesPage })),
+          },
+          {
             path: "p/:id",
             lazy: () => import("@/pages/PostPage/PostPage").then((m) => ({ Component: m.PostPage })),
           },
