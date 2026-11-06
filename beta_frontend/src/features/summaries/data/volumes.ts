@@ -14,7 +14,7 @@ export const VOLUMES: SummaryVolume[] = [
     number: 2,
     name: "Faceless",
     startChapter: 214,
-    authors: ["Nour", "Abdullah"],
+    authors: ["Nour"],
     ongoing: true,
     parts: [
       {
