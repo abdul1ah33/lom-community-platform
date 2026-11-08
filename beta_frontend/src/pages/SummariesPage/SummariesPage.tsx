@@ -154,7 +154,7 @@ export function SummariesPage() {
             </h2>
             {volumeSealed && (
               <button type="button" className={styles.linkish} onClick={() => spoilers.revealVolume(volume)}>
-                Reveal the volume's name
+                Reveal the volume's cover and name
               </button>
             )}
           </div>

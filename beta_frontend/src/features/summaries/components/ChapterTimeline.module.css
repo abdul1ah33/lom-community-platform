@@ -81,7 +81,7 @@
   margin-left: 4px;
   border: 1px dashed rgb(226 192 126 / 0.3);
   border-radius: 999px;
-  background: linear-gradient(90deg, rgb(226 192 126 / 0.18), transparent);
+  background: linear-gradient(90deg, transparent, rgb(226 192 126 / 0.2) 50%, transparent);
   background-size: 200% 100%;
   animation: ink 2.4s linear infinite;
 }

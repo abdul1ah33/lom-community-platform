@@ -25,6 +25,10 @@ export interface SummaryVolume {
   /** The volume's name. Treated as a spoiler until the reader reaches `startChapter`. */
   name: string;
   startChapter: number;
+  /** Cover art served from `public/`, at a 2:3 ratio to fit the 3D book. */
+  cover: string;
+  /** Dark colour sampled from the art, used for the book's spine and boards. */
+  coverColor: string;
   authors: string[];
   parts: SummaryPart[];
   /** More parts are still being written. */

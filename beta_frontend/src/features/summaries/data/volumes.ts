@@ -14,6 +14,8 @@ export const VOLUMES: SummaryVolume[] = [
     number: 2,
     name: "Faceless",
     startChapter: 214,
+    cover: "/summaries/vol-2/cover.webp",
+    coverColor: "#14231f",
     authors: ["Nour"],
     ongoing: true,
     parts: [
