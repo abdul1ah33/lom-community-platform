@@ -205,6 +205,13 @@
   }
 }
 
+/* One moving layer per card adds up across the whole deck on a phone. */
+@media (hover: none) and (pointer: coarse) {
+  .glyph::before {
+    animation: none;
+  }
+}
+
 /* ── Sealed (spoiler) cards ─────────────────────────────── */
 .sealed {
   position: relative;

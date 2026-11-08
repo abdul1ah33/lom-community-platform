@@ -1,14 +1,18 @@
 .sigil {
+  position: relative;
   display: block;
   max-width: 100%;
-  height: auto;
-  overflow: visible;
+  aspect-ratio: 1;
   --spin: 1;
 }
 
-.sigil g,
-.sigil circle {
-  transform-box: view-box;
+.layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
   transform-origin: 50% 50%;
 }
 
@@ -69,22 +73,20 @@
   animation: spin calc(120s / var(--spin)) linear infinite;
 }
 
-.core {
+.pulse {
   animation: pulse 4s ease-in-out infinite;
 }
 
 .eye {
   fill: #fff2f4;
   filter: drop-shadow(0 0 10px var(--crimson-400)) drop-shadow(0 0 24px var(--crimson-500));
-  animation: pulse 4s ease-in-out infinite;
 }
 
 .charged {
   --spin: 6;
 }
 
-.charged .core,
-.charged .eye {
+.charged .pulse {
   animation-duration: 0.8s;
 }
 

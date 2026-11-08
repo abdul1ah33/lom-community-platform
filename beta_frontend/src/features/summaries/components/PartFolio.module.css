@@ -136,6 +136,13 @@
   }
 }
 
+/* Animating a custom property repaints the folio every frame, so it holds still on phones. */
+@media (hover: none) and (pointer: coarse) {
+  .orbit {
+    animation: none;
+  }
+}
+
 .content {
   display: grid;
   gap: 16px;

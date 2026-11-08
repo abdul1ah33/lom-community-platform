@@ -118,6 +118,23 @@ a {
   scrollbar-color: var(--ink-600) transparent;
 }
 
+/*
+ * Phones: a frosted panel has to re-blur whatever moves behind it on every frame,
+ * and the background never stops moving. Panels get more solid to make up for it.
+ */
+@media (hover: none) and (pointer: coarse) {
+  :root {
+    --surface: rgb(22 19 32 / 0.86);
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

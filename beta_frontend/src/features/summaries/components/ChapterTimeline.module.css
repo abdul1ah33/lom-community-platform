@@ -132,6 +132,14 @@
   }
 }
 
+/* Animating box-shadow and background-position repaints on every frame. */
+@media (hover: none) and (pointer: coarse) {
+  .tail,
+  .pin {
+    animation: none;
+  }
+}
+
 .markerLabel {
   position: absolute;
   top: -8px;

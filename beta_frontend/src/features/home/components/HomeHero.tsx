@@ -29,6 +29,7 @@ export function HomeHero({ user, onLogout }: HomeHeroProps) {
   const spotlight = useMotionTemplate`radial-gradient(420px circle at ${spotX}px ${spotY}px, rgb(226 192 126 / 0.12), transparent 60%)`;
 
   const onPointerMove = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== "mouse") return;
     const rect = event.currentTarget.getBoundingClientRect();
     spotX.set(event.clientX - rect.left);
     spotY.set(event.clientY - rect.top);

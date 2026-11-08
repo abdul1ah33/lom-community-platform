@@ -16,6 +16,7 @@ export function usePointerParallax(): { x: MotionValue<number>; y: MotionValue<n
   useEffect(() => {
     if (reducedMotion) return;
     const onMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
       rawX.set((event.clientX / window.innerWidth) * 2 - 1);
       rawY.set((event.clientY / window.innerHeight) * 2 - 1);
     };

@@ -10,6 +10,8 @@ const RUNE_TEXT =
   "ABOVE THE GRAY FOG · THE CRIMSON MOON RISES · THE TAROT CLUB GATHERS · MYSTERIES AWAIT · THE NIGHT IS DEEP · " +
   "EVERY READER A BEYONDER · WORDS HIDDEN IN THE FOG · SPOILERS REMAIN SEALED · READ ON · ";
 
+const VIEW_BOX = "0 0 400 400";
+
 interface ArcaneSigilProps {
   size?: number | string;
   className?: string;
@@ -20,6 +22,10 @@ interface ArcaneSigilProps {
 /**
  * A slowly turning ritual circle: the 22 pathways inscribed on the outer ring,
  * a counter-rotating dial of sequence ticks, and a seven-pointed star at its core.
+ *
+ * Each moving part is its own <svg>, because the browser can turn a whole <svg> on
+ * the GPU after painting it once. Animating groups inside a single <svg> would
+ * re-run layout and the glow filter on every frame.
  */
 export function ArcaneSigil({ size = 520, className, charged = false }: ArcaneSigilProps) {
   const id = useId().replace(/:/g, "");
@@ -34,31 +40,28 @@ export function ArcaneSigil({ size = 520, className, charged = false }: ArcaneSi
   }).join(" ");
 
   return (
-    <svg
-      viewBox="0 0 400 400"
-      width={size}
-      height={size}
+    <span
       className={`${styles.sigil} ${charged ? styles.charged : ""} ${className ?? ""}`}
+      style={{ width: size }}
       aria-hidden="true"
     >
-      <defs>
-        <path id={textPath} d="M200,200 m-178,0 a178,178 0 1,1 356,0 a178,178 0 1,1 -356,0" />
-        <filter id={glow} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2.4" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <radialGradient id={core}>
-          <stop offset="0%" stopColor="#ff7b8c" stopOpacity="0.95" />
-          <stop offset="45%" stopColor="#d11f3c" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#7c0d20" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
-      <g filter={`url(#${glow})`}>
-        <g className={styles.ringOuter}>
+      <svg viewBox={VIEW_BOX} className={`${styles.layer} ${styles.ringOuter}`}>
+        <defs>
+          <path id={textPath} d="M200,200 m-178,0 a178,178 0 1,1 356,0 a178,178 0 1,1 -356,0" />
+          <filter id={glow} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2.4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <radialGradient id={core}>
+            <stop offset="0%" stopColor="#ff7b8c" stopOpacity="0.95" />
+            <stop offset="45%" stopColor="#d11f3c" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#7c0d20" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <g filter={`url(#${glow})`}>
           <circle cx="200" cy="200" r="194" className={styles.line} />
           <circle cx="200" cy="200" r="164" className={styles.line} />
           <text className={styles.runes}>
@@ -67,8 +70,10 @@ export function ArcaneSigil({ size = 520, className, charged = false }: ArcaneSi
             </textPath>
           </text>
         </g>
+      </svg>
 
-        <g className={styles.ringTicks}>
+      <svg viewBox={VIEW_BOX} className={`${styles.layer} ${styles.ringTicks}`}>
+        <g filter={`url(#${glow})`}>
           {ticks.map((i) => (
             <line
               key={i}
@@ -82,16 +87,20 @@ export function ArcaneSigil({ size = 520, className, charged = false }: ArcaneSi
           ))}
           <circle cx="200" cy="200" r="138" className={styles.lineDashed} />
         </g>
+      </svg>
 
-        <g className={styles.star}>
+      <svg viewBox={VIEW_BOX} className={`${styles.layer} ${styles.star}`}>
+        <g filter={`url(#${glow})`}>
           <polygon points={starPoints} className={styles.starLine} />
           <circle cx="200" cy="200" r="108" className={styles.line} />
           <circle cx="200" cy="200" r="64" className={styles.lineFaint} />
         </g>
-      </g>
+      </svg>
 
-      <circle cx="200" cy="200" r="54" fill={`url(#${core})`} className={styles.core} />
-      <circle cx="200" cy="200" r="16" className={styles.eye} />
-    </svg>
+      <svg viewBox={VIEW_BOX} className={`${styles.layer} ${styles.pulse}`}>
+        <circle cx="200" cy="200" r="54" fill={`url(#${core})`} />
+        <circle cx="200" cy="200" r="16" className={styles.eye} />
+      </svg>
+    </span>
   );
 }

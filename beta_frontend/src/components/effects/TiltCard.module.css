@@ -58,3 +58,10 @@
     --angle: 360deg;
   }
 }
+
+/* Animating a custom property repaints the card every frame, so it holds still on phones. */
+@media (hover: none) and (pointer: coarse) {
+  .border {
+    animation: none;
+  }
+}

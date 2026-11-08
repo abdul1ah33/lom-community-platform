@@ -18,10 +18,29 @@ interface Particle {
 }
 
 const COLORS = {
-  brass: [226, 192, 126],
-  crimson: [240, 68, 92],
-  fog: [207, 200, 222],
+  brass: "226,192,126",
+  crimson: "240,68,92",
+  fog: "207,200,222",
 } as const;
+
+const GLOW_RADIUS = { brass: 7, crimson: 7, fog: 3 } as const;
+
+/** Paints a soft glow once, so each frame can stamp it instead of blurring every particle. */
+function createGlowSprite(rgb: string) {
+  const size = 64;
+  const sprite = document.createElement("canvas");
+  sprite.width = size;
+  sprite.height = size;
+  const ctx = sprite.getContext("2d");
+  if (ctx) {
+    const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    gradient.addColorStop(0, `rgba(${rgb},0.22)`);
+    gradient.addColorStop(1, `rgba(${rgb},0)`);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+  }
+  return sprite;
+}
 
 /**
  * Rising embers and dust motes on a canvas. Particles drift upward, twinkle,
@@ -42,6 +61,12 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
     let particles: Particle[] = [];
     let frame = 0;
     const pointer = { x: -9999, y: -9999 };
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const sprites = {
+      brass: createGlowSprite(COLORS.brass),
+      crimson: createGlowSprite(COLORS.crimson),
+      fog: createGlowSprite(COLORS.fog),
+    };
 
     const spawn = (anywhere: boolean): Particle => {
       const roll = Math.random();
@@ -57,6 +82,10 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
     };
 
     const resize = () => {
+      // A phone's address bar changes the height while scrolling. Rebuilding here
+      // would stall the scroll and make every particle jump to a new spot.
+      if (isTouch && width > 0 && canvas.clientWidth === width) return;
+
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = canvas.clientWidth;
       height = canvas.clientHeight;
@@ -86,11 +115,11 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
         }
 
         const twinkle = 0.45 + 0.55 * Math.abs(Math.sin(time / 900 + p.phase));
-        const [r, g, b] = COLORS[p.hue];
+        const glow = p.r + GLOW_RADIUS[p.hue];
+        ctx.globalAlpha = 0.75 * twinkle;
+        ctx.drawImage(sprites[p.hue], p.x - glow, p.y - glow, glow * 2, glow * 2);
         ctx.beginPath();
-        ctx.fillStyle = `rgba(${r},${g},${b},${0.75 * twinkle})`;
-        ctx.shadowColor = `rgba(${r},${g},${b},0.9)`;
-        ctx.shadowBlur = p.hue === "fog" ? 4 : 10;
+        ctx.fillStyle = `rgb(${COLORS[p.hue]})`;
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
@@ -99,6 +128,7 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
     };
 
     const onPointerMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
       const rect = canvas.getBoundingClientRect();
       pointer.x = event.clientX - rect.left;
       pointer.y = event.clientY - rect.top;

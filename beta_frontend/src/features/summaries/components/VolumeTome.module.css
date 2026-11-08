@@ -287,6 +287,13 @@
   }
 }
 
+/* Blending forces a repaint while the book moves; on white light it looks nearly the same. */
+@media (hover: none) and (pointer: coarse) {
+  .glare {
+    mix-blend-mode: normal;
+  }
+}
+
 @media (max-width: 720px) {
   .stage {
     --w: 196px;

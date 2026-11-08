@@ -29,6 +29,7 @@ export function VolumeTome({ volume, sealed }: VolumeTomeProps) {
   useEffect(() => {
     if (reducedMotion) return;
     const onMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
       px.set((event.clientX / window.innerWidth) * 2 - 1);
       py.set((event.clientY / window.innerHeight) * 2 - 1);
     };

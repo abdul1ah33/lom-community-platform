@@ -91,6 +91,22 @@
   opacity: 0.4;
 }
 
+/*
+ * Phones: re-blurring these huge layers every frame is the heaviest thing on the
+ * page. The gradients already fade out softly, so they still read as fog without it.
+ */
+@media (hover: none) and (pointer: coarse) {
+  .blob,
+  .fogBand {
+    filter: none;
+  }
+
+  .grain {
+    inset: 0;
+    animation: none;
+  }
+}
+
 @keyframes driftA {
   to {
     transform: translate3d(18vw, -12vh, 0) scale(1.15);

@@ -135,6 +135,13 @@
   }
 }
 
+/* The foil blends with everything under it, so anything moving there repaints the whole card. */
+@media (hover: none) and (pointer: coarse) {
+  .rays {
+    animation: none;
+  }
+}
+
 .large .card {
   width: 250px;
 }

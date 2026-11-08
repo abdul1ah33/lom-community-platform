@@ -105,3 +105,11 @@
     box-shadow: 0 0 0 7px rgb(209 31 60 / 0.1), 0 0 22px var(--crimson-400);
   }
 }
+
+/* Animating box-shadow repaints on every frame. */
+@media (hover: none) and (pointer: coarse) {
+  .building .node,
+  .live .node {
+    animation: none;
+  }
+}
