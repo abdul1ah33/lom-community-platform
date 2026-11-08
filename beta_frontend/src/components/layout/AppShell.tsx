@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { preloadRoutes } from "@/app/preloadRoutes";
 import { FogBackground } from "@/components/effects/FogBackground";
 import { ParticleField } from "@/components/effects/ParticleField";
 import { useAuth } from "@/features/auth";
@@ -13,6 +14,11 @@ export function AppShell() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(preloadRoutes, 1500);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -31,7 +37,7 @@ export function AppShell() {
         <main className={styles.main}>
           <Outlet context={{ onLogout: handleLogout }} />
         </main>
-        <MobileNav />
+        <MobileNav onLogout={handleLogout} loggingOut={loggingOut} />
       </div>
     </ComposerProvider>
   );

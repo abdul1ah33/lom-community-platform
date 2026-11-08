@@ -49,8 +49,9 @@ export async function handleMockRequest(
     }
   }
 
-  // Realistic latency so loading states are visible.
-  await sleep(250 + Math.random() * 350);
+  // Realistic latency so loading states are visible while developing. A deployed
+  // demo answers instantly, otherwise every screen feels slow for no real reason.
+  if (import.meta.env.DEV) await sleep(250 + Math.random() * 350);
 
   try {
     return await match.handler({

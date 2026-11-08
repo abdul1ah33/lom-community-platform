@@ -15,6 +15,11 @@
 .main {
   min-width: 0;
   padding: clamp(20px, 3vw, 40px);
+  /*
+   * Content mid-animation (e.g. a seal waiting to stamp in at 1.8x) must not widen
+   * the page: a phone would zoom out to fit it and push the bottom bar off screen.
+   */
+  overflow-x: clip;
 }
 
 @media (max-width: 1100px) {
