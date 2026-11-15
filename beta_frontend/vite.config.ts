@@ -21,6 +21,13 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_PROXY_TARGET || "http://localhost:8000",
           changeOrigin: true,
         },
+        // The official LoM site sends no CORS headers, so the browser can't read it
+        // directly. Same trick: /lomworld/* is forwarded to it (vercel.json does this in production).
+        "/lomworld": {
+          target: "https://m.lomworld.com",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/lomworld/, ""),
+        },
       },
     },
   };

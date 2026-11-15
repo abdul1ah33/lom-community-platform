@@ -1,0 +1,172 @@
+/* Set like a chapter page (see summaries/ChapterText), inside the wiki's card surface. */
+.article {
+  display: grid;
+  gap: clamp(22px, 4vw, 34px);
+  padding: clamp(24px, 5vw, 48px) clamp(18px, 4vw, 44px);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.header {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--brass-300);
+}
+
+.title {
+  margin: 0;
+  max-width: 24ch;
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 1.3rem + 1.8vw, 42px);
+  font-weight: 600;
+  line-height: 1.14;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  color: var(--crimson-300);
+}
+
+.ornament span {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brass-400));
+}
+
+.ornament span:last-child {
+  background: linear-gradient(90deg, var(--brass-400), transparent);
+}
+
+.body {
+  display: grid;
+  gap: 1.1em;
+  width: 100%;
+  max-width: 68ch;
+  margin: 0 auto;
+  font-family: var(--font-reading);
+  font-size: clamp(17px, 0.9rem + 0.35vw, 19px);
+  line-height: 1.75;
+  color: #e2dcea;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.3em;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--brass-200);
+}
+
+.paragraph {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.figure {
+  margin: 0.4em 0;
+}
+
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 1px var(--border), 0 24px 48px -24px rgb(0 0 0 / 0.8);
+}
+
+.video {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface-strong);
+  box-shadow: inset 0 0 0 1px var(--border);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: box-shadow 0.25s, color 0.2s;
+}
+
+.video:hover {
+  color: var(--brass-200);
+  box-shadow: inset 0 0 0 1px var(--border-strong), var(--shadow-glow-brass);
+}
+
+.video > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+}
+
+.video strong {
+  color: var(--fog-100);
+}
+
+.video small {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.play {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgb(124 13 32 / 0.6);
+  box-shadow: inset 0 0 0 1px rgb(240 68 92 / 0.5), var(--shadow-glow-crimson);
+  font-size: 14px;
+  color: var(--fog-100);
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.source {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brass-300);
+  text-decoration: none;
+}
+
+.source:hover {
+  color: var(--brass-200);
+}

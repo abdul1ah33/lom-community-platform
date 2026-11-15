@@ -1,0 +1,240 @@
+.board {
+  display: grid;
+  gap: 18px;
+}
+
+/* Tabs: the same chips as the wiki's category filter. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  box-shadow: inset 0 0 0 1px var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.chip:hover {
+  color: var(--text);
+}
+
+.chipActive,
+.chipActive:hover {
+  color: var(--brass-200);
+  background: rgb(201 164 92 / 0.12);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+.count {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+/* ── Featured (newest) post ───────────────────────────── */
+.featured {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: inherit;
+  text-decoration: none;
+  transition: box-shadow 0.3s, transform 0.3s var(--ease-out-expo);
+}
+
+.featured:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--border-strong) inset, 0 24px 48px -24px rgb(201 164 92 / 0.55);
+}
+
+/* Keep the cover's own 16:9 shape so nothing printed on the banner is cropped. */
+.featured:not(.featuredPlain) {
+  align-items: center;
+}
+
+.featuredPlain {
+  grid-template-columns: 1fr;
+}
+
+.cover {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--ink-800);
+}
+
+.cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Let the picture fade into the text side. */
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 82%, rgb(22 19 32 / 0.85));
+}
+
+.featuredText {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: clamp(20px, 3vw, 32px);
+}
+
+.featuredTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 1.1rem + 1.2vw, 32px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--fog-100);
+  text-wrap: balance;
+}
+
+.lead {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--font-reading);
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--fog-200);
+}
+
+/* ── Cards ────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 160px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: inherit;
+  text-decoration: none;
+  transition: box-shadow 0.3s, transform 0.3s var(--ease-out-expo);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: inset 0 0 0 1px var(--border-strong), 0 18px 36px -22px rgb(201 164 92 / 0.6);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  color: var(--fog-100);
+}
+
+.teaser {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brass-300);
+}
+
+/* ── States ───────────────────────────────────────────── */
+.skeleton {
+  height: 420px;
+  border-radius: var(--radius-lg);
+  background: rgb(255 255 255 / 0.04);
+}
+
+.state {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 50px 0;
+  text-align: center;
+}
+
+.state h2 {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3.5vw, 30px);
+}
+
+.state p,
+.empty {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.stateActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.stateActions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--brass-300);
+}
+
+@media (max-width: 720px) {
+  .featured {
+    grid-template-columns: 1fr;
+  }
+
+  .cover::after {
+    background: linear-gradient(180deg, transparent 55%, rgb(22 19 32 / 0.9));
+  }
+}

@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/lomworld/:path*", "destination": "https://m.lomworld.com/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

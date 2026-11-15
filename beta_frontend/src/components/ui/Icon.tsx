@@ -36,6 +36,7 @@ const paths = {
   external: <><path d="M14 4.5h5.5V10M19.5 4.5 11 13" /><path d="M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10" /></>,
   chevronLeft: <path d="m14.5 6-6 6 6 6" />,
   chevronRight: <path d="m9.5 6 6 6-6 6" />,
+  news: <><path d="M5 4.5h11.5v15H6.5A1.5 1.5 0 0 1 5 18z" /><path d="M16.5 8.5H19v9.5a1.5 1.5 0 0 1-3 0" /><path d="M8 8h5.5M8 11.5h5.5M8 15h3.5" /></>,
   quill: <><path d="M20 4C12 4 6.5 9.5 5 18.5L4 20" /><path d="M20 4c0 7-4.5 12-11 12.5M9.5 12.5H14" /></>,
 } as const;
 

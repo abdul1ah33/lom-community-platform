@@ -8,6 +8,7 @@ export function preloadRoutes() {
     import("@/pages/WikiPage/WikiPage"),
     import("@/pages/SummariesPage/SummariesPage"),
     import("@/pages/BookmarksPage/BookmarksPage"),
+    import("@/pages/NewsPage/NewsPage"),
     import("@/pages/ProfilePage/ProfilePage"),
   ]);
 }

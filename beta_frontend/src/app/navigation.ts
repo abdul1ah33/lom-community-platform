@@ -20,6 +20,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Search", icon: "search", to: "/search", available: false },
   { label: "Wiki", icon: "book", to: "/wiki", available: true, mobile: true },
   { label: "Summaries", icon: "scroll", to: "/summaries", available: true, mobile: true },
+  { label: "News", icon: "news", to: "/news", available: true },
   { label: "Notifications", icon: "bell", to: "/notifications", available: false },
   { label: "Bookmarks", icon: "bookmark", to: "/bookmarks", available: true },
   { label: "Profile", icon: "user", to: "/profile", available: true },
