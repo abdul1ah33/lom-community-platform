@@ -26,6 +26,12 @@
   width: min(620px, 100%);
 }
 
+/* For writing long text: as much of the screen as it can get. */
+.wide {
+  width: min(1040px, 100%);
+  max-height: calc(100dvh - 32px);
+}
+
 .header {
   display: flex;
   align-items: flex-start;

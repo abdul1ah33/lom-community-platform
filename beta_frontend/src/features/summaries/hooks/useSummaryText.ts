@@ -1,23 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import type { SummaryPart, SummaryText } from "../types";
+import { summaryLibrary } from "../data/library";
+import type { SummaryPart } from "../types";
+import { summaryKeys } from "./useSummaryLibrary";
 
-/**
- * Each part's text is a separate chunk, so Vite only downloads it when that part is opened.
- * When the summaries move to the backend, swap this for a fetch and nothing else changes.
- */
-const files = import.meta.glob<SummaryText>("../data/text/*.json", { import: "default" });
-
-function loadSummaryText(partId: string): Promise<SummaryText> {
-  const load = files[`../data/text/${partId}.json`];
-  if (!load) return Promise.reject(new Error(`No summary text for part ${partId}`));
-  return load();
-}
-
+/** One part's written text, loaded when that part is opened. */
 export function useSummaryText(part: SummaryPart) {
   return useQuery({
-    queryKey: ["summary-text", part.id],
-    queryFn: () => loadSummaryText(part.id),
-    // The text never changes while the site is open.
+    queryKey: summaryKeys.text(part.id),
+    queryFn: () => summaryLibrary.text(part.id),
+    // Only the summary desk changes it, and it refreshes this query when it does.
     staleTime: Infinity,
   });
 }

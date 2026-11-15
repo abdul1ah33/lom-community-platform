@@ -10,7 +10,7 @@ interface DialogProps {
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
-  size?: "md" | "lg";
+  size?: "md" | "lg" | "xl";
 }
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -73,7 +73,7 @@ export function Dialog({ open, onClose, title, description, children, footer, si
             aria-labelledby={titleId}
             aria-describedby={description ? descriptionId : undefined}
             tabIndex={-1}
-            className={`${styles.panel} ${size === "lg" ? styles.large : ""}`}
+            className={`${styles.panel} ${size === "lg" ? styles.large : size === "xl" ? styles.wide : ""}`}
             initial={{ opacity: 0, y: 30, scale: 0.95, rotateX: 10 }}
             animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }}

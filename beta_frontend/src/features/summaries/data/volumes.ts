@@ -5,11 +5,11 @@ const toChapters = (rows: ChapterRow[]): SummaryChapter[] =>
   rows.map(([number, title]) => ({ number, title }));
 
 /**
- * The summaries shelf. To publish a new part: put its PDF in `pdf_summaries/`, run
- * `pdf_summaries/extract_text.py` to write its text to `text/<part id>.json`, add its
- * chapter index next to `vol2Chapters.ts`, and append an entry here.
+ * The shelf as it ships with the site. It seeds the editable library in `library.ts`:
+ * the summary desk (`/admin/summaries`) adds, edits and removes volumes, parts and
+ * chapters on top of it, so new summaries no longer need a code change.
  */
-export const VOLUMES: SummaryVolume[] = [
+export const SEED_VOLUMES: SummaryVolume[] = [
   {
     number: 2,
     name: "Faceless",
@@ -45,11 +45,18 @@ export const VOLUMES: SummaryVolume[] = [
   },
 ];
 
-export const ALL_PARTS = VOLUMES.flatMap((volume) => volume.parts.map((part) => ({ volume, part })));
+export const allParts = (volumes: SummaryVolume[]) =>
+  volumes.flatMap((volume) => volume.parts.map((part) => ({ volume, part })));
 
-export function findPart(id: string | null) {
-  return ALL_PARTS.find((entry) => entry.part.id === id) ?? null;
+export function findPart(volumes: SummaryVolume[], id: string | null) {
+  return allParts(volumes).find((entry) => entry.part.id === id) ?? null;
 }
+
+/** What readers see: parts that have no chapters yet stay on the desk. */
+export const publishedVolume = (volume: SummaryVolume): SummaryVolume => ({
+  ...volume,
+  parts: volume.parts.filter((part) => part.chapters.length > 0),
+});
 
 export const firstChapter = (part: SummaryPart) => part.chapters[0].number;
 export const lastChapter = (part: SummaryPart) => part.chapters[part.chapters.length - 1].number;
@@ -57,8 +64,21 @@ export const lastChapter = (part: SummaryPart) => part.chapters[part.chapters.le
 /** Roughly 230 words a minute. */
 export const readingMinutes = (words: number) => Math.round(words / 230);
 
-const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-export const roman = (n: number) => ROMAN[n] ?? String(n);
+const NUMERALS: [number, string][] = [
+  [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"],
+  [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
+];
+export function roman(n: number) {
+  if (!Number.isInteger(n) || n < 1 || n > 3999) return String(n);
+  let out = "";
+  for (const [value, numeral] of NUMERALS) {
+    while (n >= value) {
+      out += numeral;
+      n -= value;
+    }
+  }
+  return out;
+}
 
 export function formatMonth(iso: string) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { month: "short", year: "numeric" });

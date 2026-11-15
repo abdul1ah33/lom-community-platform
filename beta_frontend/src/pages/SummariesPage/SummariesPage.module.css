@@ -108,6 +108,7 @@
 
 .ctas {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -157,6 +158,97 @@
   100% {
     translate: 120% 0;
   }
+}
+
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 50px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  font-weight: 600;
+  color: var(--brass-200);
+  text-decoration: none;
+  transition: background 0.2s, transform 0.3s var(--ease-out-expo);
+}
+
+.secondary:hover {
+  background: rgb(226 192 126 / 0.1);
+  transform: translateY(-2px);
+}
+
+/* Loading, error and empty shelf. */
+.status {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 80px 16px;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  color: var(--text-muted);
+}
+
+.status p {
+  margin: 0;
+}
+
+/* ── Volume switcher (only with more than one volume) ──── */
+.volumeTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.03);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.volumeTab {
+  position: relative;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.volumeTab:hover {
+  color: var(--text);
+}
+
+.volumeTab > span:last-child {
+  position: relative;
+}
+
+.volumeTabActive,
+.volumeTabActive:hover {
+  color: var(--ink-950);
+}
+
+.volumeTabGlow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--brass-200), var(--brass-400));
+  box-shadow: var(--shadow-glow-brass);
+}
+
+.emptyVolume {
+  margin: 8px 0 4px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--text-muted);
 }
 
 /* ── Volume card: name, search, timeline ───────────────── */
@@ -257,7 +349,8 @@
     min-width: 0;
   }
 
-  .primary {
+  .primary,
+  .secondary {
     width: 100%;
     justify-content: center;
   }

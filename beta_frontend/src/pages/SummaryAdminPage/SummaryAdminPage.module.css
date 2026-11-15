@@ -1,0 +1,792 @@
+.page {
+  display: grid;
+  /* minmax(0, …) so wide children (the volume strip, the 3D book) can't stretch the page. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.status {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 60px 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.status h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 30px);
+  color: var(--text);
+}
+
+.status p {
+  margin: 0;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.heading {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 999px;
+  background: rgb(209 31 60 / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(255 123 140 / 0.28);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(30px, 4.4vw, 48px);
+  line-height: 1.05;
+}
+
+.glyph {
+  background: linear-gradient(180deg, #fff, var(--brass-200) 55%, var(--brass-400));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ghostLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  box-shadow: inset 0 0 0 1px var(--border);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fog-200);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.ghostLink:hover:not(:disabled) {
+  background: rgb(226 192 126 / 0.1);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--brass-200);
+}
+
+.notice {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: rgb(226 192 126 / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(226 192 126 / 0.2);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fog-200);
+}
+
+.notice svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--brass-300);
+}
+
+.notice strong {
+  color: var(--brass-200);
+}
+
+/* ── Layout: shelf of volumes + editor ─────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.shelf {
+  position: sticky;
+  top: 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.shelfItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  text-align: left;
+  color: var(--text);
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.shelfItem:hover {
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+.shelfActive,
+.shelfActive:hover {
+  background: rgb(226 192 126 / 0.08);
+  box-shadow: inset 0 0 0 1px var(--brass-400), var(--shadow-glow-brass);
+}
+
+.thumb,
+.thumbNew {
+  flex-shrink: 0;
+  width: 44px;
+  height: 66px;
+  border-radius: 4px 6px 6px 4px;
+  object-fit: cover;
+  box-shadow: -3px 0 0 rgb(0 0 0 / 0.35) inset, 0 6px 14px -6px rgb(0 0 0 / 0.8);
+}
+
+.thumbNew {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--border-strong);
+  box-shadow: none;
+  color: var(--brass-300);
+}
+
+.shelfText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.shelfKicker {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.shelfName {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.shelfMeta {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.resetLink {
+  justify-self: start;
+  margin-top: 6px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  color: var(--text-faint);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+.resetLink:hover {
+  color: var(--crimson-300);
+}
+
+.main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  min-width: 0;
+}
+
+/* ── Cards ──────────────────────────────────────────────── */
+.card {
+  display: grid;
+  gap: 18px;
+  padding: 22px 24px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: var(--shadow-card);
+}
+
+.cardHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.cardTitle {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.4vw, 26px);
+}
+
+.dangerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font-size: 13.5px;
+  color: var(--text-faint);
+}
+
+.dangerLink:hover {
+  background: rgb(209 31 60 / 0.1);
+  color: var(--crimson-300);
+}
+
+/* ── Volume form ───────────────────────────────────────── */
+.volumeGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+}
+
+.fields {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--crimson-500);
+}
+
+.check span {
+  display: grid;
+  gap: 2px;
+}
+
+.check small {
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.coverRow {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.025);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.fieldLabel {
+  font-weight: 600;
+}
+
+.hint {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-faint);
+}
+
+.fieldError {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  color: var(--crimson-300);
+}
+
+.coverActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.color {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.color input {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+
+.formActions {
+  display: flex;
+  gap: 10px;
+}
+
+.preview {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: 480px;
+  border-radius: var(--radius-md);
+  background: radial-gradient(closest-side, rgb(255 255 255 / 0.03), transparent);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.dragging {
+  box-shadow: inset 0 0 0 2px var(--brass-400);
+}
+
+/* The shelf's book is sized for the hero; scale it to fit the column. */
+.tomeWrap {
+  zoom: 0.82;
+}
+
+.dropzone {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 6px;
+  width: 220px;
+  height: 330px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 6px 12px 12px 6px;
+  background: rgb(226 192 126 / 0.03);
+  color: var(--brass-300);
+  transition: background 0.2s;
+}
+
+.dropzone:hover {
+  background: rgb(226 192 126 / 0.08);
+}
+
+.dropzone span {
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.previewLabel {
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+/* ── Parts & chapters ──────────────────────────────────── */
+.empty {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.025);
+  color: var(--text-muted);
+}
+
+.empty p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.parts {
+  display: grid;
+  gap: 12px;
+}
+
+.part {
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.025);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.partHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 8px 6px;
+}
+
+.partToggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  text-align: left;
+  color: var(--text);
+}
+
+.partToggle > svg {
+  flex-shrink: 0;
+  color: var(--text-faint);
+  transition: rotate 0.25s var(--ease-out-expo);
+}
+
+.turned {
+  rotate: 90deg;
+}
+
+.partNumeral {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgb(226 192 126 / 0.18), rgb(226 192 126 / 0.05));
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--brass-200);
+}
+
+.partInfo {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.partInfo span {
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+.partActions,
+.rowActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.04);
+  color: var(--text-muted);
+  transition: background 0.2s, color 0.2s;
+}
+
+.iconButton:hover {
+  background: rgb(226 192 126 / 0.12);
+  color: var(--brass-200);
+}
+
+.danger:hover {
+  background: rgb(209 31 60 / 0.14);
+  color: var(--crimson-300);
+}
+
+.partBody {
+  display: grid;
+  gap: 2px;
+  padding: 0 12px 12px;
+}
+
+.chapterList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 4px 4px 8px;
+  border-radius: 10px;
+}
+
+.chapterRow:hover {
+  background: rgb(255 255 255 / 0.035);
+}
+
+.chapterNum {
+  display: inline-flex;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 44px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--brass-300);
+}
+
+.chapterName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chapterName em {
+  font-size: 14px;
+  color: var(--text-faint);
+}
+
+/* Actions sit quietly until the row is hovered (always visible on touch screens). */
+@media (hover: hover) {
+  .chapterRow .rowActions {
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .chapterRow:hover .rowActions,
+  .chapterRow:focus-within .rowActions {
+    opacity: 1;
+  }
+}
+
+.addChapter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  height: 42px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  background: none;
+  font-weight: 600;
+  color: var(--brass-300);
+  transition: background 0.2s;
+}
+
+.addChapter:hover {
+  background: rgb(226 192 126 / 0.08);
+}
+
+/* ── Chapter & part dialogs ────────────────────────────── */
+.chapterForm {
+  display: grid;
+  gap: 12px;
+}
+
+.chapterFields {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs button {
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.tabs .tabActive {
+  border-bottom-color: var(--crimson-400);
+  color: var(--text);
+}
+
+.wordCount {
+  margin-left: auto;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+
+.body {
+  width: 100%;
+  min-height: min(52vh, 520px);
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgb(0 0 0 / 0.25);
+  font-family: var(--font-reading);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text);
+  resize: vertical;
+}
+
+.body:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 3px rgb(226 192 126 / 0.12);
+}
+
+.bodyShort {
+  min-height: 220px;
+}
+
+.formatHelp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+.formatHelp kbd {
+  margin-right: 4px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgb(255 255 255 / 0.06);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  color: var(--fog-200);
+}
+
+.previewPage {
+  min-height: min(52vh, 520px);
+  max-height: 60vh;
+  padding: 8px 4px;
+  overflow-y: auto;
+}
+
+.confirmText {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--fog-200);
+}
+
+/* ── Smaller screens ───────────────────────────────────── */
+@media (max-width: 1100px) {
+  .volumeGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .preview {
+    min-height: 0;
+    padding: 8px 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shelf {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .shelfItem {
+    flex: 0 0 220px;
+    scroll-snap-align: start;
+  }
+
+  .resetLink {
+    flex-shrink: 0;
+    align-self: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 18px 16px 20px;
+  }
+
+  .row,
+  .chapterFields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tomeWrap {
+    zoom: 0.7;
+  }
+
+  .partInfo span {
+    display: none;
+  }
+}

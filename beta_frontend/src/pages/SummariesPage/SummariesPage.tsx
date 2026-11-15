@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useMemo, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { CountUp } from "@/components/ui/CountUp";
 import { Icon } from "@/components/ui/Icon";
 import { RevealText } from "@/components/ui/RevealText";
@@ -10,32 +11,83 @@ import {
   GhostFolio,
   PartFolio,
   SummaryReader,
-  VOLUMES,
   VolumeTome,
   findPart,
   firstChapter,
   lastChapter,
+  publishedVolume,
   readingMinutes,
   roman,
+  useCanEditSummaries,
+  useSummaryLibrary,
   useSummarySpoilers,
   type SummaryPart,
+  type SummaryVolume,
 } from "@/features/summaries";
 import styles from "./SummariesPage.module.css";
 
-/**
- * The summaries shelf. The open folio lives in the URL (`?part=v2-p1&ch=240`), so a
- * chapter can be linked to directly and the browser's back button closes the reader.
- */
+/** The summaries shelf, read from the library the summary desk edits. */
 export function SummariesPage() {
+  const library = useSummaryLibrary();
+  const volumes = useMemo(() => library.data?.map(publishedVolume), [library.data]);
+
+  if (library.isError) {
+    return (
+      <div className={styles.status}>
+        <ArcaneSigil size={120} />
+        <p>The shelf couldn't be opened.</p>
+        <button type="button" className={styles.linkish} onClick={() => library.refetch()}>
+          Try again
+        </button>
+      </div>
+    );
+  }
+  if (!volumes) {
+    return (
+      <div className={styles.status}>
+        <ArcaneSigil size={120} charged />
+      </div>
+    );
+  }
+  if (volumes.length === 0) {
+    return (
+      <div className={styles.status}>
+        <ArcaneSigil size={120} />
+        <p>No summaries are on the shelf yet. The quill is still moving.</p>
+        <EditLink />
+      </div>
+    );
+  }
+  return <Shelf volumes={volumes} />;
+}
+
+/** Only shown to the accounts allowed into the summary desk. */
+function EditLink() {
+  if (!useCanEditSummaries()) return null;
+  return (
+    <Link to="/admin/summaries" className={styles.secondary}>
+      <Icon name="quill" size={16} /> Edit summaries
+    </Link>
+  );
+}
+
+/**
+ * The open volume and folio live in the URL (`?vol=2&part=v2-p1&ch=240`), so a chapter
+ * can be linked to directly and the browser's back button closes the reader.
+ */
+function Shelf({ volumes }: { volumes: SummaryVolume[] }) {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const spoilers = useSummarySpoilers();
   const [highlighted, setHighlighted] = useState<string | null>(null);
   const openedHere = useRef(false);
 
-  const volume = VOLUMES[0];
+  const open = findPart(volumes, params.get("part"));
+  // The volume in the URL, else the one holding the reader's chapter, else the first.
+  const reading = [...volumes].reverse().find((v) => v.startChapter <= spoilers.chapter) ?? volumes[0];
+  const volume = open?.volume ?? volumes.find((v) => String(v.number) === params.get("vol")) ?? reading;
   const volumeSealed = spoilers.isVolumeSealed(volume);
-  const open = findPart(params.get("part"));
+  const hasParts = volume.parts.length > 0;
   const chParam = params.get("ch");
   const chapterNumber = chParam && /^\d+$/.test(chParam) ? Number(chParam) : null;
 
@@ -47,8 +99,11 @@ export function SummariesPage() {
   const current = volume.parts.find((p) => spoilers.chapter >= firstChapter(p) && spoilers.chapter <= lastChapter(p));
   const continueTarget = current ?? volume.parts[0];
 
+  const showVolume = (target: SummaryVolume) => setParams({ vol: String(target.number) }, { replace: true });
+
   const openPart = (part: SummaryPart, chapter?: number | null) => {
-    const next: Record<string, string> = { part: part.id };
+    const owner = findPart(volumes, part.id)?.volume ?? volume;
+    const next: Record<string, string> = { vol: String(owner.number), part: part.id };
     if (chapter != null) next.ch = String(chapter);
     // The first open adds a history entry; moving around inside the reader replaces it.
     setParams(next, { replace: open !== null });
@@ -60,7 +115,7 @@ export function SummariesPage() {
       openedHere.current = false;
       navigate(-1);
     } else {
-      setParams({}, { replace: true });
+      setParams({ vol: String(volume.number) }, { replace: true });
     }
   };
 
@@ -76,6 +131,25 @@ export function SummariesPage() {
           >
             <Icon name="scroll" size={15} /> The Chronicle
           </motion.span>
+
+          {volumes.length > 1 && (
+            <nav className={styles.volumeTabs} aria-label="Volumes">
+              {volumes.map((v) => (
+                <button
+                  key={v.number}
+                  type="button"
+                  className={`${styles.volumeTab} ${v === volume ? styles.volumeTabActive : ""}`}
+                  aria-current={v === volume}
+                  onClick={() => showVolume(v)}
+                >
+                  {v === volume && (
+                    <motion.span layoutId="volume-tab" className={styles.volumeTabGlow} transition={{ type: "spring", stiffness: 420, damping: 34 }} />
+                  )}
+                  <span>Vol. {roman(v.number)}</span>
+                </button>
+              ))}
+            </nav>
+          )}
 
           <h1 className={styles.title}>
             <RevealText text="Volume" className={styles.titleSmall} delay={0.3} stagger={0.04} />
@@ -124,19 +198,22 @@ export function SummariesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.6 }}
           >
-            <button
-              type="button"
-              className={styles.primary}
-              onClick={() => openPart(continueTarget, current ? spoilers.chapter : null)}
-            >
-              <span className={styles.shine} aria-hidden="true" />
-              {current ? `Continue at chapter ${spoilers.chapter}` : `Begin with Part ${roman(continueTarget.number)}`}
-              <Icon name="arrowRight" size={17} />
-            </button>
+            {continueTarget && (
+              <button
+                type="button"
+                className={styles.primary}
+                onClick={() => openPart(continueTarget, current ? spoilers.chapter : null)}
+              >
+                <span className={styles.shine} aria-hidden="true" />
+                {current ? `Continue at chapter ${spoilers.chapter}` : `Begin with Part ${roman(continueTarget.number)}`}
+                <Icon name="arrowRight" size={17} />
+              </button>
+            )}
+            <EditLink />
           </motion.div>
         </div>
 
-        <VolumeTome volume={volume} sealed={volumeSealed} />
+        <VolumeTome key={volume.number} volume={volume} sealed={volumeSealed} />
       </section>
 
       <motion.section
@@ -160,23 +237,30 @@ export function SummariesPage() {
           </div>
           <div className={styles.searchWrap}>
             <ChapterSearch
+              volumes={volumes}
               isTitleHidden={spoilers.isTitleHidden}
               onJump={(part, chapter) => openPart(part, chapter.number)}
             />
           </div>
         </div>
 
-        <ChapterTimeline
-          volume={volume}
-          chapter={spoilers.chapter}
-          isSealed={spoilers.isPartSealed}
-          highlighted={highlighted}
-          onHighlight={setHighlighted}
-          onOpen={(part) => openPart(part)}
-        />
+        {hasParts ? (
+          <ChapterTimeline
+            key={volume.number}
+            volume={volume}
+            chapter={spoilers.chapter}
+            isSealed={spoilers.isPartSealed}
+            highlighted={highlighted}
+            onHighlight={setHighlighted}
+            onOpen={(part) => openPart(part)}
+          />
+        ) : (
+          <p className={styles.emptyVolume}>The first part of this volume is still being written.</p>
+        )}
       </motion.section>
 
       <motion.section
+        key={volume.number}
         className={styles.folios}
         initial="hidden"
         whileInView="visible"

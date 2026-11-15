@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useId, useMemo, useState, type KeyboardEvent } from "react";
 import { Icon } from "@/components/ui/Icon";
-import { ALL_PARTS, roman } from "../data/volumes";
-import type { SummaryChapter, SummaryPart } from "../types";
+import { allParts, roman } from "../data/volumes";
+import type { SummaryChapter, SummaryPart, SummaryVolume } from "../types";
 import styles from "./ChapterSearch.module.css";
 
 interface ChapterSearchProps {
+  /** Every volume on the shelf: a chapter number can be found in any of them. */
+  volumes: SummaryVolume[];
   isTitleHidden: (part: SummaryPart, chapterNumber: number) => boolean;
   onJump: (part: SummaryPart, chapter: SummaryChapter) => void;
 }
@@ -16,7 +18,7 @@ const MAX_RESULTS = 6;
  * "Which part has chapter 300?" Type a chapter number or words from a title.
  * Titles past the reader are never matched or shown, so searching can't spoil.
  */
-export function ChapterSearch({ isTitleHidden, onJump }: ChapterSearchProps) {
+export function ChapterSearch({ volumes, isTitleHidden, onJump }: ChapterSearchProps) {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const listId = useId();
@@ -26,20 +28,20 @@ export function ChapterSearch({ isTitleHidden, onJump }: ChapterSearchProps) {
 
   const results = useMemo(() => {
     if (!q) return [];
-    const out: { part: SummaryPart; chapter: SummaryChapter; hidden: boolean }[] = [];
-    for (const { part } of ALL_PARTS) {
+    const out: { volume: SummaryVolume; part: SummaryPart; chapter: SummaryChapter; hidden: boolean }[] = [];
+    for (const { volume, part } of allParts(volumes)) {
       for (const chapter of part.chapters) {
         const hidden = isTitleHidden(part, chapter.number);
         const hit =
           asNumber !== null
             ? String(chapter.number).startsWith(q)
             : !hidden && chapter.title.toLowerCase().includes(q);
-        if (hit) out.push({ part, chapter, hidden });
+        if (hit) out.push({ volume, part, chapter, hidden });
       }
     }
     // An exact chapter number goes first.
     return out.sort((a, b) => Number(b.chapter.number === asNumber) - Number(a.chapter.number === asNumber)).slice(0, MAX_RESULTS);
-  }, [q, asNumber, isTitleHidden]);
+  }, [q, asNumber, isTitleHidden, volumes]);
 
   const jump = (index: number) => {
     const result = results[index];
@@ -102,7 +104,7 @@ export function ChapterSearch({ isTitleHidden, onJump }: ChapterSearchProps) {
                   : "No chapter titles match (titles ahead of you are never searched)."}
               </li>
             ) : (
-              results.map(({ part, chapter, hidden }, index) => (
+              results.map(({ volume, part, chapter, hidden }, index) => (
                 <motion.li
                   key={`${part.id}-${chapter.number}`}
                   id={`${listId}-${index}`}
@@ -121,7 +123,7 @@ export function ChapterSearch({ isTitleHidden, onJump }: ChapterSearchProps) {
                     {hidden ? "Title hidden: ahead of you" : chapter.title}
                   </span>
                   <span className={styles.part}>
-                    Part {roman(part.number)}
+                    {volumes.length > 1 && `Vol. ${roman(volume.number)} · `}Part {roman(part.number)}
                   </span>
                 </motion.li>
               ))
