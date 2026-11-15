@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { type UIEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { Icon } from "@/components/ui/Icon";
@@ -42,6 +42,10 @@ export function SummaryReader({
   const panelRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLOListElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const chromeRef = useRef<HTMLDivElement>(null);
+  const lastScroll = useRef(0);
+  const [chromeHidden, setChromeHidden] = useState(false);
   // The panel grows out of the card it was opened from, and shrinks back into it.
   const [openedFrom] = useState(part.id);
   const [filter, setFilter] = useState("");
@@ -106,7 +110,30 @@ export function SummaryReader({
   useEffect(() => {
     indexRef.current?.querySelector<HTMLElement>("[aria-current='true']")?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     pageRef.current?.scrollTo({ top: 0 });
+    lastScroll.current = 0;
+    setChromeHidden(false);
   }, [shown, part.id]);
+
+  // On phones the chrome floats over the text, so the text needs to know how tall it is.
+  useEffect(() => {
+    const chrome = chromeRef.current;
+    const inner = innerRef.current;
+    if (!chrome || !inner) return;
+    const observer = new ResizeObserver(() => inner.style.setProperty("--chrome-h", `${chrome.offsetHeight}px`));
+    observer.observe(chrome);
+    return () => observer.disconnect();
+  }, []);
+
+  // Reading down hides the chrome, scrolling up brings it back. Small jitters are ignored.
+  const onPageScroll = (event: UIEvent<HTMLDivElement>) => {
+    const y = event.currentTarget.scrollTop;
+    const delta = y - lastScroll.current;
+    if (y < (chromeRef.current?.offsetHeight ?? 0)) setChromeHidden(false);
+    else if (delta > 8) setChromeHidden(true);
+    else if (delta < -8) setChromeHidden(false);
+    else return; // keep measuring from the last real move
+    lastScroll.current = y;
+  };
 
   const blocks = text.data && (chapter ? text.data.chapters[chapter.number] : text.data.prelude);
 
@@ -129,66 +156,67 @@ export function SummaryReader({
         transition={{ type: "spring", stiffness: 210, damping: 30 }}
       >
         <motion.div
+          ref={innerRef}
           className={styles.inner}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { delay: 0.25, duration: 0.4 } }}
           exit={{ opacity: 0, transition: { duration: 0.12 } }}
         >
-          <header className={styles.bar}>
-            <button type="button" className={styles.back} onClick={onClose}>
-              <Icon name="chevronLeft" size={18} />
-              <span>Shelf</span>
-            </button>
-
-            <div className={styles.heading}>
-              <span className={styles.eyebrow}>
-                Volume {roman(volume.number)}
-                {volumeSealed ? "" : ` · ${volume.name}`}
-              </span>
-              <AnimatePresence mode="popLayout" initial={false}>
-                <motion.h2
-                  key={part.id}
-                  className={styles.title}
-                  initial={{ y: 18, opacity: 0, ...softBlur(6) }}
-                  animate={{ y: 0, opacity: 1, ...softBlur(0) }}
-                  exit={{ y: -18, opacity: 0, ...softBlur(6) }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  Part {roman(part.number)}
-                  <span>
-                    Ch. {firstChapter(part)}–{lastChapter(part)}
-                  </span>
-                </motion.h2>
-              </AnimatePresence>
-            </div>
-
-            <nav className={styles.parts} aria-label="Parts">
-              {volume.parts.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  className={`${styles.pill} ${p.id === part.id ? styles.pillActive : ""}`}
-                  onClick={() => onSelectPart(p)}
-                  aria-current={p.id === part.id}
-                  title={isPartSealed(p) ? `Part ${p.number} (sealed)` : `Part ${p.number}`}
-                >
-                  {p.id === part.id && (
-                    <motion.span layoutId="reader-part-pill" className={styles.pillGlow} transition={{ type: "spring", stiffness: 420, damping: 34 }} />
-                  )}
-                  <span className={styles.pillText}>{roman(p.number)}</span>
-                  {isPartSealed(p) && <Icon name="lock" size={11} className={styles.pillLock} />}
-                </button>
-              ))}
-            </nav>
-
-            <div className={styles.actions}>
-              <button type="button" className={styles.action} onClick={onClose} title="Close (Esc)" aria-label="Close">
-                <Icon name="x" size={18} />
+          {/* Top bar and chapter list. On phones they slide away while reading down, and come back on the way up. */}
+          <div ref={chromeRef} className={styles.chrome} data-hidden={chromeHidden || undefined}>
+            <header className={styles.bar}>
+              <button type="button" className={styles.back} onClick={onClose} aria-label="Back to the shelf">
+                <Icon name="chevronLeft" size={18} />
+                <span>Shelf</span>
               </button>
-            </div>
-          </header>
 
-          <div className={styles.body}>
+              <div className={styles.heading}>
+                <span className={styles.eyebrow}>
+                  Volume {roman(volume.number)}
+                  {volumeSealed ? "" : ` · ${volume.name}`}
+                </span>
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.h2
+                    key={part.id}
+                    className={styles.title}
+                    initial={{ y: 18, opacity: 0, ...softBlur(6) }}
+                    animate={{ y: 0, opacity: 1, ...softBlur(0) }}
+                    exit={{ y: -18, opacity: 0, ...softBlur(6) }}
+                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    Part {roman(part.number)}
+                    <span>
+                      Ch. {firstChapter(part)}–{lastChapter(part)}
+                    </span>
+                  </motion.h2>
+                </AnimatePresence>
+              </div>
+
+              <nav className={styles.parts} aria-label="Parts">
+                {volume.parts.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className={`${styles.pill} ${p.id === part.id ? styles.pillActive : ""}`}
+                    onClick={() => onSelectPart(p)}
+                    aria-current={p.id === part.id}
+                    title={isPartSealed(p) ? `Part ${p.number} (sealed)` : `Part ${p.number}`}
+                  >
+                    {p.id === part.id && (
+                      <motion.span layoutId="reader-part-pill" className={styles.pillGlow} transition={{ type: "spring", stiffness: 420, damping: 34 }} />
+                    )}
+                    <span className={styles.pillText}>{roman(p.number)}</span>
+                    {isPartSealed(p) && <Icon name="lock" size={11} className={styles.pillLock} />}
+                  </button>
+                ))}
+              </nav>
+
+              <div className={styles.actions}>
+                <button type="button" className={styles.action} onClick={onClose} title="Close (Esc)" aria-label="Close">
+                  <Icon name="x" size={18} />
+                </button>
+              </div>
+            </header>
             <aside className={styles.index}>
               <label className={styles.filter}>
                 <Icon name="search" size={15} />
@@ -247,103 +275,103 @@ export function SummaryReader({
                 </button>
               )}
             </aside>
+          </div>
 
-            <div className={styles.viewer}>
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={`${part.id}-${sealed}`}
-                  className={styles.sheet}
-                  initial={{ rotateY: -70, opacity: 0, x: 40 }}
-                  animate={{ rotateY: 0, opacity: 1, x: 0 }}
-                  exit={{ rotateY: 50, opacity: 0, x: -40 }}
-                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  {sealed ? (
-                    <div className={styles.sealed}>
-                      <WaxSeal size={150} />
-                      <h3>This folio is sealed</h3>
-                      <p>
-                        Part {roman(part.number)} summarizes chapters {firstChapter(part)} to {lastChapter(part)}, past where
-                        you are in the story. Break the seal only if you don't mind spoilers.
-                      </p>
-                      <button type="button" className={styles.breakSeal} onClick={() => onReveal(part)}>
-                        Break the seal
-                      </button>
-                    </div>
-                  ) : text.isError ? (
-                    <div className={styles.sealed}>
-                      <ArcaneSigil size={130} />
-                      <h3>The page wouldn't unfold</h3>
-                      <p>Part {roman(part.number)} couldn't be loaded. Check your connection and try again.</p>
-                      <button type="button" className={styles.breakSeal} onClick={() => text.refetch()}>
-                        Try again
-                      </button>
-                    </div>
-                  ) : !blocks ? (
-                    <div className={styles.loading}>
-                      <ArcaneSigil size={140} charged />
-                      <span>Unfolding {chapter ? `chapter ${chapter.number}` : part.prelude?.title}…</span>
-                    </div>
-                  ) : (
-                    <div ref={pageRef} className={styles.page}>
-                      <motion.div
-                        key={shown ?? "prelude"}
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          <div className={styles.viewer}>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={`${part.id}-${sealed}`}
+                className={styles.sheet}
+                initial={{ rotateY: -70, opacity: 0, x: 40 }}
+                animate={{ rotateY: 0, opacity: 1, x: 0 }}
+                exit={{ rotateY: 50, opacity: 0, x: -40 }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {sealed ? (
+                  <div className={styles.sealed}>
+                    <WaxSeal size={150} />
+                    <h3>This folio is sealed</h3>
+                    <p>
+                      Part {roman(part.number)} summarizes chapters {firstChapter(part)} to {lastChapter(part)}, past where
+                      you are in the story. Break the seal only if you don't mind spoilers.
+                    </p>
+                    <button type="button" className={styles.breakSeal} onClick={() => onReveal(part)}>
+                      Break the seal
+                    </button>
+                  </div>
+                ) : text.isError ? (
+                  <div className={styles.sealed}>
+                    <ArcaneSigil size={130} />
+                    <h3>The page wouldn't unfold</h3>
+                    <p>Part {roman(part.number)} couldn't be loaded. Check your connection and try again.</p>
+                    <button type="button" className={styles.breakSeal} onClick={() => text.refetch()}>
+                      Try again
+                    </button>
+                  </div>
+                ) : !blocks ? (
+                  <div className={styles.loading}>
+                    <ArcaneSigil size={140} charged />
+                    <span>Unfolding {chapter ? `chapter ${chapter.number}` : part.prelude?.title}…</span>
+                  </div>
+                ) : (
+                  <div ref={pageRef} className={styles.page} onScroll={onPageScroll}>
+                    <motion.div
+                      key={shown ?? "prelude"}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <ChapterText
+                        kicker={chapter ? `Chapter ${chapter.number}` : `Volume ${roman(volume.number)} · Prelude`}
+                        title={chapter ? chapter.title : (part.prelude?.title ?? "")}
+                        blocks={blocks}
                       >
-                        <ChapterText
-                          kicker={chapter ? `Chapter ${chapter.number}` : `Volume ${roman(volume.number)} · Prelude`}
-                          title={chapter ? chapter.title : (part.prelude?.title ?? "")}
-                          blocks={blocks}
-                        >
-                          <nav className={styles.turns} aria-label="Chapters">
-                            {before !== undefined ? (
-                              <button type="button" onClick={() => onSelectChapter(before)}>
-                                <span className={styles.turnLabel}>
-                                  <Icon name="chevronLeft" size={14} /> {before === null ? "Prelude" : `Chapter ${before}`}
-                                </span>
-                                <span className={styles.turnTitle}>{before === null ? part.prelude?.title : titleOf(before)}</span>
-                              </button>
-                            ) : prevPart ? (
-                              <button type="button" onClick={() => onSelectPart(prevPart)}>
-                                <span className={styles.turnLabel}>
-                                  <Icon name="chevronLeft" size={14} /> Previous part
-                                </span>
-                                <span className={styles.turnTitle}>Part {roman(prevPart.number)}</span>
-                              </button>
-                            ) : (
-                              <span />
-                            )}
-                            {after != null ? (
-                              <button type="button" className={styles.turnNext} onClick={() => onSelectChapter(after)}>
-                                <span className={styles.turnLabel}>
-                                  Chapter {after} <Icon name="chevronRight" size={14} />
-                                </span>
-                                <span className={styles.turnTitle}>{titleOf(after)}</span>
-                              </button>
-                            ) : nextPart ? (
-                              <button type="button" className={styles.turnNext} onClick={() => onSelectPart(nextPart)}>
-                                <span className={styles.turnLabel}>
-                                  Next part <Icon name="chevronRight" size={14} />
-                                </span>
-                                <span className={styles.turnTitle}>
-                                  Part {roman(nextPart.number)} · Ch. {firstChapter(nextPart)}–{lastChapter(nextPart)}
-                                </span>
-                              </button>
-                            ) : (
-                              <p className={styles.endNote}>
-                                {volume.ongoing ? "The quill is still moving. More chapters are on the way." : "The end of the volume."}
-                              </p>
-                            )}
-                          </nav>
-                        </ChapterText>
-                      </motion.div>
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                        <nav className={styles.turns} aria-label="Chapters">
+                          {before !== undefined ? (
+                            <button type="button" onClick={() => onSelectChapter(before)}>
+                              <span className={styles.turnLabel}>
+                                <Icon name="chevronLeft" size={14} /> {before === null ? "Prelude" : `Chapter ${before}`}
+                              </span>
+                              <span className={styles.turnTitle}>{before === null ? part.prelude?.title : titleOf(before)}</span>
+                            </button>
+                          ) : prevPart ? (
+                            <button type="button" onClick={() => onSelectPart(prevPart)}>
+                              <span className={styles.turnLabel}>
+                                <Icon name="chevronLeft" size={14} /> Previous part
+                              </span>
+                              <span className={styles.turnTitle}>Part {roman(prevPart.number)}</span>
+                            </button>
+                          ) : (
+                            <span />
+                          )}
+                          {after != null ? (
+                            <button type="button" className={styles.turnNext} onClick={() => onSelectChapter(after)}>
+                              <span className={styles.turnLabel}>
+                                Chapter {after} <Icon name="chevronRight" size={14} />
+                              </span>
+                              <span className={styles.turnTitle}>{titleOf(after)}</span>
+                            </button>
+                          ) : nextPart ? (
+                            <button type="button" className={styles.turnNext} onClick={() => onSelectPart(nextPart)}>
+                              <span className={styles.turnLabel}>
+                                Next part <Icon name="chevronRight" size={14} />
+                              </span>
+                              <span className={styles.turnTitle}>
+                                Part {roman(nextPart.number)} · Ch. {firstChapter(nextPart)}–{lastChapter(nextPart)}
+                              </span>
+                            </button>
+                          ) : (
+                            <p className={styles.endNote}>
+                              {volume.ongoing ? "The quill is still moving. More chapters are on the way." : "The end of the volume."}
+                            </p>
+                          )}
+                        </nav>
+                      </ChapterText>
+                    </motion.div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </motion.div>
       </motion.div>

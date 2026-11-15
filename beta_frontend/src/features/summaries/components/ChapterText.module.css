@@ -119,6 +119,15 @@
 }
 
 @media (max-width: 600px) {
+  .page {
+    padding: 22px 18px 32px;
+  }
+
+  .header {
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
   .quote {
     margin-inline: -4px;
     padding-inline: 1em;

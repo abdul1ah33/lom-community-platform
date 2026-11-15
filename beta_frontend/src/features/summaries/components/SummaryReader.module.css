@@ -25,13 +25,24 @@
 }
 
 .inner {
+  position: relative;
   display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "bar bar"
+    "index viewer";
   height: 100%;
+}
+
+/* On desktop the wrapper is invisible to layout: the bar and index sit in the grid directly. */
+.chrome {
+  display: contents;
 }
 
 /* ── Top bar ───────────────────────────────────────────── */
 .bar {
+  grid-area: bar;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -177,13 +188,8 @@
 }
 
 /* ── Body ──────────────────────────────────────────────── */
-.body {
-  display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
-  min-height: 0;
-}
-
 .index {
+  grid-area: index;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 10px;
@@ -326,6 +332,7 @@
 
 /* ── Viewer ────────────────────────────────────────────── */
 .viewer {
+  grid-area: viewer;
   position: relative;
   min-height: 0;
   padding: 14px;
@@ -480,74 +487,149 @@
   color: var(--text-muted);
 }
 
-/* ── Small screens: index becomes a strip above the text ── */
+/* ── Small screens: full-screen text, with a slim chrome that hides while reading ── */
 @media (max-width: 900px) {
-  .bar {
-    flex-wrap: wrap;
-    gap: 10px;
+  .backdrop {
+    padding: 0;
   }
 
-  .heading {
-    order: 1;
-    flex-basis: calc(100% - 120px);
+  .panel {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "viewer";
+  }
+
+  /* Floats over the text; the reader measures it into --chrome-h so the text starts below it. */
+  .chrome {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    display: block;
+    padding-top: env(safe-area-inset-top);
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgb(24 20 35 / 0.98), rgb(14 12 21 / 0.97));
+    box-shadow: 0 12px 30px -18px rgb(0 0 0 / 0.9);
+    transition: transform 0.32s var(--ease-out-expo);
+    will-change: transform;
+  }
+
+  .chrome[data-hidden] {
+    transform: translateY(calc(-100% - 2px));
+  }
+
+  .bar {
+    gap: 8px;
+    padding: 8px 10px 6px;
+    border-bottom: 0;
+    background: none;
   }
 
   .back {
-    order: 0;
-  }
-
-  .actions {
-    order: 2;
-    margin-left: auto;
-  }
-
-  .parts {
-    order: 3;
-    flex-basis: 100%;
+    width: 34px;
+    height: 34px;
+    padding: 0;
     justify-content: center;
   }
 
-  .body {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
+  .back span {
+    display: none;
+  }
+
+  .eyebrow {
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+  }
+
+  .title {
+    gap: 8px;
+    font-size: 17px;
+  }
+
+  .title span {
+    font-size: 12px;
+  }
+
+  .parts {
+    gap: 2px;
+    padding: 3px;
+  }
+
+  .pill {
+    min-width: 32px;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 13px;
+  }
+
+  .action {
+    width: 34px;
+    height: 34px;
   }
 
   .index {
-    grid-template-rows: auto auto;
-    padding: 10px 12px 0;
+    display: block;
+    padding: 0 10px 8px;
     border-right: 0;
   }
 
-  .filter {
+  .filter,
+  .revealAhead,
+  .chapterTitle {
     display: none;
   }
 
   .chapters {
     display: flex;
     gap: 6px;
-    padding: 0 0 10px;
+    padding: 0;
     overflow-x: auto;
     overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .chapters::-webkit-scrollbar {
+    display: none;
   }
 
   .chapter {
     grid-template-columns: auto;
     width: auto;
-    padding: 6px 12px;
+    padding: 4px 11px;
     border: 1px solid var(--border);
     border-radius: 999px;
-  }
-
-  .chapterTitle {
-    display: none;
-  }
-
-  .revealAhead {
-    display: none;
+    font-size: 13px;
   }
 
   .viewer {
-    padding: 10px 12px 12px;
+    padding: 0;
+    perspective: none;
+  }
+
+  .sheet {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .page {
+    padding-top: var(--chrome-h, 100px);
+  }
+
+  .loading,
+  .sealed {
+    padding-top: calc(var(--chrome-h, 100px) + 24px);
+  }
+}
+
+@media (max-width: 370px) {
+  .title span {
+    display: none;
   }
 }
 
