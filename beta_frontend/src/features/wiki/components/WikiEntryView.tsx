@@ -8,6 +8,7 @@ import type { WikiEntry, WikiSection } from "../types";
 import { FandomLink } from "./FandomLink";
 import { categoryLabel } from "./WikiEntryCard";
 import styles from "./WikiEntryView.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 export function WikiEntryView({ entry }: { entry: WikiEntry }) {
   const spoilers = useWikiSpoilers();
@@ -89,7 +90,7 @@ function Section({ slug, index, section }: { slug: string; index: number; sectio
               className={styles.seal}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, scale: 1.08, filter: "blur(6px)" }}
+              exit={{ opacity: 0, scale: 1.08, ...softBlur(6) }}
             >
               <span className={styles.sealText}>Spoiler for chapter {section.spoiler_chapter}</span>
               <button type="button" className={styles.reveal} onClick={() => spoilers.reveal(key)}>

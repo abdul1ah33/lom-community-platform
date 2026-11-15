@@ -4,6 +4,7 @@ import { Icon } from "@/components/ui/Icon";
 import { entryRevealKey, useWikiSpoilers } from "../hooks/useWikiSpoilers";
 import { WIKI_CATEGORIES, type WikiEntrySummary } from "../types";
 import styles from "./WikiEntryCard.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 export const categoryLabel = (id: string) => WIKI_CATEGORIES.find((c) => c.id === id)?.label ?? id;
 
@@ -26,7 +27,7 @@ export function WikiEntryCard({ entry, index = 0 }: { entry: WikiEntrySummary; i
           <motion.div
             key="sealed"
             className={`${styles.card} ${styles.sealed}`}
-            exit={{ opacity: 0, scale: 1.04, filter: "blur(8px)" }}
+            exit={{ opacity: 0, scale: 1.04, ...softBlur(8) }}
             role="group"
             aria-label={`Sealed ${categoryLabel(entry.category)} entry, revealed at chapter ${entry.reveal_chapter}`}
           >
@@ -40,7 +41,7 @@ export function WikiEntryCard({ entry, index = 0 }: { entry: WikiEntrySummary; i
             </button>
           </motion.div>
         ) : (
-          <motion.div key="open" initial={{ opacity: 0, filter: "blur(8px)" }} animate={{ opacity: 1, filter: "blur(0px)" }}>
+          <motion.div key="open" initial={{ opacity: 0, ...softBlur(8) }} animate={{ opacity: 1, ...softBlur(0) }}>
             <Link to={`/wiki/${entry.slug}`} className={styles.card}>
               <span className={styles.category}>{categoryLabel(entry.category)}</span>
               <strong className={styles.title}>{entry.title}</strong>

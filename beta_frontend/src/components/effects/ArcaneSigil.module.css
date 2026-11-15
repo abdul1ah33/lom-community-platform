@@ -107,3 +107,8 @@
     opacity: 1;
   }
 }
+
+/* Slow devices: the circle holds still. */
+:global(:root[data-perf="low"]) .layer {
+  animation: none;
+}

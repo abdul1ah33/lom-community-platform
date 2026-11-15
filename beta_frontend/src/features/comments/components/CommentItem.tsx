@@ -15,6 +15,7 @@ import { useDeleteComment, useLikeComment, useUpdateComment } from "../hooks/use
 import { COMMENT_LIMITS, type Comment } from "../types";
 import { MentionTextarea } from "./MentionTextarea";
 import styles from "./Comments.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 interface CommentItemProps {
   comment: Comment;
@@ -64,7 +65,7 @@ export function CommentItem({ comment, onReply, highlight = false }: CommentItem
       className={`${styles.item} ${highlight ? styles.highlight : ""}`}
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -20, filter: "blur(6px)" }}
+      exit={{ opacity: 0, x: -20, ...softBlur(6) }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
       <Link to={`/u/${comment.author.username}`} className={styles.avatarLink} aria-hidden="true" tabIndex={-1}>

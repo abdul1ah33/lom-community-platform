@@ -15,6 +15,7 @@ import { AuthForm } from "@/features/auth/components/AuthForm";
 import { useUpdateProfile } from "@/features/profile";
 import { usePointerParallax } from "@/hooks/usePointerParallax";
 import styles from "./LoginPage.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 const WHISPERS = [
   "Every reader is a Beyonder waiting for the right potion.",
@@ -116,9 +117,9 @@ export function LoginPage() {
               <AnimatePresence mode="wait">
                 <motion.p
                   key={whisper}
-                  initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -12, filter: "blur(8px)" }}
+                  initial={{ opacity: 0, y: 12, ...softBlur(8) }}
+                  animate={{ opacity: 1, y: 0, ...softBlur(0) }}
+                  exit={{ opacity: 0, y: -12, ...softBlur(8) }}
                   transition={{ duration: 0.6 }}
                 >
                   {WHISPERS[whisper]}

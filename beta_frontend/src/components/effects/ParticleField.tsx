@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { isTouchDevice, usePerfTier } from "@/lib/performance/performanceTier";
 
 interface ParticleFieldProps {
   /** Particles per 10,000 px² of viewport. */
@@ -46,12 +47,18 @@ function createGlowSprite(rgb: string) {
  * Rising embers and dust motes on a canvas. Particles drift upward, twinkle,
  * and part gently around the cursor. Freezes when motion is reduced and
  * pauses while the tab is hidden.
+ *
+ * Phones draw at 30 fps on a 1x canvas: the specks are tiny and slow, so it looks
+ * the same for a quarter of the pixels and half the frames. Slow devices skip it.
  */
 export function ParticleField({ density = 0.9, className }: ParticleFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const perfTier = usePerfTier();
+  const enabled = perfTier !== "low";
 
   useEffect(() => {
+    if (!enabled) return;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
@@ -60,8 +67,11 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
     let height = 0;
     let particles: Particle[] = [];
     let frame = 0;
+    let lastDraw = 0;
+    const minFrameGap = isTouchDevice ? 1000 / 30 - 2 : 0;
+    // Half the frames, so each one moves twice as far to keep the same speed.
+    const step = isTouchDevice ? 2 : 1;
     const pointer = { x: -9999, y: -9999 };
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
     const sprites = {
       brass: createGlowSprite(COLORS.brass),
       crimson: createGlowSprite(COLORS.crimson),
@@ -84,9 +94,9 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
     const resize = () => {
       // A phone's address bar changes the height while scrolling. Rebuilding here
       // would stall the scroll and make every particle jump to a new spot.
-      if (isTouch && width > 0 && canvas.clientWidth === width) return;
+      if (isTouchDevice && width > 0 && canvas.clientWidth === width) return;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = isTouchDevice ? 1 : Math.min(window.devicePixelRatio || 1, 2);
       width = canvas.clientWidth;
       height = canvas.clientHeight;
       canvas.width = width * dpr;
@@ -97,6 +107,11 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
     };
 
     const draw = (time: number) => {
+      if (time - lastDraw < minFrameGap) {
+        frame = requestAnimationFrame(draw);
+        return;
+      }
+      lastDraw = time;
       ctx.clearRect(0, 0, width, height);
 
       for (const p of particles) {
@@ -109,8 +124,8 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
             p.x += (dx / dist) * push;
             p.y += (dy / dist) * push;
           }
-          p.x += p.vx + Math.sin(time / 2400 + p.phase) * 0.12;
-          p.y += p.vy;
+          p.x += (p.vx + Math.sin(time / 2400 + p.phase) * 0.12) * step;
+          p.y += p.vy * step;
           if (p.y < -10 || p.x < -10 || p.x > width + 10) Object.assign(p, spawn(false));
         }
 
@@ -151,7 +166,9 @@ export function ParticleField({ density = 0.9, className }: ParticleFieldProps) 
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [density, reducedMotion]);
+  }, [density, reducedMotion, enabled]);
+
+  if (!enabled) return null;
 
   return (
     <canvas

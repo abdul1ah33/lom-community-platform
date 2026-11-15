@@ -146,3 +146,14 @@ a {
     transition-duration: 0.001ms !important;
   }
 }
+
+/*
+ * Slow devices (see lib/performance/performanceTier.ts): decorative loops play once
+ * and stop, so nothing repaints while the page sits still. The heaviest effects
+ * (fog, sigils) switch off entirely in their own stylesheets; spinners keep turning.
+ */
+:root[data-perf="low"] *,
+:root[data-perf="low"] *::before,
+:root[data-perf="low"] *::after {
+  animation-iteration-count: 1 !important;
+}

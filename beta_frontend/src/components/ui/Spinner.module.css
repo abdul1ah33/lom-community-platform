@@ -12,3 +12,10 @@
     transform: rotate(360deg);
   }
 }
+
+/* A loading spinner has to keep turning, even where decorative loops are stopped. */
+@media (prefers-reduced-motion: no-preference) {
+  :global(:root[data-perf="low"]) .spinner {
+    animation-iteration-count: infinite !important;
+  }
+}

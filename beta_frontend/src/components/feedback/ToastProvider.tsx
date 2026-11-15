@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/Icon";
 import styles from "./Toast.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 type ToastTone = "success" | "error";
 
@@ -47,9 +48,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 key={toast.id}
                 layout
                 className={`${styles.toast} ${styles[toast.tone]}`}
-                initial={{ opacity: 0, y: 24, scale: 0.9, filter: "blur(6px)" }}
-                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, x: 60, filter: "blur(6px)" }}
+                initial={{ opacity: 0, y: 24, scale: 0.9, ...softBlur(6) }}
+                animate={{ opacity: 1, y: 0, scale: 1, ...softBlur(0) }}
+                exit={{ opacity: 0, x: 60, ...softBlur(6) }}
                 transition={{ type: "spring", stiffness: 380, damping: 30 }}
               >
                 <span className={styles.icon}>

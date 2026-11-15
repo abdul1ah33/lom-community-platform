@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { Fragment } from "react";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 interface RevealTextProps {
   text: string;
@@ -12,20 +13,21 @@ interface RevealTextProps {
   as?: "h1" | "h2" | "p" | "span";
 }
 
-const charVariants = {
-  hidden: { opacity: 0, y: "0.6em", filter: "blur(10px)" },
+/** A function, not a constant: the device tier is only known once the app starts. */
+const charVariants = () => ({
+  hidden: { opacity: 0, y: "0.6em", ...softBlur(10) },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
+    ...softBlur(0),
     transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
   },
-};
+});
 
 /**
- * Characters rise out of a blur one by one. Letters are grouped into
- * unbreakable words so lines only wrap at spaces. Screen readers get the
- * whole string at once.
+ * Characters rise out of a blur one by one (no blur on phones, see softBlur).
+ * Letters are grouped into unbreakable words so lines only wrap at spaces.
+ * Screen readers get the whole string at once.
  */
 export function RevealText({
   text,
@@ -37,6 +39,7 @@ export function RevealText({
 }: RevealTextProps) {
   const Tag = motion[as];
   const words = text.split(" ");
+  const variants = charVariants();
 
   return (
     <Tag
@@ -51,7 +54,7 @@ export function RevealText({
           {/* Very long "words" (e.g. 50-char usernames) may still break so they never overflow on phones. */}
           <span aria-hidden="true" style={word.length <= 16 ? { display: "inline-block", whiteSpace: "nowrap" } : undefined}>
             {Array.from(word).map((char, c) => (
-              <motion.span key={c} className={charClassName} style={{ display: "inline-block" }} variants={charVariants}>
+              <motion.span key={c} className={charClassName} style={{ display: "inline-block" }} variants={variants}>
                 {char}
               </motion.span>
             ))}

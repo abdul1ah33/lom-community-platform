@@ -17,6 +17,7 @@ import { BookmarkButton } from "./BookmarkButton";
 import { LikeButton } from "./LikeButton";
 import { PostBody, SpoilerBadge } from "./PostBody";
 import styles from "./PostCard.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 interface PostCardProps {
   post: Post;
@@ -56,7 +57,7 @@ export function PostCard({ post, index = 0, variant = "feed", onDeleted }: PostC
       className={`${styles.card} ${isFeed ? styles.clickable : styles.full}`}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
+      exit={{ opacity: 0, scale: 0.95, ...softBlur(8) }}
       transition={{ duration: 0.55, delay: Math.min(index, 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
       onClick={openPost}
     >

@@ -139,3 +139,15 @@
   80% { transform: translate(6%, 2%); }
   100% { transform: translate(0, 0); }
 }
+
+/* Slow devices: a still, unblurred fog painted once, with no grain layer on top. */
+:global(:root[data-perf="low"]) .blob,
+:global(:root[data-perf="low"]) .fogBand {
+  filter: none;
+  animation: none;
+  will-change: auto;
+}
+
+:global(:root[data-perf="low"]) .grain {
+  display: none;
+}

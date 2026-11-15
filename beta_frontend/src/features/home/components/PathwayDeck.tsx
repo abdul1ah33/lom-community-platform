@@ -5,6 +5,7 @@ import { PATHWAYS, toRoman, type Pathway } from "@/data/lore/pathways";
 import { usePathwaySpoilers } from "@/features/profile";
 import { SectionHeader } from "./SectionHeader";
 import styles from "./PathwayDeck.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 /**
  * A scrollable deck of the 22 pathways. Pathways the reader has met flip to show
@@ -86,8 +87,8 @@ function PathwayCard({ pathway }: { pathway: Pathway }) {
       onMouseLeave={() => setFlipped(false)}
       aria-pressed={flipped}
       aria-label={`${pathway.name} pathway. Sequence 9: ${pathway.sequence9}`}
-      initial={{ opacity: 0, filter: "blur(12px)", scale: 0.92 }}
-      animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+      initial={{ opacity: 0, ...softBlur(12), scale: 0.92 }}
+      animate={{ opacity: 1, ...softBlur(0), scale: 1 }}
       transition={{ duration: 0.6 }}
     >
       <motion.span
@@ -117,7 +118,7 @@ function SealedCard({ pathway, onReveal }: { pathway: Pathway; onReveal: () => v
   return (
     <motion.div
       className={`${styles.card} ${styles.sealed}`}
-      exit={{ opacity: 0, scale: 1.08, filter: "blur(10px)" }}
+      exit={{ opacity: 0, scale: 1.08, ...softBlur(10) }}
       transition={{ duration: 0.35 }}
       role="group"
       aria-label={`Sealed pathway, revealed at chapter ${pathway.revealChapter}`}

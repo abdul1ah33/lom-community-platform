@@ -6,6 +6,7 @@ import { useReaderChapter } from "@/features/profile";
 import { useSpoilerGate } from "../hooks/useSpoilerGate";
 import type { Post } from "../types";
 import styles from "./PostBody.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 /** Placeholder lines shown when the server withheld the text, so nothing real leaks. */
 const SEALED_FILLER = "The fog hides these words until you have read far enough to see them clearly. ".repeat(2);
@@ -39,7 +40,7 @@ export function PostBody({ post, clamp = false }: PostBodyProps) {
             className={styles.seal}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.08, filter: "blur(6px)" }}
+            exit={{ opacity: 0, scale: 1.08, ...softBlur(6) }}
           >
             {gate.state === "revealing" ? (
               <span className={styles.revealing}>

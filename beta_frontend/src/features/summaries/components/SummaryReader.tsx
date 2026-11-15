@@ -10,6 +10,7 @@ import { ChapterText } from "./ChapterText";
 import { folioLayoutId } from "./PartFolio";
 import { WaxSeal } from "./WaxSeal";
 import styles from "./SummaryReader.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 interface SummaryReaderProps {
   volume: SummaryVolume;
@@ -148,9 +149,9 @@ export function SummaryReader({
                 <motion.h2
                   key={part.id}
                   className={styles.title}
-                  initial={{ y: 18, opacity: 0, filter: "blur(6px)" }}
-                  animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                  exit={{ y: -18, opacity: 0, filter: "blur(6px)" }}
+                  initial={{ y: 18, opacity: 0, ...softBlur(6) }}
+                  animate={{ y: 0, opacity: 1, ...softBlur(0) }}
+                  exit={{ y: -18, opacity: 0, ...softBlur(6) }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 >
                   Part {roman(part.number)}

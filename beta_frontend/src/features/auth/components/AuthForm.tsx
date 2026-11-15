@@ -15,6 +15,7 @@ import {
   type AuthMode,
 } from "../validation";
 import styles from "./AuthForm.module.css";
+import { softBlur } from "@/lib/performance/performanceTier";
 
 interface AuthFormProps {
   /** `chapter` is the reading progress entered at sign-up (null when signing in or left blank). */
@@ -142,9 +143,9 @@ export function AuthForm({ onSuccess, onPendingChange }: AuthFormProps) {
         <motion.header
           key={mode}
           className={styles.header}
-          initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
+          initial={{ opacity: 0, y: 10, ...softBlur(6) }}
+          animate={{ opacity: 1, y: 0, ...softBlur(0) }}
+          exit={{ opacity: 0, y: -10, ...softBlur(6) }}
           transition={{ duration: 0.3 }}
         >
           <h2 className={styles.title}>{copy.title}</h2>
