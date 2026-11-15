@@ -2,12 +2,12 @@ import type { SummaryChapter, SummaryPart, SummaryVolume } from "../types";
 import { VOL2_PART1, VOL2_PART2, VOL2_PART3, type ChapterRow } from "./vol2Chapters";
 
 const toChapters = (rows: ChapterRow[]): SummaryChapter[] =>
-  rows.map(([number, page, title]) => ({ number, page, title }));
+  rows.map(([number, title]) => ({ number, title }));
 
 /**
- * The summaries shelf. To publish a new part: drop the PDF in
- * `public/summaries/vol-<n>/`, add its chapter index next to `vol2Chapters.ts`,
- * and append an entry here. Page and word counts are shown on the folio cards.
+ * The summaries shelf. To publish a new part: put its PDF in `pdf_summaries/`, run
+ * `pdf_summaries/extract_text.py` to write its text to `text/<part id>.json`, add its
+ * chapter index next to `vol2Chapters.ts`, and append an entry here.
  */
 export const VOLUMES: SummaryVolume[] = [
   {
@@ -22,18 +22,14 @@ export const VOLUMES: SummaryVolume[] = [
       {
         id: "v2-p1",
         number: 1,
-        file: "/summaries/vol-2/part-1.pdf",
-        pages: 33,
         words: 18232,
         writtenAt: "2025-10-11",
-        prelude: { title: "Notes from Volume 1", page: 1 },
+        prelude: { title: "Notes from Volume 1" },
         chapters: toChapters(VOL2_PART1),
       },
       {
         id: "v2-p2",
         number: 2,
-        file: "/summaries/vol-2/part-2.pdf",
-        pages: 39,
         words: 19999,
         writtenAt: "2026-03-15",
         chapters: toChapters(VOL2_PART2),
@@ -41,8 +37,6 @@ export const VOLUMES: SummaryVolume[] = [
       {
         id: "v2-p3",
         number: 3,
-        file: "/summaries/vol-2/part-3.pdf",
-        pages: 41,
         words: 21637,
         writtenAt: "2026-04-12",
         chapters: toChapters(VOL2_PART3),

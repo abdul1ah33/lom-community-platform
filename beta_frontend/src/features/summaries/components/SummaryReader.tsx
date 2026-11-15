@@ -4,7 +4,9 @@ import { createPortal } from "react-dom";
 import { ArcaneSigil } from "@/components/effects/ArcaneSigil";
 import { Icon } from "@/components/ui/Icon";
 import { firstChapter, lastChapter, roman } from "../data/volumes";
+import { useSummaryText } from "../hooks/useSummaryText";
 import type { SummaryPart, SummaryVolume } from "../types";
+import { ChapterText } from "./ChapterText";
 import { folioLayoutId } from "./PartFolio";
 import { WaxSeal } from "./WaxSeal";
 import styles from "./SummaryReader.module.css";
@@ -12,7 +14,7 @@ import styles from "./SummaryReader.module.css";
 interface SummaryReaderProps {
   volume: SummaryVolume;
   part: SummaryPart;
-  /** Chapter to jump to, or null for the start of the PDF. */
+  /** Chapter to show, or null for the part's opening (its prelude, else its first chapter). */
   chapterNumber: number | null;
   volumeSealed: boolean;
   isPartSealed: (part: SummaryPart) => boolean;
@@ -23,16 +25,7 @@ interface SummaryReaderProps {
   onClose: () => void;
 }
 
-/**
- * Phones and some browsers (Android Chrome, Firefox with PDFs disabled) can't render a PDF
- * inside a page. There we keep the chapter index but open the PDF itself in a new tab.
- */
-const canEmbedPdf = () =>
-  navigator.pdfViewerEnabled !== false && !window.matchMedia("(pointer: coarse) and (max-width: 820px)").matches;
-
-const pdfUrl = (part: SummaryPart, page: number) => `${part.file}#page=${page}&view=FitH&navpanes=0`;
-
-/** Full-screen folio: chapter index on the left, the PDF on the right, parts switchable in place. */
+/** Full-screen folio: chapter index on the left, the chapter's text on the right, parts switchable in place. */
 export function SummaryReader({
   volume,
   part,
@@ -47,20 +40,27 @@ export function SummaryReader({
 }: SummaryReaderProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLOListElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
   // The panel grows out of the card it was opened from, and shrinks back into it.
   const [openedFrom] = useState(part.id);
-  const [embed] = useState(canEmbedPdf);
-  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
+  const text = useSummaryText(part);
 
   const sealed = isPartSealed(part);
-  const chapter = part.chapters.find((c) => c.number === chapterNumber) ?? null;
-  const page = chapter?.page ?? 1;
-  const src = pdfUrl(part, page);
   const index = volume.parts.indexOf(part);
-  const prev = volume.parts[index - 1];
-  const next = volume.parts[index + 1];
+  const prevPart = volume.parts[index - 1];
+  const nextPart = volume.parts[index + 1];
   const hiddenAhead = part.chapters.some((c) => isTitleHidden(part, c.number));
+
+  // What is on the page: a chapter of this part, or null for the prelude.
+  const chapter = part.chapters.find((c) => c.number === chapterNumber) ?? (part.prelude ? null : part.chapters[0]);
+  const shown = chapter?.number ?? null;
+
+  // Reading order inside the part, for the previous / next links under the text.
+  const order: (number | null)[] = [...(part.prelude ? [null] : []), ...part.chapters.map((c) => c.number)];
+  const position = order.indexOf(shown);
+  const before = position > 0 ? order[position - 1] : undefined;
+  const after = position < order.length - 1 ? order[position + 1] : undefined;
 
   const q = filter.trim().toLowerCase();
   const chapters = q
@@ -69,9 +69,14 @@ export function SummaryReader({
       )
     : part.chapters;
 
-  // Keyboard: Escape closes, ← / → turn to the neighbouring part.
-  const keys = useRef({ onClose, onSelectPart, prev, next });
-  keys.current = { onClose, onSelectPart, prev, next };
+  const titleOf = (n: number) =>
+    isTitleHidden(part, n) ? "Ahead of you" : (part.chapters.find((c) => c.number === n)?.title ?? "");
+
+  // Keyboard: Escape closes, ← / → turn the page (into the neighbouring part at either end).
+  const goBack = () => (before !== undefined ? onSelectChapter(before) : prevPart && onSelectPart(prevPart));
+  const goOn = () => (after !== undefined ? onSelectChapter(after) : nextPart && onSelectPart(nextPart));
+  const keys = useRef({ onClose, goBack, goOn, sealed });
+  keys.current = { onClose, goBack, goOn, sealed };
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
     panelRef.current?.focus();
@@ -79,12 +84,14 @@ export function SummaryReader({
 
     const onKeyDown = (event: KeyboardEvent) => {
       const typing = event.target instanceof HTMLInputElement;
-      const { onClose, onSelectPart, prev, next } = keys.current;
+      const { onClose, goBack, goOn, sealed } = keys.current;
       if (event.key === "Escape") {
         if (typing && (event.target as HTMLInputElement).value) return;
         onClose();
-      } else if (!typing && event.key === "ArrowLeft" && prev) onSelectPart(prev);
-      else if (!typing && event.key === "ArrowRight" && next) onSelectPart(next);
+      } else if (typing || sealed) {
+        return;
+      } else if (event.key === "ArrowLeft") goBack();
+      else if (event.key === "ArrowRight") goOn();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => {
@@ -94,20 +101,13 @@ export function SummaryReader({
     };
   }, []);
 
-  useEffect(() => setLoading(true), [src]);
-
-  // Keep the current chapter in view in the index.
+  // Keep the current chapter in view in the index, and start every chapter at its top.
   useEffect(() => {
     indexRef.current?.querySelector<HTMLElement>("[aria-current='true']")?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [chapterNumber, part.id]);
+    pageRef.current?.scrollTo({ top: 0 });
+  }, [shown, part.id]);
 
-  const selectChapter = (n: number | null) => {
-    onSelectChapter(n);
-    if (!embed) {
-      const target = n === null ? 1 : (part.chapters.find((c) => c.number === n)?.page ?? 1);
-      window.open(pdfUrl(part, target), "_blank", "noopener");
-    }
-  };
+  const blocks = text.data && (chapter ? text.data.chapters[chapter.number] : text.data.prelude);
 
   return createPortal(
     <motion.div
@@ -181,16 +181,6 @@ export function SummaryReader({
             </nav>
 
             <div className={styles.actions}>
-              {!sealed && (
-                <>
-                  <a className={styles.action} href={part.file} download title="Download PDF" aria-label="Download PDF">
-                    <Icon name="download" size={18} />
-                  </a>
-                  <a className={styles.action} href={src} target="_blank" rel="noreferrer" title="Open in a new tab" aria-label="Open in a new tab">
-                    <Icon name="external" size={18} />
-                  </a>
-                </>
-              )}
               <button type="button" className={styles.action} onClick={onClose} title="Close (Esc)" aria-label="Close">
                 <Icon name="x" size={18} />
               </button>
@@ -210,23 +200,22 @@ export function SummaryReader({
                   <li>
                     <button
                       type="button"
-                      className={`${styles.chapter} ${chapterNumber === null ? styles.current : ""}`}
-                      onClick={() => selectChapter(null)}
-                      aria-current={chapterNumber === null}
+                      className={`${styles.chapter} ${shown === null ? styles.current : ""}`}
+                      onClick={() => onSelectChapter(null)}
+                      aria-current={shown === null}
                       disabled={sealed}
                     >
-                      {chapterNumber === null && <motion.span layoutId="reader-chapter" className={styles.currentGlow} />}
+                      {shown === null && <motion.span layoutId="reader-chapter" className={styles.currentGlow} />}
                       <span className={styles.chapterNum}>
                         <Icon name="sparkle" size={13} />
                       </span>
                       <span className={styles.chapterTitle}>{part.prelude.title}</span>
-                      <span className={styles.chapterPage}>p.{part.prelude.page}</span>
                     </button>
                   </li>
                 )}
                 {chapters.map((c, i) => {
                   const hidden = sealed || isTitleHidden(part, c.number);
-                  const current = c.number === chapterNumber;
+                  const current = c.number === shown;
                   return (
                     <motion.li
                       key={`${part.id}-${c.number}`}
@@ -237,14 +226,13 @@ export function SummaryReader({
                       <button
                         type="button"
                         className={`${styles.chapter} ${current ? styles.current : ""} ${hidden ? styles.ahead : ""}`}
-                        onClick={() => selectChapter(c.number)}
+                        onClick={() => onSelectChapter(c.number)}
                         aria-current={current}
                         disabled={sealed}
                       >
                         {current && <motion.span layoutId="reader-chapter" className={styles.currentGlow} />}
                         <span className={styles.chapterNum}>{c.number}</span>
                         <span className={styles.chapterTitle}>{hidden ? "Ahead of you" : c.title}</span>
-                        <span className={styles.chapterPage}>p.{c.page}</span>
                       </button>
                     </motion.li>
                   );
@@ -281,41 +269,79 @@ export function SummaryReader({
                         Break the seal
                       </button>
                     </div>
-                  ) : embed ? (
-                    <>
-                      <iframe key={src} src={src} title={`Part ${part.number} summary PDF`} className={styles.pdf} onLoad={() => setLoading(false)} />
-                      <AnimatePresence>
-                        {loading && (
-                          <motion.div className={styles.loading} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                            <ArcaneSigil size={140} charged />
-                            <span>
-                              Unfolding {chapter ? `chapter ${chapter.number}` : `Part ${roman(part.number)}`}…
-                            </span>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </>
-                  ) : (
-                    <div className={styles.fallback}>
+                  ) : text.isError ? (
+                    <div className={styles.sealed}>
                       <ArcaneSigil size={130} />
-                      <h3>Read it full screen</h3>
-                      <p>This browser opens PDFs on their own. Tap a chapter to open the summary at that page.</p>
-                      <a className={styles.breakSeal} href={src} target="_blank" rel="noreferrer">
-                        <Icon name="external" size={16} /> Open Part {roman(part.number)}
-                      </a>
+                      <h3>The page wouldn't unfold</h3>
+                      <p>Part {roman(part.number)} couldn't be loaded. Check your connection and try again.</p>
+                      <button type="button" className={styles.breakSeal} onClick={() => text.refetch()}>
+                        Try again
+                      </button>
+                    </div>
+                  ) : !blocks ? (
+                    <div className={styles.loading}>
+                      <ArcaneSigil size={140} charged />
+                      <span>Unfolding {chapter ? `chapter ${chapter.number}` : part.prelude?.title}…</span>
+                    </div>
+                  ) : (
+                    <div ref={pageRef} className={styles.page}>
+                      <motion.div
+                        key={shown ?? "prelude"}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      >
+                        <ChapterText
+                          kicker={chapter ? `Chapter ${chapter.number}` : `Volume ${roman(volume.number)} · Prelude`}
+                          title={chapter ? chapter.title : (part.prelude?.title ?? "")}
+                          blocks={blocks}
+                        >
+                          <nav className={styles.turns} aria-label="Chapters">
+                            {before !== undefined ? (
+                              <button type="button" onClick={() => onSelectChapter(before)}>
+                                <span className={styles.turnLabel}>
+                                  <Icon name="chevronLeft" size={14} /> {before === null ? "Prelude" : `Chapter ${before}`}
+                                </span>
+                                <span className={styles.turnTitle}>{before === null ? part.prelude?.title : titleOf(before)}</span>
+                              </button>
+                            ) : prevPart ? (
+                              <button type="button" onClick={() => onSelectPart(prevPart)}>
+                                <span className={styles.turnLabel}>
+                                  <Icon name="chevronLeft" size={14} /> Previous part
+                                </span>
+                                <span className={styles.turnTitle}>Part {roman(prevPart.number)}</span>
+                              </button>
+                            ) : (
+                              <span />
+                            )}
+                            {after != null ? (
+                              <button type="button" className={styles.turnNext} onClick={() => onSelectChapter(after)}>
+                                <span className={styles.turnLabel}>
+                                  Chapter {after} <Icon name="chevronRight" size={14} />
+                                </span>
+                                <span className={styles.turnTitle}>{titleOf(after)}</span>
+                              </button>
+                            ) : nextPart ? (
+                              <button type="button" className={styles.turnNext} onClick={() => onSelectPart(nextPart)}>
+                                <span className={styles.turnLabel}>
+                                  Next part <Icon name="chevronRight" size={14} />
+                                </span>
+                                <span className={styles.turnTitle}>
+                                  Part {roman(nextPart.number)} · Ch. {firstChapter(nextPart)}–{lastChapter(nextPart)}
+                                </span>
+                              </button>
+                            ) : (
+                              <p className={styles.endNote}>
+                                {volume.ongoing ? "The quill is still moving. More chapters are on the way." : "The end of the volume."}
+                              </p>
+                            )}
+                          </nav>
+                        </ChapterText>
+                      </motion.div>
                     </div>
                   )}
                 </motion.div>
               </AnimatePresence>
-
-              <div className={styles.turns}>
-                <button type="button" onClick={() => prev && onSelectPart(prev)} disabled={!prev} aria-label="Previous part">
-                  <Icon name="chevronLeft" size={18} />
-                </button>
-                <button type="button" onClick={() => next && onSelectPart(next)} disabled={!next} aria-label="Next part">
-                  <Icon name="chevronRight" size={18} />
-                </button>
-              </div>
             </div>
           </div>
         </motion.div>

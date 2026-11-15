@@ -121,7 +121,7 @@ export function ChapterSearch({ isTitleHidden, onJump }: ChapterSearchProps) {
                     {hidden ? "Title hidden: ahead of you" : chapter.title}
                   </span>
                   <span className={styles.part}>
-                    Part {roman(part.number)} · p.{chapter.page}
+                    Part {roman(part.number)}
                   </span>
                 </motion.li>
               ))

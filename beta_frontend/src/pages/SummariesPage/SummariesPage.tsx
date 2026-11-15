@@ -40,7 +40,7 @@ export function SummariesPage() {
   const chapterNumber = chParam && /^\d+$/.test(chParam) ? Number(chParam) : null;
 
   const chapters = volume.parts.reduce((n, p) => n + p.chapters.length, 0);
-  const pages = volume.parts.reduce((n, p) => n + p.pages, 0);
+  const words = volume.parts.reduce((n, p) => n + p.words, 0);
   const minutes = volume.parts.reduce((n, p) => n + readingMinutes(p.words), 0);
 
   // "Continue": the part that holds the reader's chapter, else the first part.
@@ -101,7 +101,7 @@ export function SummariesPage() {
             {[
               { value: volume.parts.length, label: "Parts" },
               { value: chapters, label: "Chapters" },
-              { value: pages, label: "Pages" },
+              { value: Math.round(words / 1000), label: "Thousand words" },
               { value: Math.round(minutes / 60), label: "Hours of reading", prefix: "~" },
             ].map((stat) => (
               <motion.div

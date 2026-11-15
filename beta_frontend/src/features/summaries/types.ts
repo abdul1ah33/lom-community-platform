@@ -1,22 +1,17 @@
 export interface SummaryChapter {
   number: number;
-  /** PDF page where this chapter's heading appears. */
-  page: number;
   title: string;
 }
 
 export interface SummaryPart {
-  /** Stable id used in the URL (`?part=`) and the spoiler reveal key. */
+  /** Stable id used in the URL (`?part=`), the spoiler reveal key, and the text file name. */
   id: string;
   number: number;
-  /** Served from `public/`, e.g. `/summaries/vol-2/part-1.pdf`. */
-  file: string;
-  pages: number;
   words: number;
-  /** When the PDF was finished (ISO date). */
+  /** When the part was finished (ISO date). */
   writtenAt: string;
   /** Notes that come before the first chapter, e.g. a recap of the previous volume. */
-  prelude?: { title: string; page: number };
+  prelude?: { title: string };
   chapters: SummaryChapter[];
 }
 
@@ -33,4 +28,17 @@ export interface SummaryVolume {
   parts: SummaryPart[];
   /** More parts are still being written. */
   ongoing: boolean;
+}
+
+/**
+ * One block of a summary: a paragraph, a small heading (only in a prelude),
+ * or a passage the author quotes straight from the novel.
+ */
+export type SummaryBlock = string | { heading: string } | { quote: string[] };
+
+/** The written text of one part, as produced by `pdf_summaries/extract_text.py`. */
+export interface SummaryText {
+  prelude: SummaryBlock[];
+  /** Keyed by chapter number. */
+  chapters: Record<string, SummaryBlock[]>;
 }

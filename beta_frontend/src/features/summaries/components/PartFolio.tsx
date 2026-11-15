@@ -117,8 +117,8 @@ export function PartFolio({
 
             <dl className={styles.meta}>
               <div>
-                <dt>Pages</dt>
-                <dd>{part.pages}</dd>
+                <dt>Words</dt>
+                <dd>{(part.words / 1000).toFixed(1)}k</dd>
               </div>
               <div>
                 <dt>Chapters</dt>

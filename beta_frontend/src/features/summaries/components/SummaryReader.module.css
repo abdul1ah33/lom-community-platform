@@ -231,7 +231,7 @@
 .chapter {
   position: relative;
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
+  grid-template-columns: 38px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
   width: 100%;
@@ -287,12 +287,6 @@
   text-overflow: ellipsis;
 }
 
-.chapterPage {
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-faint);
-}
-
 .ahead .chapterTitle {
   font-style: italic;
   color: var(--text-faint);
@@ -343,23 +337,24 @@
   height: 100%;
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: #2a2a2e;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgb(201 164 92 / 0.07), transparent 60%),
+    linear-gradient(180deg, rgb(20 17 29 / 0.96), rgb(10 9 15 / 0.98));
   box-shadow:
     0 0 0 1px rgb(226 192 126 / 0.25),
     0 20px 50px -20px rgb(0 0 0 / 0.8);
   transform-origin: left center;
 }
 
-.pdf {
-  display: block;
-  width: 100%;
+.page {
   height: 100%;
-  border: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: rgb(201 164 92 / 0.35) transparent;
 }
 
 .loading,
-.sealed,
-.fallback {
+.sealed {
   position: absolute;
   inset: 0;
   display: grid;
@@ -380,15 +375,13 @@
   color: var(--fog-200);
 }
 
-.sealed h3,
-.fallback h3 {
+.sealed h3 {
   margin: 6px 0 0;
   font-family: var(--font-display);
   font-size: 26px;
 }
 
-.sealed p,
-.fallback p {
+.sealed p {
   max-width: 46ch;
   margin: 0;
   color: var(--text-muted);
@@ -414,40 +407,80 @@
   transform: translateY(-2px) scale(1.03);
 }
 
+/* Previous / next chapter, under the text. */
 .turns {
-  position: absolute;
-  right: 28px;
-  bottom: 28px;
-  display: flex;
-  gap: 6px;
-  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 2.4em;
+  padding-top: 1.6em;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-ui);
 }
 
 .turns button {
   display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--border-strong);
-  border-radius: 50%;
-  background: rgb(12 10 18 / 0.85);
-  backdrop-filter: blur(10px);
-  color: var(--brass-200);
+  gap: 4px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.02);
+  text-align: left;
+  color: var(--text);
   transition:
-    transform 0.2s,
-    opacity 0.2s;
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.25s var(--ease-out-expo);
 }
 
-.turns button:hover:not(:disabled) {
-  transform: scale(1.08);
+.turns button:hover {
+  border-color: var(--border-strong);
+  background: rgb(201 164 92 / 0.06);
+  transform: translateY(-2px);
 }
 
-.turns button:disabled {
-  opacity: 0.3;
-  cursor: default;
+.turns .turnNext {
+  grid-column: 2;
+  text-align: right;
 }
 
-/* ── Small screens: index becomes a strip above the PDF ── */
+.turnLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass-300);
+}
+
+.turnNext .turnLabel {
+  justify-content: flex-end;
+}
+
+.turnTitle {
+  overflow: hidden;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.endNote {
+  grid-column: 2;
+  margin: 0;
+  align-self: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  text-align: right;
+  color: var(--text-muted);
+}
+
+/* ── Small screens: index becomes a strip above the text ── */
 @media (max-width: 900px) {
   .bar {
     flex-wrap: wrap;
@@ -505,8 +538,7 @@
     border-radius: 999px;
   }
 
-  .chapterTitle,
-  .chapterPage {
+  .chapterTitle {
     display: none;
   }
 
@@ -517,9 +549,15 @@
   .viewer {
     padding: 10px 12px 12px;
   }
+}
 
+@media (max-width: 520px) {
   .turns {
-    right: 22px;
-    bottom: 22px;
+    grid-template-columns: 1fr;
+  }
+
+  .turns .turnNext,
+  .endNote {
+    grid-column: 1;
   }
 }

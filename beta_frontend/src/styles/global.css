@@ -39,6 +39,8 @@
 
   --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
   --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  /* Long-form reading, e.g. the chapter summaries. */
+  --font-reading: "EB Garamond", "Cormorant Garamond", Georgia, serif;
   --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --radius-sm: 10px;

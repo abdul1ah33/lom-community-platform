@@ -1,0 +1,126 @@
+/* A chapter set like a page of a book: one comfortable column of serif text. */
+.page {
+  width: 100%;
+  max-width: 68ch;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 64px) clamp(18px, 4vw, 40px) 40px;
+  font-family: var(--font-reading);
+  font-size: clamp(17px, 0.9rem + 0.35vw, 19.5px);
+  line-height: 1.75;
+  color: #e2dcea;
+}
+
+/* ── Heading ───────────────────────────────────────────── */
+.header {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin-bottom: clamp(26px, 4vw, 40px);
+  text-align: center;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--brass-300);
+}
+
+.title {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 1.4rem + 1.8vw, 44px);
+  font-weight: 600;
+  line-height: 1.12;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  color: var(--crimson-300);
+}
+
+.ornament span {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brass-400));
+}
+
+.ornament span:last-child {
+  background: linear-gradient(90deg, var(--brass-400), transparent);
+}
+
+/* ── Text ──────────────────────────────────────────────── */
+.text p {
+  margin: 0 0 1.05em;
+  text-wrap: pretty;
+  hyphens: auto;
+}
+
+.opening::first-letter {
+  float: left;
+  margin: 0.06em 0.12em 0 0;
+  font-family: var(--font-display);
+  font-size: 3.5em;
+  font-weight: 700;
+  line-height: 0.82;
+  color: var(--brass-300);
+  text-shadow: 0 0 24px rgb(201 164 92 / 0.35);
+}
+
+/* The author's own asides, e.g. "(Just wanted to show Klein's lying skills)". */
+.text .aside {
+  font-style: italic;
+  font-size: 0.94em;
+  color: var(--text-muted);
+}
+
+.subheading {
+  margin: 1.8em 0 0.6em;
+  font-family: var(--font-display);
+  font-size: 0.78em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.subheading:first-child {
+  margin-top: 0;
+}
+
+/* Passages quoted straight from the novel. */
+.quote {
+  position: relative;
+  margin: 1.6em 0;
+  padding: 1.1em 1.3em 0.2em;
+  border-left: 2px solid var(--brass-400);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: linear-gradient(90deg, rgb(201 164 92 / 0.08), rgb(201 164 92 / 0.015));
+  font-size: 0.95em;
+  color: var(--fog-200);
+}
+
+.quoteLabel {
+  display: block;
+  margin-bottom: 0.5em;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--brass-400);
+}
+
+@media (max-width: 600px) {
+  .quote {
+    margin-inline: -4px;
+    padding-inline: 1em;
+  }
+}
