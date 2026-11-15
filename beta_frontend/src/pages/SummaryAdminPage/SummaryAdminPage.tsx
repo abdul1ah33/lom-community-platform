@@ -137,14 +137,6 @@ function Desk() {
         </div>
       </header>
 
-      <p className={styles.notice}>
-        <Icon name="alert" size={16} />
-        <span>
-          There is no server yet, so the library is saved in this browser only. Readers on other devices still see the
-          shelf as it ships with the site. Use <strong>Back up</strong> to keep a copy or move it to another browser.
-        </span>
-      </p>
-
       <div className={styles.layout}>
         <nav className={styles.shelf} aria-label="Volumes">
           {volumes.map((v) => (
