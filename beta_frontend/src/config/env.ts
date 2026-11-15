@@ -12,9 +12,9 @@ function readMockMode(): MockMode {
   return import.meta.env.DEV ? "users" : "off";
 }
 
-/** Usernames allowed into the summary desk. The demo account can use it in dev. */
+/** Usernames allowed into the summary desk: by default the summaries' authors (see mocks/db.ts). */
 function readSummaryEditors(): string[] {
-  const value = import.meta.env.VITE_SUMMARY_EDITORS ?? (import.meta.env.DEV ? "Fool_Above_Fog" : "");
+  const value = import.meta.env.VITE_SUMMARY_EDITORS ?? "Nour,Abdullah";
   return value
     .split(",")
     .map((name: string) => name.trim().toLowerCase())

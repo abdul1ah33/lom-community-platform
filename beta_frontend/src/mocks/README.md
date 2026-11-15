@@ -18,6 +18,10 @@ seen, it is copied into the mock DB using the real `/auth/me`.
 In `all` mode, sign in with the demo account **fool@lom.community / praisethefool**. Every other
 seeded account uses the password `password123`.
 
+The summaries' authors, **nour@lom.community** and **abdullah@lom.community** (password
+`summary123`), are the default `VITE_SUMMARY_EDITORS`, so they get the summary desk at
+`/admin/summaries`. Every other account is a normal reader.
+
 `VITE_MOCK_REDACT_SPOILERS=true` makes the posts mock withhold spoiler text the way a
 redacting server would (see the Spoilers section of posts.md).
 

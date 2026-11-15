@@ -64,6 +64,35 @@ const STORAGE_KEY = "lom.mockdb.v1";
 
 export const DEMO_ACCOUNT = { email: "fool@lom.community", password: "praisethefool" };
 
+/**
+ * The summaries' authors. Their usernames are the default VITE_SUMMARY_EDITORS, so signing
+ * in as either opens the summary desk; every other account is an ordinary reader.
+ */
+export const EDITOR_ACCOUNTS = [
+  { username: "Nour", email: "nour@lom.community", password: "summary123" },
+  { username: "Abdullah", email: "abdullah@lom.community", password: "summary123" },
+] as const;
+
+function editorUsers(): MockUser[] {
+  return EDITOR_ACCOUNTS.map((account, i) => ({
+    ...account,
+    id: `55555555-5555-4555-8555-00000000000${i}`,
+    display_name: account.username,
+    avatar_url: null,
+    bio: "Writes the volume summaries.",
+    location: null,
+    favorite_character: "Klein Moretti",
+    favorite_pathway: null,
+    // Authors have read the whole novel, so nothing on the shelf is sealed for them.
+    current_chapter: 1432,
+    progress_updated_at: daysAgo(1),
+    joined_at: daysAgo(30),
+    posts: 0,
+    comments: 0,
+    likes_received: 0,
+  }));
+}
+
 function daysAgo(days: number) {
   return new Date(Date.now() - days * 86_400_000).toISOString();
 }
@@ -165,7 +194,7 @@ function seed(): MockDbState {
 
   const [fool, justice, hanged, nighthawk, sun] = users.map((u) => u.id);
   return {
-    users,
+    users: [...users, ...editorUsers()],
     posts: seedPosts({ fool, justice, hanged, nighthawk, sun }),
     comments: seedComments({ fool, justice, hanged, nighthawk, sun }),
     commentLikes: [
@@ -201,7 +230,12 @@ function load(): MockDbState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     // Merge over the seed so data saved by an older mock version gains new collections.
-    if (raw) return { ...seed(), ...(JSON.parse(raw) as Partial<MockDbState>) };
+    if (raw) {
+      const saved = { ...seed(), ...(JSON.parse(raw) as Partial<MockDbState>) };
+      // Accounts added to the seed later (the summaries' authors) join data saved before them.
+      const missing = editorUsers().filter((u) => !saved.users.some((existing) => existing.id === u.id));
+      return { ...saved, users: [...saved.users, ...missing] };
+    }
   } catch {
     /* corrupt or unavailable: reseed */
   }
