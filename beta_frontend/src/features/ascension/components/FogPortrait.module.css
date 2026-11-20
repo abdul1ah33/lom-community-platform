@@ -1,0 +1,273 @@
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 560px;
+  perspective: 1200px;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+/* Crimson moon glowing behind the arch. */
+.moon {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  margin-left: -150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 123 140 / 0.55), rgb(209 31 60 / 0.25) 40%, transparent 70%);
+  filter: blur(8px);
+  z-index: -2;
+  animation: moon 7s ease-in-out infinite;
+}
+
+@keyframes moon {
+  50% {
+    scale: 1.12;
+    opacity: 0.75;
+  }
+}
+
+/* Slowly turning ring of runes around the frame. */
+.runes {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  z-index: -1;
+  animation: turn 80s linear infinite;
+}
+
+@keyframes turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.ringLine {
+  fill: none;
+  stroke: rgb(226 192 126 / 0.22);
+  stroke-width: 1;
+}
+
+.runeText {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  fill: rgb(226 192 126 / 0.5);
+}
+
+/* The arched window. */
+.frame {
+  position: relative;
+  width: 300px;
+  height: 470px;
+  border-radius: 999px 999px 18px 18px;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  box-shadow:
+    0 40px 90px -20px rgb(0 0 0 / 0.9),
+    0 0 60px rgb(209 31 60 / 0.25);
+}
+
+.image {
+  position: absolute;
+  inset: -24px;
+  width: calc(100% + 48px);
+  height: calc(100% + 48px);
+  object-fit: cover;
+  user-select: none;
+  animation: drift 22s ease-in-out infinite alternate;
+}
+
+/* A slow camera drift on the picture itself. */
+@keyframes drift {
+  from {
+    scale: 1.04;
+    transform-origin: 40% 30%;
+  }
+  to {
+    scale: 1.14;
+    transform-origin: 60% 55%;
+  }
+}
+
+/* Pulls the picture into the site palette: ink shadows, a crimson cast in the dark parts. */
+.tint {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgb(12 10 18 / 0.1), transparent 30%, rgb(12 10 18 / 0.55) 100%),
+    radial-gradient(circle at 50% 18%, rgb(209 31 60 / 0.22), transparent 55%);
+  mix-blend-mode: multiply;
+}
+
+.fog {
+  position: absolute;
+  left: -60%;
+  width: 220%;
+  height: 45%;
+  background: radial-gradient(ellipse at center, rgb(207 200 222 / 0.32), transparent 65%);
+  filter: blur(14px);
+}
+
+.fogA {
+  bottom: -8%;
+  animation: fog 18s ease-in-out infinite alternate;
+}
+
+.fogB {
+  top: 30%;
+  opacity: 0.55;
+  animation: fog 26s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes fog {
+  from {
+    translate: -12% 0;
+  }
+  to {
+    translate: 12% -4%;
+  }
+}
+
+/* A sheen that sweeps across the glass now and then. */
+.glint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgb(255 255 255 / 0.14) 50%, transparent 60%);
+  translate: -120% 0;
+  animation: glint 9s ease-in-out 2.5s infinite;
+}
+
+@keyframes glint {
+  0%,
+  70% {
+    translate: -120% 0;
+  }
+  100% {
+    translate: 120% 0;
+  }
+}
+
+/* Brass-and-crimson hairline orbiting the arch, like the site's tilt cards. */
+.border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    rgb(226 192 126 / 0.2) 0deg,
+    var(--brass-300) 50deg,
+    rgb(226 192 126 / 0.2) 110deg,
+    rgb(226 192 126 / 0.2) 190deg,
+    var(--crimson-400) 240deg,
+    rgb(226 192 126 / 0.2) 300deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: orbit 7s linear infinite;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes orbit {
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* Fog pooling at the foot of the window, spilling into the page. */
+.mist {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  width: 520px;
+  height: 140px;
+  margin-left: -260px;
+  background: radial-gradient(ellipse at center, rgb(167 159 186 / 0.35), transparent 70%);
+  filter: blur(18px);
+  animation: fog 14s ease-in-out infinite alternate;
+}
+
+.motes span {
+  position: absolute;
+  left: calc(22% + var(--m) * 4%);
+  bottom: 14%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fog-100);
+  box-shadow: 0 0 8px var(--brass-200);
+  opacity: 0;
+  animation: mote calc(6s + var(--m) * 0.4s) ease-in infinite;
+  animation-delay: calc(var(--m) * 0.55s);
+}
+
+.motes span:nth-child(3n) {
+  background: var(--crimson-300);
+  box-shadow: 0 0 8px var(--crimson-400);
+}
+
+@keyframes mote {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc((7 - var(--m)) * 6px), -420px);
+  }
+}
+
+:global(:root[data-perf="low"]) .moon,
+:global(:root[data-perf="low"]) .runes,
+:global(:root[data-perf="low"]) .image,
+:global(:root[data-perf="low"]) .fog,
+:global(:root[data-perf="low"]) .glint,
+:global(:root[data-perf="low"]) .border,
+:global(:root[data-perf="low"]) .mist,
+:global(:root[data-perf="low"]) .motes span {
+  animation: none;
+}
+
+@media (max-width: 720px) {
+  .stage {
+    height: 440px;
+  }
+
+  .frame {
+    width: 230px;
+    height: 360px;
+  }
+
+  .runes {
+    width: 400px;
+    height: 400px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moon,
+  .runes,
+  .image,
+  .fog,
+  .glint,
+  .border,
+  .mist,
+  .motes span {
+    animation: none;
+  }
+}

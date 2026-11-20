@@ -3,7 +3,7 @@ export { LawTablets } from "./components/LawTablets";
 export { PathwayCodex } from "./components/PathwayCodex";
 export { PathwayGrid } from "./components/PathwayGrid";
 export { SefirotOrbit } from "./components/SefirotOrbit";
-export { SequenceSpire } from "./components/SequenceSpire";
+export { FogPortrait } from "./components/FogPortrait";
 export { TierLadder } from "./components/TierLadder";
 export { BESTOWAL, CONCEPTS, SEFIROT } from "./data/codex";
 export { DIVINE_PATHWAYS, OUTER_PATHWAYS, getPathwayMeta } from "./data/pathways";

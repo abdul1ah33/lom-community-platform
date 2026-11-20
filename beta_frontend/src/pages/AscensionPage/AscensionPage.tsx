@@ -15,7 +15,7 @@ import {
   PathwayGrid,
   SEFIROT,
   SefirotOrbit,
-  SequenceSpire,
+  FogPortrait,
   TierLadder,
   getPathwayMeta,
   type PathwayMeta,
@@ -129,7 +129,7 @@ export function AscensionPage() {
             </button>
           </motion.div>
         </div>
-        <SequenceSpire />
+        <FogPortrait />
       </section>
 
       <Section
