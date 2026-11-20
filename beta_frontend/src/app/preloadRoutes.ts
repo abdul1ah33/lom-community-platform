@@ -9,6 +9,7 @@ export function preloadRoutes() {
     import("@/pages/SummariesPage/SummariesPage"),
     import("@/pages/BookmarksPage/BookmarksPage"),
     import("@/pages/NewsPage/NewsPage"),
+    import("@/pages/AscensionPage/AscensionPage"),
     import("@/pages/ProfilePage/ProfilePage"),
   ]);
 }

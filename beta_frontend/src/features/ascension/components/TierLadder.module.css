@@ -1,0 +1,169 @@
+.ladder {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 10px 0;
+  list-style: none;
+}
+
+.spine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  translate: -1px 0;
+  border-radius: 2px;
+  background: var(--ink-600);
+}
+
+.spineFill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transform-origin: top;
+  background: linear-gradient(180deg, var(--brass-300), var(--crimson-400) 70%, #fff);
+  box-shadow:
+    0 0 18px var(--crimson-400),
+    0 0 4px #fff;
+}
+
+.rung {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 60px minmax(0, 1fr);
+  align-items: start;
+}
+
+.left .card {
+  grid-column: 1;
+}
+
+/* Alternate sides interlock instead of each taking a full row. */
+.rung + .rung {
+  margin-top: -44px;
+}
+
+.right .card {
+  grid-column: 3;
+}
+
+.node {
+  position: absolute;
+  left: 50%;
+  top: 26px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff, var(--brass-300) 45%, var(--crimson-500));
+  box-shadow:
+    0 0 0 5px rgb(12 10 18 / 0.9),
+    0 0 22px var(--crimson-400);
+  z-index: 1;
+}
+
+/* Higher rungs glow brighter. */
+.rung .node {
+  filter: brightness(calc(0.75 + var(--i) * 0.06));
+}
+
+.card {
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: inset 0 0 0 1px var(--border);
+  transition: box-shadow 0.3s;
+}
+
+.card:hover,
+.cardOpen {
+  box-shadow:
+    inset 0 0 0 1px var(--border-strong),
+    0 20px 50px -20px rgb(209 31 60 / 0.35);
+}
+
+.head {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 16px 44px 16px 18px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.seq {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--brass-200);
+}
+
+.alias {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--fog-300);
+}
+
+.summary {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.chevron {
+  position: absolute;
+  right: 16px;
+  top: 20px;
+  color: var(--text-faint);
+  transition:
+    rotate 0.35s var(--ease-out-expo),
+    color 0.2s;
+}
+
+.cardOpen .chevron {
+  rotate: 90deg;
+  color: var(--brass-200);
+}
+
+.detail {
+  overflow: hidden;
+}
+
+.detailInner {
+  padding: 0 18px 18px;
+}
+
+@media (max-width: 760px) {
+  .spine,
+  .node {
+    left: 10px;
+  }
+
+  .rung {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .left .card,
+  .right .card {
+    grid-column: 2;
+  }
+
+  .rung + .rung {
+    margin-top: 0;
+  }
+}

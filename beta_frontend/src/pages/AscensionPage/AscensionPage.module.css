@@ -1,0 +1,334 @@
+.page {
+  display: grid;
+  gap: 72px;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+/* ── Hero ──────────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  align-items: center;
+  gap: 24px;
+}
+
+.copy {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 999px;
+  background: rgb(209 31 60 / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(255 123 140 / 0.28);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.title {
+  display: grid;
+  margin: 0;
+  line-height: 0.95;
+}
+
+.titleSmall {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(26px, 3.4vw, 40px);
+  color: var(--fog-200);
+}
+
+.titleBig {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(46px, 7.6vw, 96px);
+  letter-spacing: 0.01em;
+  filter: drop-shadow(0 6px 30px rgb(209 31 60 / 0.4));
+}
+
+.glyph {
+  background: linear-gradient(180deg, #fff, var(--brass-200) 50%, var(--brass-400));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  max-width: 56ch;
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.lead strong {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--brass-200);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stat {
+  display: grid;
+  min-width: 104px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgb(7 6 11 / 0.45);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.stat strong {
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--brass-200);
+}
+
+.stat > span {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 50px;
+  padding: 0 24px;
+  border: 1px solid rgb(255 123 140 / 0.5);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--crimson-400), var(--crimson-700));
+  box-shadow:
+    var(--shadow-glow-crimson),
+    inset 0 1px 0 rgb(255 255 255 / 0.25);
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  transition:
+    transform 0.3s var(--ease-out-expo),
+    box-shadow 0.3s;
+}
+
+.primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 60px rgb(209 31 60 / 0.55),
+    inset 0 1px 0 rgb(255 255 255 / 0.25);
+}
+
+.primary svg {
+  transition: translate 0.3s var(--ease-out-expo);
+}
+
+.primary:hover svg {
+  translate: 5px 0;
+}
+
+.shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 0.35) 50%, transparent 65%);
+  translate: -120% 0;
+  animation: shine 4s ease-in-out 2s infinite;
+}
+
+@keyframes shine {
+  0%,
+  60% {
+    translate: -120% 0;
+  }
+  100% {
+    translate: 120% 0;
+  }
+}
+
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 50px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  font-weight: 600;
+  color: var(--brass-200);
+  transition:
+    background 0.2s,
+    transform 0.3s var(--ease-out-expo);
+}
+
+.secondary:hover {
+  background: rgb(226 192 126 / 0.1);
+  transform: translateY(-2px);
+}
+
+/* ── Sections ──────────────────────────────────────── */
+.section {
+  display: grid;
+  gap: 26px;
+  scroll-margin-top: 24px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.sectionEyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--crimson-300);
+}
+
+.sectionEyebrow::after {
+  content: "";
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--crimson-400), transparent);
+}
+
+.sectionTitle {
+  margin: 6px 0 4px;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.4vw, 48px);
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+}
+
+.sectionLead {
+  max-width: 60ch;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--fog-300);
+}
+
+.deckTabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.03);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.deckTab {
+  position: relative;
+  height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.deckTab:hover {
+  color: var(--text);
+}
+
+.deckTab > span:last-child {
+  position: relative;
+}
+
+.deckTabActive,
+.deckTabActive:hover {
+  color: var(--ink-950);
+}
+
+.deckGlow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--brass-200), var(--brass-400));
+  box-shadow: var(--shadow-glow-brass);
+}
+
+.source {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero > :last-child {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    gap: 56px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .stat {
+    min-width: 0;
+  }
+
+  .ctas,
+  .primary,
+  .secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .deckTabs {
+    width: 100%;
+  }
+
+  .deckTab {
+    flex: 1;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+}
