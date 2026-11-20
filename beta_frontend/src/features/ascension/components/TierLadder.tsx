@@ -27,7 +27,9 @@ export function TierLadder() {
       {TIERS.map((tier, i) => {
         const key = `ascension:tier:${tier.id}`;
         const sealed = spoilers.isSealed(key, tier.sealUntil);
-        const expanded = open === tier.id;
+        const nameKey = `ascension:tier-name:${tier.id}`;
+        const nameSealed = tier.nameSealUntil !== undefined && spoilers.isSealed(nameKey, tier.nameSealUntil);
+        const expanded = open === tier.id && !nameSealed;
         return (
           <motion.li
             key={tier.id}
@@ -47,18 +49,24 @@ export function TierLadder() {
               transition={{ type: "spring", stiffness: 300, damping: 16, delay: 0.2 }}
             />
             <div className={`${styles.card} ${expanded ? styles.cardOpen : ""}`}>
-              <button
-                type="button"
-                className={styles.head}
-                aria-expanded={expanded}
-                onClick={() => setOpen(expanded ? null : tier.id)}
-              >
-                <span className={styles.seq}>{tier.sequences}</span>
-                <span className={styles.name}>{tier.name}</span>
-                {tier.alias && <span className={styles.alias}>{tier.alias}</span>}
-                <span className={styles.summary}>{tier.summary}</span>
-                <Icon name="chevronRight" size={18} className={styles.chevron} />
-              </button>
+              {nameSealed ? (
+                <div className={styles.sealedHead}>
+                  <Sealed until={tier.nameSealUntil!} onReveal={() => spoilers.reveal(nameKey)} lines={3} compact />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.head}
+                  aria-expanded={expanded}
+                  onClick={() => setOpen(expanded ? null : tier.id)}
+                >
+                  <span className={styles.seq}>{tier.sequences}</span>
+                  <span className={styles.name}>{tier.name}</span>
+                  {tier.alias && <span className={styles.alias}>{tier.alias}</span>}
+                  <span className={styles.summary}>{tier.summary}</span>
+                  <Icon name="chevronRight" size={18} className={styles.chevron} />
+                </button>
+              )}
               <AnimatePresence initial={false}>
                 {expanded && (
                   <motion.div

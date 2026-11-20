@@ -63,6 +63,8 @@ export interface Tier {
   summary: string;
   detail: string[];
   sealUntil: number;
+  /** Before this chapter even the rung's name and summary are hidden. */
+  nameSealUntil?: number;
 }
 
 export const TIERS: Tier[] = [
@@ -126,6 +128,7 @@ export const TIERS: Tier[] = [
   },
   {
     id: "god",
+    nameSealUntil: 300,
     sequences: "Sequence 0",
     name: "True God",
     summary: "Three Sequence 1 characteristics, one Uniqueness, one throne.",
@@ -138,6 +141,7 @@ export const TIERS: Tier[] = [
   },
   {
     id: "half",
+    nameSealUntil: 300,
     sequences: "Beyond Seq. 0",
     name: "Half a Great Old One",
     alias: "Quasi Great Old One",
@@ -152,6 +156,7 @@ export const TIERS: Tier[] = [
   },
   {
     id: "old-one",
+    nameSealUntil: 300,
     sequences: "Above the Sequences",
     name: "Great Old One",
     alias: "Outer Deity",

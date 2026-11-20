@@ -140,6 +140,10 @@
   color: var(--brass-200);
 }
 
+.sealedHead {
+  padding: 10px;
+}
+
 .detail {
   overflow: hidden;
 }
