@@ -36,16 +36,25 @@ export function useAscensionSpoilers() {
   const pathwayUntil = (meta: PathwayMeta) =>
     meta.kind === "outer" ? SEQUEL : (getPathway(meta.slug)?.revealChapter ?? 0);
 
+  const isPathwaySealed = (meta: PathwayMeta) => isSealed(pathwayKey(meta), pathwayUntil(meta));
+  const sequenceKey = (meta: PathwayMeta, n: number) => `ascension:${meta.slug}:${n}`;
+
   return {
     chapter,
     isSealed,
     reveal: (key: string) => store.add(key),
-    isPathwaySealed: (meta: PathwayMeta) => isSealed(pathwayKey(meta), pathwayUntil(meta)),
+    isPathwaySealed,
     revealPathway: (meta: PathwayMeta) => store.add(pathwayKey(meta)),
     pathwayUntil,
+    /**
+     * An Outer Deity is sequel material from top to bottom, so revealing the pathway opens
+     * its whole ladder. Divine pathways keep their higher Sequences sealed separately.
+     */
     isSequenceSealed: (meta: PathwayMeta, n: number) =>
-      isSealed(`ascension:${meta.slug}:${n}`, sequenceSealUntil(meta, n)),
-    revealSequence: (meta: PathwayMeta, n: number) => store.add(`ascension:${meta.slug}:${n}`),
+      meta.kind === "outer"
+        ? isPathwaySealed(meta) && !store.has(sequenceKey(meta, n))
+        : isSealed(sequenceKey(meta, n), sequenceSealUntil(meta, n)),
+    revealSequence: (meta: PathwayMeta, n: number) => store.add(sequenceKey(meta, n)),
   };
 }
 

@@ -75,6 +75,7 @@ export function PathwayCodex({ meta, level, onSelect, onClose }: PathwayCodexPro
 
   // The rail lists Sequence 0 (or the Great Old One) at the top.
   const rail = [...sequences].reverse();
+  const sealedCount = sequences.filter((s) => spoilers.isSequenceSealed(meta, s.n)).length;
   const climbed = sequences.length > 1 ? index / (sequences.length - 1) : 0;
 
   return createPortal(
@@ -100,7 +101,9 @@ export function PathwayCodex({ meta, level, onSelect, onClose }: PathwayCodexPro
       >
         <header className={styles.header}>
           <div>
-            <span className={styles.eyebrow}>{meta.kind === "outer" ? "Outer Deity pathway" : "Path of the Divine"}</span>
+            <span className={styles.eyebrow}>
+              {meta.kind === "outer" ? "Outer Deity pathway" : "Path of the Divine"}
+            </span>
             <h2 className={styles.title}>
               <RevealText text={meta.god} charClassName={styles.glyph} delay={0.15} stagger={0.035} />
             </h2>
@@ -123,6 +126,15 @@ export function PathwayCodex({ meta, level, onSelect, onClose }: PathwayCodexPro
         ) : (
           <div className={styles.body}>
             <nav className={styles.rail} aria-label="Sequences">
+              {sealedCount > 0 && (
+                <button
+                  type="button"
+                  className={styles.revealAll}
+                  onClick={() => sequences.forEach((s) => spoilers.revealSequence(meta, s.n))}
+                >
+                  <Icon name="eye" size={13} /> Reveal all {sealedCount}
+                </button>
+              )}
               <div className={styles.railList}>
                 <span className={styles.railTrack} aria-hidden="true">
                   <motion.span
