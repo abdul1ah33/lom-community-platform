@@ -13,8 +13,7 @@ import {
   OUTER_PATHWAYS,
   PathwayCodex,
   PathwayGrid,
-  SEFIROT,
-  SefirotOrbit,
+  TIERS,
   FogPortrait,
   TierLadder,
   getPathwayMeta,
@@ -85,8 +84,8 @@ export function AscensionPage() {
             transition={{ delay: 1.2, duration: 0.9 }}
           >
             How a mortal drinks a potion and starts the long, dangerous climb from <strong>Sequence 9</strong> to a
-            throne <strong>above the Sequences</strong>. The laws, the ladder, every pathway and the Sefirot they lead
-            to, retold for this community. Anything past your chapter stays sealed until you break it open.
+            throne <strong>above the Sequences</strong>. The laws, the ladder and every pathway with all its powers,
+            retold for this community. Anything past your chapter stays sealed until you break it open.
           </motion.p>
 
           <motion.div
@@ -98,7 +97,7 @@ export function AscensionPage() {
             {[
               { value: DIVINE_PATHWAYS.length, label: "Divine pathways" },
               { value: DIVINE_PATHWAYS.length * 10, label: "Sequences" },
-              { value: SEFIROT.length, label: "Sefirot" },
+              { value: TIERS.length, label: "Ranks of power" },
               { value: OUTER_PATHWAYS.length, label: "Outer Deities" },
             ].map((stat) => (
               <motion.div
@@ -206,17 +205,8 @@ export function AscensionPage() {
       </Section>
 
       <Section
-        id="sefirot"
-        eyebrow="Chapter V"
-        title="The Sefirot"
-        lead="Nine sources of power on Earth. Each one feeds a family of pathways and belongs to a Great Old One."
-      >
-        <SefirotOrbit />
-      </Section>
-
-      <Section
         id="bestowal"
-        eyebrow="Chapter VI"
+        eyebrow="Chapter V"
         title="Other Roads to Power"
         lead="The potions are the only correct path, but not the only one."
       >
